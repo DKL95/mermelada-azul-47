@@ -94,6 +94,10 @@ El juego guarda una copia para funcionar sin internet. Al publicar cambios, sube
 > 🔈 Si no se oye nada, revisa el interruptor de silencio del iPhone y el ⚙️ de Sonido del juego.
 > 💾 La partida se guarda sola en el teléfono. Si se borra la app de la pantalla de inicio o los datos de Safari, se pierde.
 
+## 🤖 Android (APK)
+
+Para tenerlo como app instalable en Android, sigue [`GUIA_APK.md`](GUIA_APK.md) (Capacitor + Android Studio).
+
 ---
 
 ## 🗂️ Estructura
