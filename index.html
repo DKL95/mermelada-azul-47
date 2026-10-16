@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <!-- Que los buscadores NO indexen el juego (es privado) -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#3DA5FF">
+  <!-- iPhone: al agregarlo a la pantalla de inicio se abre como app,
+       a pantalla completa y con la barra de estado transparente -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Candy Crepas">
+  <meta name="format-detection" content="telephone=no">
+  <title>Candy Crepas</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+  <!-- iPhone solo acepta PNG para el ícono de la pantalla de inicio -->
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <!-- Fuente redondeada (si no hay internet se usa la del sistema) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/ui.css">
+  <link rel="stylesheet" href="css/escenas.css">
+</head>
+<body>
+  <div id="app">
+    <!-- ===== Barra superior: dinero, día, reputación, reloj ===== -->
+    <header id="barra-superior">
+      <div class="indicador" id="ind-dinero" title="Dinero">
+        <span class="ind-icono" aria-hidden="true">💰</span>
+        <span class="ind-valor" id="valor-dinero">$0</span>
+      </div>
+      <div class="indicador" id="ind-dia" title="Día">
+        <span class="ind-etiqueta">Día</span>
+        <span class="ind-valor" id="valor-dia">1</span>
+      </div>
+      <div class="indicador" id="ind-reputacion" title="Reputación">
+        <span class="estrellas" id="valor-reputacion"></span>
+      </div>
+      <div class="indicador" id="ind-reloj" title="Hora del turno">
+        <span class="ind-icono" aria-hidden="true">🕘</span>
+        <span class="ind-valor" id="valor-reloj">9:00</span>
+      </div>
+      <button class="btn-icono" id="btn-ajustes" aria-label="Ajustes">⚙️</button>
+    </header>
+
+    <!-- ===== Pantallas (una por pestaña) ===== -->
+    <main id="pantallas">
+      <section class="pantalla" id="pantalla-cocina" data-pestana="cocina" aria-label="Cocina"></section>
+      <section class="pantalla" id="pantalla-venta" data-pestana="venta" aria-label="Venta"></section>
+    </main>
+
+    <!-- ===== Barra inferior de pestañas ===== -->
+    <nav id="barra-tabs" role="tablist">
+      <button class="tab" role="tab" data-pestana="cocina">
+        <span class="tab-icono" aria-hidden="true">🍳</span>
+        <span class="tab-texto">Cocina</span>
+        <span class="tab-globo" id="globo-cocina" hidden>0</span>
+      </button>
+      <button class="tab" role="tab" data-pestana="venta">
+        <span class="tab-icono" aria-hidden="true">🛎️</span>
+        <span class="tab-texto">Venta</span>
+        <span class="tab-globo" id="globo-venta" hidden>0</span>
+      </button>
+    </nav>
+
+    <!-- Capa para ventanas emergentes y avisos -->
+    <div id="capa-modal" hidden></div>
+    <div id="capa-avisos" aria-live="polite"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

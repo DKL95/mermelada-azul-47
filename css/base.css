@@ -1,0 +1,203 @@
+/* ============================================================
+   base.css — colores, tipografía y estructura general.
+   Todos los colores viven aquí como variables: cámbialos y
+   se actualiza todo el juego.
+   ============================================================ */
+:root {
+  /* Paleta: azules vivos + acentos "candy" (rosa chicle y amarillo) */
+  --fondo: #F3F9FF;
+  --fondo-2: #DDEEFF;
+  --primario: #3DA5FF;
+  --primario-fuerte: #1F5FFF;
+  --candy: #FF4FA3;
+  --amarillo: #FFD84D;
+  --aqua: #7FE3F0;
+  --aqua-fuerte: #14B8A6;
+  --lila: #B9A6FF;
+  --caramelo: #E7A35C;
+  --masa: #F2C27E;
+  --chocolate: #6B3E2E;
+  --chocolate-suave: #8A5A47;
+  --blanco: #FFFFFF;
+  --gris: #A9B6CF;
+
+  --texto: #1B2A55;
+  --texto-suave: #5B6B93;
+
+  --sombra: 0 4px 12px rgba(27, 42, 85, 0.15);
+  --sombra-fuerte: 0 8px 24px rgba(27, 42, 85, 0.25);
+  --radio: 18px;
+  --radio-chico: 12px;
+
+  --alto-barra-sup: 56px;
+  --alto-tabs: 72px;
+
+  --fuente: 'Fredoka', 'Nunito', 'Segoe UI Rounded', 'Segoe UI', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #CFE4FF; /* fondo detrás del "teléfono" en PC */
+  color: var(--texto);
+  font-family: var(--fuente);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;   /* iPhone: sin menú al mantener presionado */
+  -webkit-text-size-adjust: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;   /* sin "rebote" ni jalar para recargar */
+  overflow: hidden;
+  touch-action: manipulation;  /* sin zoom con doble toque */
+}
+
+button { font-family: inherit; color: inherit; cursor: pointer; }
+
+/* El juego ocupa toda la pantalla en el celular y una columna
+   con forma de teléfono en la computadora. */
+#app {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
+  background: var(--fondo);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@media (min-width: 520px) {
+  #app { box-shadow: var(--sombra-fuerte); }
+}
+
+/* ===== Barra superior ===== */
+#barra-superior {
+  flex: 0 0 auto;
+  min-height: var(--alto-barra-sup);
+  padding: calc(6px + env(safe-area-inset-top)) 8px 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primario);
+  box-shadow: 0 2px 8px rgba(27, 42, 85, 0.12);
+  z-index: 10;
+}
+
+.indicador {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+}
+#ind-dinero { flex: 1 1 auto; min-width: 0; }
+#ind-dinero .ind-valor { overflow: hidden; text-overflow: ellipsis; }
+.ind-etiqueta { font-weight: 500; color: var(--texto-suave); font-size: 13px; }
+.ind-icono { font-size: 16px; }
+.indicador.salta { animation: salto 0.35s ease; }
+
+.estrellas { display: flex; gap: 1px; }
+.estrellas svg { width: 13px; height: 13px; display: block; }
+#valor-reloj small { margin-left: 2px; font-size: 10px; font-weight: 500; }
+
+.btn-icono {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 18px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 0 rgba(27, 42, 85, 0.15);
+}
+.btn-icono:active { transform: translateY(2px); box-shadow: none; }
+
+/* En pantallas muy angostas se esconde la etiqueta "Día" */
+@media (max-width: 370px) {
+  .ind-etiqueta { display: none; }
+  .indicador { padding: 0 8px; font-size: 14px; }
+}
+
+/* ===== Pantallas ===== */
+#pantallas {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.pantalla {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: none;
+}
+.pantalla.activa {
+  display: block;
+  animation: aparecer 0.25s ease;
+}
+
+/* ===== Barra de pestañas ===== */
+#barra-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: var(--blanco);
+  box-shadow: 0 -2px 10px rgba(27, 42, 85, 0.1);
+  z-index: 10;
+}
+.tab {
+  position: relative;
+  flex: 1;
+  height: 56px;
+  border: none;
+  border-radius: var(--radio);
+  background: var(--fondo-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  transition: background 0.2s, transform 0.1s;
+}
+.tab-icono { font-size: 24px; }
+.tab.activa {
+  background: var(--primario);
+  color: var(--texto);
+  box-shadow: inset 0 -3px 0 rgba(27, 42, 85, 0.15);
+}
+.tab:active { transform: scale(0.97); }
+.tab-globo {
+  position: absolute;
+  top: 4px;
+  right: 14px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--candy);
+  color: var(--blanco);
+  font-size: 13px;
+  line-height: 22px;
+}
+
+/* ===== Animaciones reutilizables ===== */
+@keyframes aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes salto { 50% { transform: scale(1.12); } }
+@keyframes flotar { 50% { transform: translateY(-4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

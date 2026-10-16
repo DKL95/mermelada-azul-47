@@ -1,0 +1,1087 @@
+/* ============================================================
+   escenas.css — decorado de la Cocina y de la Venta.
+   ============================================================ */
+
+/* ================= COCINA ================= */
+.cocina {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  /* Pared de azulejos */
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.55) 2px, transparent 2px) 0 0 / 40px 40px,
+    linear-gradient(rgba(255,255,255,0.55) 2px, transparent 2px) 0 0 / 40px 40px,
+    var(--aqua);
+}
+
+/* Riel donde se cuelgan las comandas (tickets) */
+.riel {
+  position: relative;
+  flex: 0 0 auto;
+  height: 84px;
+  padding: 14px 10px 0;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.riel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 8px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(#C9C2BC, #9C948D);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+}
+.riel-vacio {
+  align-self: center;
+  margin: 10px auto 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+/* Comandas colgadas en el riel */
+.comanda {
+  position: relative;
+  flex: 0 0 auto;
+  width: 86px;
+  height: 64px;
+  margin-top: 2px;
+  padding: 8px 4px 6px;
+  border: none;
+  border-radius: 4px 4px 8px 8px;
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  transform-origin: top center;
+  animation: colgar 0.6s ease;
+}
+@keyframes colgar { 0% { transform: rotate(8deg); } 50% { transform: rotate(-4deg); } 100% { transform: none; } }
+.comanda .pinza {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 22px;
+  height: 7px;
+  margin-left: -11px;
+  border-radius: 0 0 3px 3px;
+  background: #9C948D;
+}
+.comanda b { font-size: 13px; line-height: 1; }
+.comanda .ticket-iconos { gap: 1px 3px; margin: 0; }
+.comanda .ico-ing svg { width: 17px; height: 17px; }
+.comanda .ico-ing b { font-size: 9px; right: -5px; bottom: -3px; }
+.comanda .ico-doblez { display: none; }
+.comanda .pac { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; }
+.comanda.activa { outline: 3px solid var(--candy); transform: translateY(4px); }
+.comanda.lista::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: var(--aqua-fuerte);
+  font-weight: 700;
+}
+.etiqueta-pedido {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  z-index: 3;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--candy);
+  color: var(--blanco);
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: var(--sombra);
+}
+
+/* Repisa con frascos */
+.repisa { flex: 0 0 auto; height: 56px; padding: 0 12px; }
+.repisa svg { width: 100%; height: 100%; display: block; }
+
+/* Mostrador con la plancha */
+.mostrador-cocina {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 6px;
+  padding: 8px 0;
+  background: linear-gradient(#BFE0FF, #8EC5FF);
+  border-top: 10px solid #FFFFFF;
+  box-shadow: inset 0 6px 10px rgba(27,42,85,0.1);
+}
+/* Escenario: plancha o plato con la crepa encima */
+.escenario {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(66vw, 270px, 31vh);
+  aspect-ratio: 1;
+  touch-action: none; /* que arrastrar no haga scroll */
+  cursor: pointer;
+}
+.escenario > .capa-plancha, .escenario > .capa-plato, .lienzo-crepa, .doblada {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.escenario svg { width: 100%; height: 100%; display: block; }
+.capa-plato { opacity: 0; transform: scale(0.9); transition: opacity 0.35s, transform 0.35s; }
+.capa-plancha { transition: opacity 0.35s, transform 0.35s; }
+.escenario.en-plato .capa-plato { opacity: 1; transform: none; }
+.escenario.en-plato .capa-plancha { opacity: 0; transform: scale(0.9); }
+.escenario.en-plato .vapor { display: none; }
+.escenario:not([data-etapa="masa"]) .guia { display: none; }
+.lienzo-crepa { transition: opacity 0.3s; }
+
+/* Volteo: la crepa se "aplasta" y vuelve */
+.escenario.volteando .lienzo-crepa { animation: voltear 0.42s ease-in-out; }
+@keyframes voltear {
+  0% { transform: none; }
+  45% { transform: scaleX(0.05) translateY(-20px); }
+  100% { transform: none; }
+}
+
+/* Doblado: se oculta la crepa plana y aparece la doblada */
+.doblada { pointer-events: none; opacity: 0; }
+.escenario.doblando .lienzo-crepa { opacity: 0; }
+.escenario.doblando .doblada { opacity: 1; animation: doblar 0.45s cubic-bezier(.3,1.6,.6,1); }
+@keyframes doblar {
+  0% { transform: scale(1.3) rotate(-8deg); opacity: 0; }
+  100% { transform: none; opacity: 1; }
+}
+/* Mandar a la charola: sale volando hacia la charola */
+.escenario.enviando .doblada { animation: enviar 0.45s ease-in forwards; }
+@keyframes enviar { to { transform: translate(60%, -60%) scale(0.2); opacity: 0; } }
+
+/* Rastra que sigue al dedo */
+.rastra {
+  position: absolute;
+  left: -40px;
+  top: -40px;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 3px rgba(0,0,0,0.25));
+}
+
+/* Vapor (y humo si se está quemando) */
+.escenario .vapor {
+  position: absolute;
+  bottom: 60%;
+  width: 14px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  animation: vapor 3s ease-in infinite;
+}
+.escenario .vapor:nth-of-type(1) { left: 35%; animation-delay: 0s; }
+.escenario .vapor:nth-of-type(2) { left: 50%; animation-delay: 1s; }
+.escenario .vapor:nth-of-type(3) { left: 62%; animation-delay: 2s; }
+.escenario.quemandose .vapor { background: rgba(60,55,53,0.8); width: 22px; animation-duration: 1.2s; }
+@keyframes vapor {
+  0% { opacity: 0; transform: translateY(20px) scaleX(1); }
+  30% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-40px) scaleX(1.8); }
+}
+
+/* Panel de controles de cada estación */
+.panel-estacion {
+  width: 100%;
+  max-width: 420px;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.instruccion {
+  margin: 0;
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--texto);
+}
+#controles { display: flex; flex-direction: column; gap: 8px; }
+.fila-botones { display: flex; gap: 8px; }
+.fila-botones .btn { flex: 1; padding: 0 10px; font-size: 16px; }
+.btn-grande { min-height: 56px; font-size: 19px !important; }
+
+/* Medidores de la masa */
+.medidores { display: flex; gap: 8px; }
+.medidor {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radio-chico);
+  background: rgba(255,255,255,0.8);
+  font-size: 14px;
+  font-weight: 600;
+}
+.medidor b { margin-left: auto; color: var(--primario-fuerte); font-size: 16px; }
+.barrita { flex: 1; height: 10px; border-radius: 5px; background: var(--fondo-2); overflow: hidden; }
+.barrita i { display: block; height: 100%; background: #F2C27E; transition: width 0.1s; }
+
+/* Barra de cocción con zonas */
+.barra-coccion {
+  position: relative;
+  display: flex;
+  height: 30px;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 3px solid var(--blanco);
+  box-shadow: var(--sombra);
+}
+.zona.cruda { background: linear-gradient(90deg, #F7EBC4, #F3D99A); }
+.zona.perfecta { background: #2BD07A; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.6); }
+.zona.dorada { background: #F0A23B; }
+.zona.quemada { background: linear-gradient(90deg, #B85A2A, #3C2618); }
+.aguja {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: var(--texto);
+  box-shadow: 0 0 0 2px var(--blanco);
+}
+.leyenda-coccion { position: relative; display: flex; justify-content: space-between; font-size: 12px; color: var(--texto-suave); margin-top: -4px; }
+.leyenda-coccion .centro { position: absolute; transform: translateX(-50%); color: #14935A; font-weight: 600; }
+
+/* Bandeja de ingredientes */
+.bandeja-ingredientes { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 8px 2px 2px; }
+.btn-ingrediente {
+  position: relative;
+  flex: 1 0 62px;
+  min-height: 64px;
+  padding: 4px 2px;
+  border: 3px solid transparent;
+  border-radius: var(--radio-chico);
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+.btn-ingrediente svg { width: 34px; height: 34px; }
+.btn-ingrediente.elegido { border-color: var(--candy); transform: translateY(-3px); }
+.btn-ingrediente .cuenta {
+  position: absolute;
+  top: -8px;
+  right: -2px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--candy);
+  color: var(--blanco);
+  font-size: 12px;
+}
+
+/* Opciones de doblado */
+.opciones-doblado { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.btn-doblado {
+  padding: 4px 2px;
+  border: 3px solid transparent;
+  border-radius: var(--radio-chico);
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+  font-size: 12px;
+  font-weight: 600;
+}
+.btn-doblado svg { width: 100%; height: 44px; display: block; }
+.btn-doblado.elegido { border-color: var(--candy); }
+
+/* Resumen de la crepa terminada */
+.resumen-crepa { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.resumen-crepa span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.85);
+  font-size: 14px;
+}
+.resumen-crepa .ancho { flex-basis: 100%; text-align: center; }
+
+/* Charola de crepas terminadas */
+.charola-cocina {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: var(--candy);
+  color: var(--blanco);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--sombra);
+}
+.lista-charola { display: flex; flex-direction: column; gap: 8px; }
+.item-charola { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: var(--radio-chico); background: var(--blanco); }
+.item-charola svg { width: 56px; height: 56px; flex: 0 0 auto; }
+.item-charola span { flex: 1; font-size: 14px; }
+.item-charola .btn { min-height: 40px; font-size: 14px; padding: 0 12px; }
+
+/* Fila de estaciones */
+.estaciones {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: #CFE6FF;
+}
+.estacion {
+  flex: 0 0 auto;
+  min-width: 64px;
+  min-height: 52px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: var(--radio-chico);
+  background: rgba(255,255,255,0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+.estacion .num {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  background: var(--fondo-2);
+  font-size: 12px;
+  line-height: 20px;
+}
+.estacion.actual { background: var(--primario); color: var(--texto); }
+.estacion.actual .num { background: var(--blanco); }
+.estacion.hecha .num { background: var(--aqua-fuerte); color: var(--blanco); }
+.estacion.pronto { opacity: 0.45; }
+.estacion.pronto .num { background: none; }
+
+/* ================= VENTA ================= */
+.venta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(#CDEBF5, #E8F6FA);
+}
+.calle { position: absolute; inset: 0; }
+.calle svg { width: 100%; height: 100%; display: block; }
+.fachada { flex: 0 0 auto; position: relative; }
+.fachada svg { width: 100%; display: block; }
+
+/* Zona donde se forman los clientes */
+.zona-clientes {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+/* Mensaje central: botón de abrir, "esperando clientes", etc. */
+.aviso-zona {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.aviso-zona > * { pointer-events: auto; }
+.pildora {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.85);
+  color: var(--texto-suave);
+  font-size: 15px;
+}
+.flotando { animation: flotar 3s ease-in-out infinite; }
+.btn-abrir { min-height: 60px; padding: 0 28px; font-size: 20px; box-shadow: 0 5px 0 #1542B8; animation: latido 1.6s ease-in-out infinite; }
+.sub-abrir { font-weight: 600; color: var(--texto-suave); }
+@keyframes latido { 50% { transform: scale(1.05); } }
+
+/* ----- Clientes ----- */
+.cliente {
+  position: absolute;
+  bottom: 0;
+  width: 30%;
+  max-width: 140px;
+  transform: translateX(-50%);
+  transition: left 2.4s linear;
+  z-index: 1;
+  cursor: pointer;
+}
+.cuerpo-cliente svg { width: 100%; display: block; }
+.cliente.caminando .cuerpo-cliente { animation: caminar 0.4s ease-in-out infinite alternate; }
+@keyframes caminar { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-6px) rotate(2deg); } }
+.cliente.brinco .cuerpo-cliente { animation: brinquito 0.45s ease-in-out 3; }
+@keyframes brinquito { 50% { transform: translateY(-16px); } }
+.cliente.saliendo { pointer-events: none; }
+
+.sobre-cabeza {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  max-width: 150px;
+}
+.globo {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+.globo::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-top-color: var(--blanco);
+  border-bottom: 0;
+}
+.globo-pedir { background: var(--amarillo); animation: latido 1.2s ease-in-out infinite; }
+.globo-pedir::after { border-top-color: var(--amarillo); }
+.globo-enojado { background: #FFD6D6; }
+.globo-enojado::after { border-top-color: #FFD6D6; }
+.ticket-cabeza {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--blanco);
+  border-top: 4px solid var(--candy);
+  box-shadow: var(--sombra);
+  font-size: 13px;
+  font-weight: 700;
+}
+.paciencia {
+  width: 70px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.8);
+  overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+}
+.paciencia i { display: block; height: 100%; width: 100%; background: #2BD07A; transition: width 0.25s linear, background 0.3s; }
+
+/* Tarjeta para tomar el pedido */
+.tarjeta-pedido {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 8px;
+  z-index: 6;
+  padding: 12px;
+  border-radius: var(--radio);
+  background: var(--blanco);
+  border-top: 6px solid var(--candy);
+  box-shadow: var(--sombra-fuerte);
+  animation: aparecer 0.2s ease;
+}
+.tarjeta-pedido .dice { margin: 0 0 8px; font-size: 16px; font-weight: 500; text-align: center; }
+.tarjeta-pedido .fila-botones .btn { font-size: 15px; }
+.tarjeta-pedido .fila-botones .btn:first-child { flex: 0 0 auto; }
+.ticket-iconos { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; margin-bottom: 10px; }
+.ico-ing { position: relative; display: inline-flex; }
+.ico-ing svg { width: 32px; height: 32px; }
+.ico-ing b { position: absolute; right: -8px; bottom: -4px; font-size: 12px; color: var(--candy); }
+.ico-doblez { padding: 3px 8px; border-radius: 999px; background: var(--fondo-2); font-size: 12px; font-weight: 600; }
+
+/* Ventana de entrega */
+.ticket-grande { padding: 10px; border-radius: var(--radio-chico); background: var(--blanco); border-top: 5px solid var(--candy); text-align: center; }
+.ticket-grande .ticket-iconos { margin: 6px 0 0; }
+.opciones-charola { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.opcion-crepa {
+  padding: 6px;
+  border: 3px solid transparent;
+  border-radius: var(--radio-chico);
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+  font-weight: 600;
+}
+.opcion-crepa svg { width: 100%; height: 80px; display: block; }
+.opcion-crepa.sugerida { border-color: var(--aqua-fuerte); }
+
+/* Mostrador de venta con caja registradora */
+.mostrador-venta {
+  position: relative;
+  z-index: 2; /* tapa la parte de abajo de los clientes */
+  flex: 0 0 auto;
+  /* la caja y la charola sobresalen hacia la calle (50/380 del ancho) */
+  margin-top: -13.2%;
+}
+.mostrador-venta svg { width: 100%; display: block; }
+.charola-venta {
+  position: absolute;
+  left: 10%;
+  width: 28%;
+  bottom: 66%;
+  display: flex;
+  justify-content: center;
+}
+.mini-crepa { position: relative; width: 25%; margin: 0 -2%; }
+.mini-crepa svg { width: 100%; display: block; }
+.mini-crepa b { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); font-size: 10px; color: var(--candy); }
+
+/* Cobro: monedas y texto flotante */
+.moneda {
+  position: absolute;
+  z-index: 70;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FFF3B0, #FFC93C 45%, #E09A10);
+  box-shadow: 0 0 0 2px #E09A10;
+  transition: transform 0.75s cubic-bezier(.5,-0.3,.7,1), opacity 0.75s;
+  pointer-events: none;
+}
+.texto-cobro {
+  position: absolute;
+  z-index: 70;
+  transform: translateX(-50%);
+  font-size: 26px;
+  font-weight: 700;
+  color: #14935A;
+  text-shadow: 0 2px 0 #fff, 0 0 6px #fff;
+  pointer-events: none;
+  animation: subir 1.4s ease-out forwards;
+}
+@keyframes subir { to { transform: translate(-50%, -60px); opacity: 0; } }
+
+/* Resumen del día */
+.resumen-dia { display: flex; flex-direction: column; gap: 8px; }
+.resumen-dia > div { display: flex; justify-content: space-between; padding: 10px 14px; border-radius: var(--radio-chico); background: var(--blanco); font-size: 16px; }
+
+/* ================= CALIFICACIÓN Y REACCIONES (Fase 4) ================= */
+.estrellitas { color: #F6B93B; letter-spacing: 1px; white-space: nowrap; }
+.estrellitas i { font-style: normal; color: #D5DCE8; }
+.estrellitas.grandes { font-size: 26px; }
+
+.globo-resena { max-width: 150px; font-size: 12px; font-weight: 500; line-height: 1.25; }
+.globo-resena .estrellitas { display: block; font-size: 14px; }
+.globo-neutral { background: #FFF3C4; }
+.globo-neutral::after { border-top-color: #FFF3C4; }
+
+/* Se va azotando los pies */
+.cliente.azotando .cuerpo-cliente { animation: azotar 0.18s linear 8; }
+@keyframes azotar { 25% { transform: translateX(-4px) rotate(-3deg); } 75% { transform: translateX(4px) rotate(3deg); } }
+
+.corazon {
+  position: absolute;
+  bottom: 60%;
+  font-size: 20px;
+  pointer-events: none;
+  opacity: 0;
+  animation: corazon 1.6s ease-out forwards;
+}
+@keyframes corazon {
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-90px) scale(1.2); }
+}
+
+/* Tarjeta con el porcentaje y el desglose */
+.tarjeta-calif {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 8px;
+  z-index: 6;
+  padding: 10px 12px;
+  border-radius: var(--radio);
+  background: var(--blanco);
+  border-top: 6px solid var(--primario);
+  box-shadow: var(--sombra-fuerte);
+  animation: salto 0.35s ease;
+  cursor: pointer;
+}
+.tarjeta-calif.excelente { border-top-color: #2BD07A; }
+.tarjeta-calif.mala { border-top-color: #FF3B3B; }
+.calif-cabeza { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
+.calif-cabeza .pct { font-size: 34px; font-weight: 700; color: var(--primario-fuerte); }
+.tarjeta-calif.excelente .pct { color: #14935A; }
+.tarjeta-calif.mala .pct { color: #D62828; }
+.partes { display: flex; flex-direction: column; gap: 3px; }
+.parte { display: grid; grid-template-columns: 112px 1fr 40px; align-items: center; gap: 6px; font-size: 13px; }
+.parte b { text-align: right; }
+.parte .barrita i { background: var(--primario); }
+.cuenta { margin-top: 8px; padding-top: 6px; border-top: 2px dashed var(--fondo-2); }
+.cuenta .linea { display: flex; justify-content: space-between; font-size: 14px; }
+
+/* Botón del buzón sobre la fachada */
+.btn-buzon {
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blanco);
+  box-shadow: var(--sombra);
+  font-size: 22px;
+  z-index: 2;
+}
+.btn-buzon .tab-globo { top: -4px; right: -6px; }
+
+/* Lista de reseñas */
+.buzon { display: flex; flex-direction: column; gap: 8px; }
+.buzon-promedio { text-align: center; font-size: 26px; font-weight: 700; color: #E09A10; }
+.buzon-promedio small { font-size: 14px; color: var(--texto-suave); font-weight: 500; }
+.buzon-dia { margin: 6px 0 0; font-size: 15px; color: var(--texto-suave); }
+.resena { display: flex; gap: 10px; padding: 8px; border-radius: var(--radio-chico); background: var(--blanco); }
+.resena.nueva { box-shadow: inset 4px 0 0 var(--candy); }
+.resena-cara { flex: 0 0 52px; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: var(--fondo-2); }
+.resena-cara svg { width: 100%; height: 100%; display: block; }
+.resena-texto { flex: 1; min-width: 0; }
+.resena-texto p { margin: 2px 0; font-size: 15px; line-height: 1.3; }
+.resena-texto small { color: var(--texto-suave); font-size: 12px; }
+
+/* Resumen del día: estrellas y desglose */
+.resumen-dia > .estrellas-dia { justify-content: center; background: none; padding: 0; }
+.resumen-dia > .desglose { flex-direction: column; justify-content: flex-start; padding: 10px; }
+.resumen-dia > .resena { justify-content: flex-start; padding: 8px; }
+
+
+/* ================= CONTENIDO COMPLETO (Fase 5) ================= */
+
+/* Elegir la masa */
+.chips-masa { display: flex; gap: 6px; }
+.chip-masa {
+  flex: 1;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.85);
+  font-size: 13px;
+  font-weight: 600;
+}
+.chip-masa svg { width: 26px; height: 26px; flex: 0 0 auto; }
+.chip-masa.elegido { border-color: var(--candy); background: var(--blanco); }
+
+/* Pestañitas de la bandeja (Untables / Frutas, etc.) */
+.tabs-bandeja { display: flex; gap: 6px; }
+.tab-bandeja {
+  flex: 1;
+  min-height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.55);
+  color: var(--texto-suave);
+  font-size: 14px;
+  font-weight: 600;
+}
+.tab-bandeja.activa { background: var(--blanco); color: var(--texto); box-shadow: var(--sombra); }
+.bandeja-ingredientes { margin: 0 -12px; padding: 8px 12px 4px; }
+.btn-ingrediente { flex: 0 0 68px; line-height: 1.1; text-align: center; }
+.btn-ingrediente span { display: block; margin-top: 2px; }
+
+/* Salsa que se está dibujando */
+.capa-trazo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.escenario[data-etapa="toppings"], .escenario[data-etapa="decorar"] { cursor: crosshair; }
+
+/* Botón del menú de la casa */
+.btn-menu-cocina {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: var(--blanco);
+  color: var(--texto);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--sombra);
+}
+.etiqueta-pedido { border: none; cursor: pointer; }
+
+/* Comandas con más ingredientes */
+.riel { height: 90px; }
+.comanda { width: 96px; height: 70px; padding-top: 9px; }
+.comanda .ticket-iconos { gap: 1px 2px; }
+.comanda .ico-ing svg { width: 15px; height: 15px; }
+.ico-mas { font-size: 11px; font-weight: 700; color: var(--texto-suave); }
+
+/* Detalle de la comanda */
+.det-quien { margin: 0 0 4px; text-align: center; font-weight: 600; }
+.det-quien small { color: var(--texto-suave); font-weight: 500; }
+.det-texto { margin: 0 0 10px; text-align: center; font-size: 16px; }
+.ticket-detalle { display: flex; flex-direction: column; gap: 6px; }
+.det-fila { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: var(--radio-chico); background: var(--blanco); }
+.det-titulo { flex: 0 0 86px; font-size: 13px; font-weight: 600; color: var(--texto-suave); padding-top: 4px; }
+.det-items { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.det-item { display: inline-flex; align-items: center; gap: 3px; font-size: 14px; font-weight: 500; }
+.det-item svg { width: 26px; height: 26px; }
+.det-item b { color: var(--candy); }
+
+/* Tarjeta de pedido: quién es el cliente */
+.tarjeta-pedido .quien { margin: 0 0 4px; text-align: center; font-size: 13px; font-weight: 600; color: var(--candy); }
+
+/* Los niños son más chiquitos */
+.cliente.nino { width: 24%; max-width: 110px; }
+
+/* Menú de la casa */
+.menu-casa { display: flex; flex-direction: column; gap: 6px; }
+.menu-titulo { margin: 8px 0 0; font-size: 16px; }
+.menu-combo { padding: 8px; border-radius: var(--radio-chico); background: var(--blanco); }
+.menu-combo-cabeza { display: flex; flex-direction: column; margin-bottom: 4px; }
+.menu-combo-cabeza small { color: var(--texto-suave); }
+.menu-combo .ticket-iconos { justify-content: flex-start; margin: 0; }
+.menu-combo .ico-ing svg { width: 26px; height: 26px; }
+.menu-nota { margin: 2px 0; font-size: 13px; color: var(--texto-suave); text-align: center; }
+.menu-ing { display: flex; gap: 8px; align-items: center; padding: 4px 8px; border-radius: var(--radio-chico); background: var(--blanco); }
+.menu-ing svg { width: 34px; height: 34px; flex: 0 0 auto; }
+.menu-ing span { display: flex; flex-direction: column; font-size: 14px; }
+.menu-ing small { color: var(--texto-suave); font-size: 12px; line-height: 1.25; }
+.bloqueado { opacity: 0.5; }
+
+.resena-nombre { display: block; font-weight: 700; color: var(--candy) !important; }
+.dev-tipos .btn { flex: 0 0 auto; min-width: 44px; padding: 0 6px; font-size: 20px; }
+
+/* ================= PROGRESIÓN (Fase 6) ================= */
+
+/* Botones de logros y tienda sobre la fachada */
+.botones-fachada { position: absolute; right: 6px; top: 8px; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+.botones-fachada .btn-buzon { position: static; }
+
+/* Tarjeta del evento del día (antes de abrir) */
+.tarjeta-evento {
+  max-width: 300px;
+  margin: 2px 16px 0;
+  padding: 8px 12px;
+  border-radius: var(--radio-chico);
+  background: rgba(255,255,255,0.92);
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 15px;
+}
+.tarjeta-evento small { color: var(--texto-suave); font-size: 13px; line-height: 1.25; }
+.tarjeta-evento.grande { max-width: none; margin: 0 0 8px; font-size: 17px; background: var(--amarillo); }
+.tarjeta-evento.grande small { color: var(--texto); }
+
+/* Clima del evento */
+.clima { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.clima.lluvia {
+  background:
+    repeating-linear-gradient(105deg, transparent 0 18px, rgba(80,120,190,0.35) 18px 19px, transparent 19px 40px);
+  background-size: 120px 120px;
+  animation: lluvia 0.5s linear infinite;
+}
+@keyframes lluvia { to { background-position: -30px 120px; } }
+.clima.calor { background: radial-gradient(circle at 85% 0%, rgba(255,216,77,0.35), transparent 60%); }
+.clima span { position: absolute; bottom: -30px; font-size: 20px; opacity: 0; animation: corazon-sube 7s linear infinite; }
+@keyframes corazon-sube {
+  0% { opacity: 0; transform: translateY(0); }
+  15% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-420px) translateX(20px); }
+}
+
+/* Barra de bebidas sobre los 4 paneles del mostrador */
+.barra-bebidas {
+  position: absolute;
+  left: 2.6%;
+  right: 2.6%;
+  top: 52%;
+  height: 40%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0 7%;
+  z-index: 3;
+}
+.vaso-btn {
+  position: relative;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+.mostrador-venta .vaso-btn svg { width: auto; height: 62%; display: block; }
+.vaso-cuenta { font-size: 9px; letter-spacing: 1px; color: var(--candy); line-height: 1; }
+.vaso-btn .llenado { position: absolute; left: 0; bottom: 0; width: 100%; height: 0; background: rgba(61,165,255,0.35); }
+.vaso-btn.preparando .llenado { animation: llenar 2.2s linear forwards; }
+@keyframes llenar { to { height: 100%; } }
+
+/* Gatito */
+.miau { font-size: 18px; color: var(--candy); }
+
+/* Doblado bloqueado */
+.btn-doblado.bloqueado { opacity: 0.45; }
+
+/* Temporizador asistido: la barra parpadea */
+.barra-coccion.alerta { animation: alerta 0.35s ease 3; }
+@keyframes alerta { 50% { box-shadow: 0 0 0 5px #2BD07A; } }
+
+/* Tienda */
+.tienda { display: flex; flex-direction: column; gap: 6px; }
+.tienda-dinero { text-align: center; font-size: 18px; }
+.tienda-dinero b { color: #14935A; }
+.mejora { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: var(--radio-chico); background: var(--blanco); }
+.mejora.tenida { background: #E9FBF1; }
+.mejora-emoji { font-size: 28px; flex: 0 0 36px; text-align: center; }
+.mejora-texto { flex: 1; display: flex; flex-direction: column; min-width: 0; font-size: 15px; }
+.mejora-texto small { color: var(--texto-suave); font-size: 12px; line-height: 1.25; }
+.mejora-texto .efecto { color: var(--primario-fuerte); font-weight: 600; }
+.mejora .btn { flex: 0 0 auto; min-height: 44px; padding: 0 12px; font-size: 15px; }
+.comprado { flex: 0 0 auto; font-weight: 700; color: #14935A; font-size: 14px; }
+.niveles { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.niveles i { width: 9px; height: 9px; border-radius: 50%; background: var(--fondo-2); }
+.niveles i.lleno { background: var(--candy); }
+
+/* Logros */
+.logros-cuenta { text-align: center; font-size: 20px; font-weight: 700; color: #E09A10; margin-bottom: 6px; }
+.logros { display: flex; flex-direction: column; gap: 6px; }
+.logro { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: var(--radio-chico); background: var(--blanco); opacity: 0.55; }
+.logro.ganado { opacity: 1; box-shadow: inset 4px 0 0 #F6B93B; }
+.logro span:last-child { display: flex; flex-direction: column; font-size: 15px; }
+.logro small { color: var(--texto-suave); font-size: 12px; }
+.logro .premio { color: #14935A; }
+.logro-emoji { font-size: 28px; flex: 0 0 36px; text-align: center; }
+
+/* Cartelito de logro desbloqueado */
+.aviso-logro {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 6px auto 0;
+  padding: 10px 16px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  border-radius: var(--radio);
+  background: linear-gradient(135deg, #FFF3C4, #FFFFFF);
+  border: 3px solid #F6B93B;
+  box-shadow: var(--sombra-fuerte);
+  animation: salto 0.4s ease, desvanecer 0.5s ease 3.1s forwards;
+  pointer-events: none;
+}
+.aviso-logro span:last-child { display: flex; flex-direction: column; }
+.aviso-logro small { font-size: 12px; color: var(--texto-suave); }
+.aviso-logro b { font-size: 16px; }
+@keyframes desvanecer { to { opacity: 0; transform: translateY(-10px); } }
+
+/* Resumen del día */
+.resumen-dia > .total { background: #E9FBF1; font-weight: 700; }
+.resumen-dia .sube { color: #14935A; font-size: 13px; }
+.resumen-dia .baja { color: #D62828; }
+.resumen-dia > .record { justify-content: center; background: var(--amarillo); font-weight: 700; }
+.resumen-dia > .evento-resumen { justify-content: center; background: none; padding: 0; font-weight: 600; }
+.resumen-dia > .logros-hoy { flex-wrap: wrap; gap: 6px; justify-content: flex-start; }
+.resumen-dia > .logros-hoy > span:first-child { flex-basis: 100%; }
+.chip-logro { padding: 4px 10px; border-radius: 999px; background: #FFF3C4; font-size: 13px; font-weight: 600; }
+.novedades { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+
+.ajuste-nota { display: block; font-size: 12px; color: var(--texto-suave); font-weight: 400; }
+
+/* ================= PULIDO (Fase 7) ================= */
+
+/* Pantalla de inicio */
+#inicio {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,79,163,0.25), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(61,165,255,0.3), transparent 50%),
+    linear-gradient(#FFF6FB, #E8F4FF);
+  transition: opacity 0.4s;
+}
+#inicio.saliendo { opacity: 0; pointer-events: none; }
+.inicio-caja { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.inicio-logo { width: 170px; height: 170px; animation: flotar-logo 3s ease-in-out infinite; }
+#inicio h1 { margin: 0; font-size: 38px; color: var(--candy); text-shadow: 0 3px 0 #fff, 0 5px 0 rgba(255,79,163,0.25); }
+.inicio-dedicatoria { margin: 0 0 12px; font-size: 18px; color: var(--texto); }
+#inicio .btn-grande { width: 100%; }
+.inicio-pin { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.inicio-pin label { font-weight: 600; }
+.inicio-pin input {
+  min-height: 52px;
+  padding: 0 16px;
+  border: 3px solid var(--fondo-2);
+  border-radius: var(--radio-chico);
+  font: inherit;
+  font-size: 20px;
+  text-align: center;
+  background: var(--blanco);
+}
+.inicio-pin input:focus { outline: none; border-color: var(--candy); }
+.pin-error { color: #D62828; font-weight: 600; }
+.temblor { animation: temblor 0.4s ease; }
+@keyframes temblor { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+@keyframes flotar-logo { 50% { transform: translateY(-8px); } }
+
+/* Cartitas (bienvenida y sorpresa) */
+.carta-texto p { margin: 0 0 10px; font-size: 17px; line-height: 1.45; }
+.carta-firma { margin: 8px 0 0; text-align: right; font-weight: 600; color: var(--candy); font-style: italic; }
+.carta-aviso { margin: 0 0 10px; text-align: center; font-weight: 600; }
+.sobre { position: relative; perspective: 600px; }
+.sobre-solapa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 70px;
+  z-index: 2;
+  background: #FF8FC0;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.6s ease, opacity 0.6s 0.3s;
+}
+.sobre-papel {
+  padding: 20px 16px 14px;
+  border-radius: 10px;
+  background: #FFFDF6;
+  border: 2px solid #FFD6E8;
+  box-shadow: inset 0 0 0 6px #FFF0F7;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.8s ease 0.4s, opacity 0.5s 0.4s;
+}
+.sobre.abierto .sobre-solapa { transform: rotateX(180deg); opacity: 0; }
+.sobre.abierto .sobre-papel { max-height: 1200px; opacity: 1; }
+
+/* Créditos */
+.creditos { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.creditos .inicio-logo { width: 110px; height: 110px; }
+.creditos h3 { margin: 0; font-size: 24px; color: var(--candy); }
+.creditos p { margin: 0; }
+.creditos .carta-firma { text-align: center; }
+.creditos-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 10px 0; }
+.creditos-stats span { padding: 4px 10px; border-radius: 999px; background: var(--blanco); font-size: 14px; }
+.creditos small { color: var(--texto-suave); }
+
+/* Tutorial */
+.tuto-aro {
+  position: absolute;
+  z-index: 45;
+  border: 4px solid var(--candy);
+  border-radius: 16px;
+  pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.7);
+  animation: aro 1.2s ease-in-out infinite;
+  transition: left 0.3s, top 0.3s, width 0.3s, height 0.3s;
+}
+@keyframes aro { 50% { transform: scale(1.06); opacity: 0.6; } }
+.tuto-globo {
+  position: absolute;
+  z-index: 46;
+  padding: 10px 14px;
+  border-radius: var(--radio);
+  background: var(--blanco);
+  border: 3px solid var(--candy);
+  box-shadow: var(--sombra-fuerte);
+  transition: top 0.3s;
+}
+.tuto-globo.entra { animation: salto 0.35s ease; }
+.tuto-globo small { color: var(--candy); font-weight: 700; }
+.tuto-globo p { margin: 4px 0 6px; font-size: 16px; line-height: 1.35; }
+.tuto-saltar { border: none; background: none; padding: 4px 0; color: var(--texto-suave); font: inherit; font-size: 13px; text-decoration: underline; }
+
+/* Botón de ayuda en la cocina */
+.btn-ayuda-cocina {
+  position: absolute;
+  left: 96px;
+  top: 8px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blanco);
+  color: var(--primario-fuerte);
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: var(--sombra);
+}
+
+/* Partículas de azúcar / canela */
+.particula {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(27,42,85,0.08);
+  animation: caer-polvo 0.8s ease-in forwards;
+}
+@keyframes caer-polvo { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(36px); } }
+
+/* Confeti de crepa perfecta */
+.confeti {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  z-index: 5;
+  pointer-events: none;
+  animation: confeti 2s ease-in forwards;
+}
+@keyframes confeti {
+  0% { transform: translateY(0) rotate(0); opacity: 1; }
+  100% { transform: translateY(420px) rotate(540deg); opacity: 0; }
+}
