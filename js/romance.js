@@ -104,8 +104,8 @@ export function pantallaInicio() {
         <p class="inicio-dedicatoria">Hecho con cariño para <b>${CONFIG.nombreElla}</b> 💕</p>
         ${pin ? `
           <form class="inicio-pin" autocomplete="off">
-            <label for="pin">🔐 Palabra secreta</label>
-            <input id="pin" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+            <label for="pin">🔐 PIN</label>
+            <input id="pin" type="password" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" required>
             <button class="btn btn-primario btn-grande" type="submit">Entrar</button>
             <small class="pin-error" hidden>Mmm… esa no es 🙈</small>
           </form>`
