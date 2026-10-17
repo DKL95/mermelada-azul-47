@@ -56,6 +56,9 @@ export const LOGROS = [
   { id: 'duena', emoji: '👑', nombre: 'Dueña del changarro', descripcion: 'Compra todas las mejoras de la tienda.', premio: 500,
     cumple: (e) => MEJORAS.filter((m) => !m.soloEn || m.soloEn.includes(e.ajustes.dificultad))
       .every((m) => (e.mejoras[m.id] || 0) >= m.precios.length) },
+  // Va al final para que se gane en la misma revisión que el último de los otros
+  { id: 'todos', emoji: '💖', nombre: 'Ay que', descripcion: 'Desbloquea todos los demás logros.', premio: 1000,
+    cumple: (e) => LOGROS.every((l) => l.id === 'todos' || e.logros.includes(l.id)) },
 ];
 
 /**
