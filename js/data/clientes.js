@@ -44,15 +44,15 @@ export const MULT_PACIENCIA = { relajado: 3, normal: 1, desafio: 0.75 };
    crepa favorita. Aparecen cuando la reputación es de 4★ o más. */
 export const VIPS = [
   { id: 'lupita', nombre: 'Doña Lupita', favorito: 'cajeta_nuez',
-    apariencia: { piel: '#E8B08A', pelo: '#D9D9E0', ropa: '#8B5CF6', peinado: 'chongo', accesorio: 'lentes', colorAcc: '#8B5CF6' } },
+    apariencia: { piel: '#E8B08A', pelo: '#D9D9E0', ropa: '#8B5CF6', peinado: 'chongo', accesorio: 'lentes', colorAcc: '#8B5CF6', vestimenta: 'sueter', ropa2: '#FFFFFF', extra: 'collar' } },
   { id: 'beto', nombre: 'Don Beto', favorito: 'clasica',
-    apariencia: { piel: '#C98E66', pelo: '#9A9AA3', ropa: '#14B8A6', peinado: 'calvo', accesorio: 'boina', colorAcc: '#1B2A55' } },
+    apariencia: { piel: '#C98E66', pelo: '#9A9AA3', ropa: '#14B8A6', peinado: 'calvo', accesorio: 'boina', colorAcc: '#1B2A55', vestimenta: 'camisa', extra: 'moñito', bigote: true } },
   { id: 'sofi', nombre: 'Sofi', favorito: 'nutella_fresa',
-    apariencia: { piel: '#FFE0C7', pelo: '#B8462E', ropa: '#FF4FA3', peinado: 'coleta', accesorio: 'moño', colorAcc: '#FFD84D' } },
+    apariencia: { piel: '#FFE0C7', pelo: '#B8462E', ropa: '#FF4FA3', peinado: 'coleta', accesorio: 'moño', colorAcc: '#FFD84D', vestimenta: 'vestido', ropa2: '#FFD84D', pecas: true } },
   { id: 'memo', nombre: 'Memo', favorito: 'banana_split',
-    apariencia: { piel: '#A26B48', pelo: '#1B1B2B', ropa: '#FFB020', peinado: 'rizado', accesorio: 'gorra', colorAcc: '#1F5FFF' } },
+    apariencia: { piel: '#A26B48', pelo: '#1B1B2B', ropa: '#FFB020', peinado: 'rizado', accesorio: 'gorra', colorAcc: '#1F5FFF', vestimenta: 'sudadera', ropa2: '#1F5FFF', extra: 'camara' } },
   { id: 'vale', nombre: 'Vale', favorito: 'frutos_rojos',
-    apariencia: { piel: '#F6C9A4', pelo: '#2B1B12', ropa: '#22C55E', peinado: 'largo', accesorio: 'bufanda', colorAcc: '#FF6B4A' } },
+    apariencia: { piel: '#F6C9A4', pelo: '#2B1B12', ropa: '#22C55E', peinado: 'largo', accesorio: 'bufanda', colorAcc: '#FF6B4A', vestimenta: 'chamarra', ropa2: '#FFFFFF', aretes: true } },
 ];
 
 /* La crítica famosa (evento "Visita famosa"): viene una vez ese día,
@@ -60,13 +60,55 @@ export const VIPS = [
 export const FAMOSA = {
   nombre: 'Lulú Estrella',
   titulo: 'crítica de comida famosa en internet',
-  apariencia: { piel: '#F6C9A4', pelo: '#E8C27A', ropa: '#8B5CF6', peinado: 'largo', accesorio: 'lentesSol', colorAcc: '#1B1B2B' },
+  apariencia: { piel: '#F6C9A4', pelo: '#E8C27A', ropa: '#8B5CF6', peinado: 'largo', accesorio: 'lentesSol', colorAcc: '#1B1B2B', vestimenta: 'vestido', ropa2: '#FFD84D', extra: 'bolso', aretes: true },
 };
 
 // ---------- Apariencia (se combina al azar) ----------
 export const PIELES = ['#FFE0C7', '#F6C9A4', '#E8B08A', '#C98E66', '#A26B48', '#7A4E33'];
 export const PELOS = ['#2B1B12', '#4A2E1C', '#7A4A26', '#C68B4B', '#E8C27A', '#1B1B2B', '#B8462E'];
+// De vez en cuando alguien trae el pelo pintado
+export const PELOS_FANTASIA = ['#FF7AC6', '#8B5CF6', '#3DA5FF', '#2BD0B0'];
 // Ropa en colores vivos
 export const ROPAS = ['#FF4FA3', '#3DA5FF', '#14B8A6', '#FFB020', '#8B5CF6', '#FF6B4A', '#22C55E', '#1F5FFF'];
-export const PEINADOS = ['corto', 'largo', 'chongo', 'rizado', 'coleta', 'calvo'];
-export const ACCESORIOS = ['ninguno', 'ninguno', 'gorra', 'lentes', 'moño', 'bufanda'];
+// Sacos (más serios) y mezclilla de los overoles
+export const SACOS = ['#1B2A55', '#3B2F4A', '#2F4F4F', '#6B3E2E', '#4A4A58'];
+export const MEZCLILLAS = ['#3D6FD8', '#5A8BE0', '#2E4F9E'];
+export const PEINADOS = ['corto', 'largo', 'chongo', 'rizado', 'coleta', 'calvo', 'afro', 'trenzas', 'copete', 'bob', 'colitas'];
+export const ACCESORIOS = ['ninguno', 'ninguno', 'gorra', 'lentes', 'moño', 'bufanda', 'gorro', 'sombrero', 'diadema', 'flor'];
+export const VESTIMENTAS = ['playera', 'rayas', 'sudadera', 'camisa', 'saco', 'vestido', 'overol', 'chamarra', 'sueter'];
+export const ESTAMPADOS = ['ninguno', 'corazon', 'estrella', 'puntos', 'crepa'];
+// Lo que traen colgado o en la mano
+export const EXTRAS = ['ninguno', 'ninguno', 'collar', 'bolso', 'camara', 'mochila', 'corbata', 'moñito'];
+
+/* Estilo de cada tipo de cliente: de dónde sale su ropa, lo que traen
+   en la cabeza y en la mano. Lo que no venga aquí sale de las listas
+   generales de arriba. */
+export const ESTILOS = {
+  tranquilo: {
+    vestimentas: ['sueter', 'sudadera', 'vestido', 'playera', 'camisa'],
+    accesorios: ['ninguno', 'flor', 'sombrero', 'diadema', 'gorro', 'lentes', 'bufanda'],
+    extras: ['ninguno', 'collar', 'bolso', 'camara'],
+  },
+  nino: {
+    vestimentas: ['overol', 'playera', 'rayas', 'sudadera'],
+    accesorios: ['ninguno', 'gorra', 'gorro', 'diadema', 'moño'],
+    extras: ['globo', 'paleta', 'mochila', 'ninguno'],
+    peinados: ['corto', 'rizado', 'colitas', 'coleta', 'copete', 'afro', 'trenzas'],
+  },
+  apurado: {
+    vestimentas: ['saco', 'chamarra', 'camisa', 'sudadera'],
+    accesorios: ['audifonos'],
+    extras: ['cafe', 'cafe', 'mochila', 'corbata'],
+  },
+  exigente: {
+    vestimentas: ['camisa', 'saco', 'sueter'],
+    accesorios: ['lentes', 'lentes', 'ninguno'],
+    extras: ['corbata', 'moñito', 'collar', 'ninguno'],
+    peinados: ['copete', 'bob', 'chongo', 'corto', 'calvo'],
+  },
+  gourmet: {
+    vestimentas: ['saco'],
+    accesorios: ['boina'],
+    extras: ['moñito', 'corbata'],
+  },
+};

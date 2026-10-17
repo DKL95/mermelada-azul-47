@@ -7,9 +7,12 @@
    para que cada emoción sea solo una combinación distinta.
    ============================================================ */
 import { estado } from './state.js';
-import { TIPOS_CLIENTE, VIPS, FAMOSA, MULT_PACIENCIA, PIELES, PELOS, ROPAS, PEINADOS, ACCESORIOS } from './data/clientes.js';
+import {
+  TIPOS_CLIENTE, VIPS, FAMOSA, MULT_PACIENCIA, PIELES, PELOS, PELOS_FANTASIA, ROPAS, SACOS, MEZCLILLAS,
+  PEINADOS, ACCESORIOS, VESTIMENTAS, ESTAMPADOS, EXTRAS, ESTILOS,
+} from './data/clientes.js';
 import { DOBLADOS, COMBOS, ingrediente, disponibles, comboDisponible, dobladoDisponible } from './data/ingredientes.js';
-import { FORMAS_DE_PEDIR, FORMAS_NINO, SALUDOS_VIP, SALUDOS_FAMOSA, FORMAS_NOVIO, alAzar } from './data/mensajes.js';
+import { FORMAS_DE_PEDIR, FORMAS_POR_TIPO, FORMAS_NINO, SALUDOS_VIP, SALUDOS_FAMOSA, FORMAS_NOVIO, alAzar } from './data/mensajes.js';
 import { CONFIG } from './config.js';
 import { multPaciencia } from './data/mejoras.js';
 import { evento } from './data/eventos.js';
@@ -248,23 +251,38 @@ export function precioPedido(pedido, tipo) {
   return Math.round(total * (tipo?.pago || 1));
 }
 
-/** Apariencia al azar (con detalles según el tipo). */
+/** Apariencia al azar, vestida según la personalidad de su tipo. */
 function aparienciaPara(tipo) {
+  const estilo = ESTILOS[tipo.id] || {};
+  const nino = tipo.id === 'nino';
+  const ropa = alAzar(ROPAS);
   const a = {
     piel: alAzar(PIELES),
-    pelo: alAzar(PELOS),
-    ropa: alAzar(ROPAS),
-    peinado: alAzar(PEINADOS),
-    accesorio: alAzar(ACCESORIOS),
+    pelo: Math.random() < 0.08 && tipo.id !== 'gourmet' ? alAzar(PELOS_FANTASIA) : alAzar(PELOS),
+    ropa,
+    ropa2: alAzar(ROPAS.filter((c) => c !== ropa)),
+    peinado: alAzar(estilo.peinados || PEINADOS),
+    accesorio: alAzar(estilo.accesorios || ACCESORIOS),
     colorAcc: alAzar(ROPAS),
+    vestimenta: alAzar(estilo.vestimentas || VESTIMENTAS),
+    estampado: alAzar(ESTAMPADOS),
+    extra: alAzar(estilo.extras || EXTRAS),
+    pecas: Math.random() < (nino ? 0.4 : 0.15),
+    lunar: Math.random() < 0.1,
+    aretes: !nino && Math.random() < 0.25,
   };
-  if (tipo.id === 'gourmet') { a.accesorio = 'boina'; a.colorAcc = '#1B2A55'; a.bigote = Math.random() < 0.5; }
-  if (tipo.id === 'exigente' && Math.random() < 0.6) a.accesorio = 'lentes';
-  if (tipo.id === 'apurado') a.accesorio = 'audifonos';
-  if (tipo.id === 'nino') {
-    if (a.peinado === 'calvo') a.peinado = 'corto';
-    if (a.accesorio === 'bufanda') a.accesorio = 'gorra';
+  if (a.vestimenta === 'saco') a.ropa = alAzar(SACOS);
+  if (a.vestimenta === 'overol') a.ropa = alAzar(MEZCLILLAS);
+  // Corbata y moñito solo con camisa o saco
+  if ((a.extra === 'corbata' || a.extra === 'moñito') && !['camisa', 'saco'].includes(a.vestimenta)) a.extra = 'ninguno';
+  // Barba o bigote para algunos adultos
+  if (!nino && !['colitas', 'trenzas'].includes(a.peinado)) {
+    const r = Math.random();
+    if (r < 0.1) a.barba = true; else if (r < 0.18) a.bigote = true;
   }
+  if (tipo.id === 'gourmet') { a.colorAcc = '#1B2A55'; a.bigote = Math.random() < 0.5; a.barba = false; }
+  if (tipo.id === 'apurado') a.colorAcc = alAzar(['#1B1B2B', '#FF4FA3', '#FFFFFF', '#1F5FFF']);
+  if (nino && a.peinado === 'calvo') a.peinado = 'corto';
   return a;
 }
 
@@ -285,7 +303,8 @@ export function crearCliente(enFila = [], forzarTipo = null) {
   if (novio) mult *= 2;                 // él siempre te espera 💕
   if (!e.tutorialVisto) mult *= 3;      // durante el tutorial nadie tiene prisa
   const paciencia = tipo.paciencia * mult;
-  const formas = novio ? FORMAS_NOVIO : famosa ? SALUDOS_FAMOSA : vip ? SALUDOS_VIP : tipo.id === 'nino' ? FORMAS_NINO : FORMAS_DE_PEDIR;
+  const propias = FORMAS_POR_TIPO[tipo.id] && Math.random() < 0.7 ? FORMAS_POR_TIPO[tipo.id] : FORMAS_DE_PEDIR;
+  const formas = novio ? FORMAS_NOVIO : famosa ? SALUDOS_FAMOSA : vip ? SALUDOS_VIP : tipo.id === 'nino' ? FORMAS_NINO : propias;
   contador++;
   return {
     id: `c${Date.now().toString(36)}${contador}`,
@@ -364,21 +383,198 @@ export function caraSVG(emocion = 'normal') {
 }
 
 // ============================================================
-//  Cuerpo, peinado y accesorios
+//  Cuerpo, ropa, peinado y accesorios
 // ============================================================
 
-function peinadoAtras(p, color) {
-  if (p === 'largo') return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v52 q-12 6 -20 0 v-40 h-40 v40 q-8 6 -20 0 z" fill="${color}"/>`;
-  if (p === 'coleta') return `<ellipse cx="100" cy="66" rx="12" ry="20" fill="${color}" transform="rotate(20 100 66)"/>`;
-  return '';
+// Silueta del cuerpo (también sirve para recortar estampados)
+const CUERPO = 'M18 206 q0 -86 42 -86 q42 0 42 86 z';
+const SOMBRA = 'rgba(27,42,85,0.18)';
+const CUELLO = '<path d="M44 122 q16 14 32 0" stroke="rgba(255,255,255,0.5)" stroke-width="4" fill="none" stroke-linecap="round"/>';
+
+/** Florecita de 5 pétalos. */
+function flor(x, y, color, r = 5) {
+  const petalos = [0, 1, 2, 3, 4].map((i) => {
+    const ang = (i / 5) * Math.PI * 2 - Math.PI / 2;
+    return `<circle cx="${(x + Math.cos(ang) * r).toFixed(1)}" cy="${(y + Math.sin(ang) * r).toFixed(1)}" r="${r * 0.75}" fill="${color}"/>`;
+  }).join('');
+  return `${petalos}<circle cx="${x}" cy="${y}" r="${r * 0.55}" fill="#FFD84D"/>`;
 }
-function peinadoFrente(p, color) {
+
+/** Estrella de 5 picos. */
+function estrella(cx, cy, r, color) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const ang = (i / 10) * Math.PI * 2 - Math.PI / 2;
+    const rr = i % 2 ? r * 0.45 : r;
+    pts.push(`${(cx + Math.cos(ang) * rr).toFixed(1)},${(cy + Math.sin(ang) * rr).toFixed(1)}`);
+  }
+  return `<polygon points="${pts.join(' ')}" fill="${color}"/>`;
+}
+
+/** Dibujito al frente de la playera. */
+function estampado(tipo, color, clip) {
+  switch (tipo) {
+    case 'corazon': return `<path d="M60 174 l-11 -11 a6.5 6.5 0 0 1 11 -8.5 a6.5 6.5 0 0 1 11 8.5 z" fill="${color}"/>`;
+    case 'estrella': return estrella(60, 162, 13, color);
+    case 'crepa': return `<path d="M47 150 L73 150 L60 176 z" fill="#F2C27E" stroke="#C98E4B" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M47 150 L73 150 L70 156 L50 156 z" fill="#6B3E2E"/><circle cx="55" cy="151" r="2" fill="#E8556B"/><circle cx="65" cy="151" r="2" fill="#E8556B"/>`;
+    case 'puntos': {
+      let d = '';
+      for (let y = 134, f = 0; y < 206; y += 15, f++) {
+        for (let x = 20 + (f % 2) * 8; x < 104; x += 16) d += `<circle cx="${x}" cy="${y}" r="3.5"/>`;
+      }
+      return `<g clip-path="url(#${clip})" fill="${color}">${d}</g>`;
+    }
+    default: return '';
+  }
+}
+
+/** Ropa: lo que va debajo del cuello y lo que va encima. */
+function ropa(a, clip) {
+  const c2 = a.ropa2 || a.colorAcc;
+  const base = `<path d="${CUERPO}" fill="${a.ropa}"/>`;
+  const resorte = `<rect x="0" y="198" width="120" height="8" fill="rgba(27,42,85,0.15)" clip-path="url(#${clip})"/>`;
+  switch (a.vestimenta) {
+    case 'rayas': {
+      let r = '';
+      for (let y = 130; y < 206; y += 14) r += `<rect x="0" y="${y}" width="120" height="6"/>`;
+      return { abajo: `${base}<g clip-path="url(#${clip})" fill="${c2}">${r}</g>${CUELLO}`, encima: '' };
+    }
+    case 'sudadera':
+      return {
+        abajo: `${base}<path d="M30 132 q30 -28 60 0 q-30 12 -60 0 z" fill="rgba(27,42,85,0.2)"/>
+          <path d="M36 180 q24 -8 48 0 v16 h-48 z" fill="rgba(27,42,85,0.15)"/>${resorte}`,
+        encima: `<path d="M53 124 v22 M67 124 v22" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="53" cy="147" r="2.5" fill="${c2}"/><circle cx="67" cy="147" r="2.5" fill="${c2}"/>`,
+      };
+    case 'camisa':
+      return {
+        abajo: `${base}<path d="M60 128 v78" stroke="rgba(27,42,85,0.2)" stroke-width="2"/>
+          ${[142, 160, 178, 196].map((y) => `<circle cx="60" cy="${y}" r="2.4" fill="#FFFFFF"/>`).join('')}
+          <rect x="70" y="146" width="14" height="12" rx="2" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>`,
+        encima: `<path d="M49 116 L60 130 L41 131 z M71 116 L60 130 L79 131 z" fill="#FFFFFF" stroke="rgba(27,42,85,0.2)" stroke-width="1.5" stroke-linejoin="round"/>`,
+      };
+    case 'saco':
+      return {
+        abajo: `${base}<path d="M44 121 L76 121 L60 170 z" fill="#FFFFFF"/>
+          <path d="M44 121 L60 170 L38 140 z M76 121 L60 170 L82 140 z" fill="rgba(255,255,255,0.14)" stroke="rgba(0,0,0,0.2)" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="60" cy="182" r="2.6" fill="rgba(0,0,0,0.35)"/><circle cx="60" cy="195" r="2.6" fill="rgba(0,0,0,0.35)"/>
+          <path d="M76 148 h12 l-3 -7 l-3 4 l-3 -5 z" fill="${a.colorAcc}"/>`,
+        encima: '',
+      };
+    case 'vestido':
+      return {
+        abajo: `${base}<path d="M28 160 L92 160 L114 206 L6 206 z" fill="${a.ropa}"/>
+          ${[[30, 186], [52, 176], [74, 190], [94, 180], [44, 198], [64, 166]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.5" fill="${c2}" opacity="0.8"/>`).join('')}
+          <rect x="26" y="155" width="68" height="8" rx="4" fill="${c2}"/>${flor(82, 159, '#FFFFFF', 3.5)}`,
+        encima: `<path d="M46 121 q14 18 28 0 z" fill="${a.piel}"/>`,
+      };
+    case 'overol':
+      return {
+        abajo: `<path d="${CUERPO}" fill="${c2}"/>${CUELLO}
+          <g clip-path="url(#${clip})" fill="${a.ropa}"><rect x="38" y="148" width="44" height="60" rx="6"/><rect x="0" y="182" width="120" height="30"/></g>
+          <path d="M33 134 L44 152 M87 134 L76 152" stroke="${a.ropa}" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="44" cy="152" r="3.2" fill="#FFD84D"/><circle cx="76" cy="152" r="3.2" fill="#FFD84D"/>
+          <rect x="50" y="160" width="20" height="12" rx="2" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-dasharray="3 2"/>`,
+        encima: '',
+      };
+    case 'chamarra':
+      return {
+        abajo: `${base}<path d="M60 124 V206" stroke="#D9D9E0" stroke-width="3"/><path d="M60 128 V204" stroke="#8A8A99" stroke-width="1.5" stroke-dasharray="1.5 2.5"/>
+          <path d="M32 176 l10 -8 M88 176 l-10 -8" stroke="rgba(27,42,85,0.3)" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="0" y="197" width="120" height="9" fill="${c2}" clip-path="url(#${clip})"/>`,
+        encima: `<path d="M41 124 q19 12 38 0 l-5 -8 q-14 9 -28 0 z" fill="${c2}"/>`,
+      };
+    case 'sueter': {
+      let zig = 'M10 150';
+      for (let x = 20; x <= 110; x += 10) zig += ` L${x} ${(x / 10) % 2 ? 160 : 150}`;
+      const puntos = [30, 45, 60, 75, 90].map((x) => `<circle cx="${x}" cy="174" r="2.6"/>`).join('');
+      return {
+        abajo: `${base}<g clip-path="url(#${clip})"><path d="${zig}" stroke="${c2}" stroke-width="4" fill="none" stroke-linejoin="round"/>
+          <g fill="${c2}">${puntos}</g></g>${resorte}
+          <path d="M44 122 q16 14 32 0" stroke="${c2}" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+        encima: '',
+      };
+    }
+    default: // playera
+      return { abajo: `${base}${CUELLO}${estampado(a.estampado, c2, clip)}`, encima: '' };
+  }
+}
+
+/** Lo que traen colgado o en la mano. */
+function extra(a) {
+  const c = a.colorAcc;
+  switch (a.extra) {
+    case 'corbata': return `<path d="M56 122 h8 l-1 6 h-6 z" fill="${c}"/><path d="M57 128 L63 128 L66 160 L60 168 L54 160 z" fill="${c}"/>
+      <path d="M58 140 l5 -4 M57 152 l7 -5" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>`;
+    case 'moñito': return `<path d="M60 126 l-11 -6 v12 z M60 126 l11 -6 v12 z" fill="${c}"/><circle cx="60" cy="126" r="3" fill="${c}" stroke="rgba(0,0,0,0.2)"/>`;
+    case 'collar': {
+      let d = '';
+      for (let i = 0; i <= 8; i++) {
+        const t = i / 8;
+        const x = (1 - t) ** 2 * 44 + 2 * (1 - t) * t * 60 + t * t * 76;
+        const y = (1 - t) ** 2 * 122 + 2 * (1 - t) * t * 146 + t * t * 122;
+        d += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6"/>`;
+      }
+      return `<g fill="#FFFFFF" stroke="#D9D9E0" stroke-width="0.8">${d}</g>`;
+    }
+    case 'bolso': return `<path d="M36 130 L88 178" stroke="${c}" stroke-width="3"/><rect x="80" y="172" width="24" height="20" rx="5" fill="${c}"/>
+      <path d="M80 179 h24" stroke="rgba(0,0,0,0.2)" stroke-width="2"/><circle cx="92" cy="181" r="2" fill="#FFD84D"/>`;
+    case 'camara': return `<path d="M38 128 Q60 162 82 128" stroke="#1B1B2B" stroke-width="2.5" fill="none"/>
+      <rect x="47" y="148" width="26" height="17" rx="3" fill="#2B2B35"/><rect x="51" y="145" width="8" height="4" rx="1" fill="#2B2B35"/>
+      <circle cx="60" cy="156.5" r="5.5" fill="#5B6B8C" stroke="#FFFFFF" stroke-width="1.5"/><circle cx="68" cy="151" r="1.4" fill="#FFD84D"/>`;
+    case 'mochila': return `<path d="M36 134 Q43 162 37 194 M84 134 Q77 162 83 194" stroke="${c}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <rect x="35" y="160" width="7" height="5" rx="1" fill="rgba(0,0,0,0.25)"/><rect x="78" y="160" width="7" height="5" rx="1" fill="rgba(0,0,0,0.25)"/>`;
+    case 'cafe': return `<path d="M93 150 q-3 -6 0 -10 M99 150 q-3 -6 0 -10" stroke="rgba(27,42,85,0.3)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M86 158 h20 l-2.5 28 h-15 z" fill="#FFFFFF" stroke="#C9B8A6" stroke-width="1.5" stroke-linejoin="round"/>
+      <rect x="84" y="153" width="24" height="6" rx="2.5" fill="#6B3E2E"/><rect x="87.5" y="166" width="17" height="9" fill="#C47A3A"/>`;
+    case 'paleta': return `<path d="M100 198 V146" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="100" cy="136" r="12" fill="${c}"/><path d="M100 136 m-7 0 a7 7 0 1 1 7 7 a4 4 0 1 1 -4 -4" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+    case 'globo': return `<path d="M108 52 q-12 40 -4 80 q6 30 -8 58" stroke="rgba(27,42,85,0.45)" stroke-width="1.2" fill="none"/>
+      <ellipse cx="108" cy="36" rx="11" ry="14" fill="${c}"/><path d="M105 50 h6 l-3 -3 z" fill="${c}"/>
+      <ellipse cx="104" cy="31" rx="3" ry="5" fill="rgba(255,255,255,0.5)" transform="rotate(20 104 31)"/>`;
+    default: return '';
+  }
+}
+
+/** Pecas, lunar y barba (van debajo de los ojos y la boca). */
+function detallesCara(a) {
+  let d = '';
+  if (a.barba) d += `<path d="M22 72 Q24 110 60 112 Q96 110 98 72 Q94 96 80 98 Q70 93 60 94 Q50 93 40 98 Q26 96 22 72 Z" fill="${a.pelo}"/>`;
+  if (a.pecas) d += `<g fill="#B5653A" opacity="0.5">${[[34, 78], [39, 82], [31, 83], [86, 78], [81, 82], [89, 83]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.4"/>`).join('')}</g>`;
+  if (a.lunar) d += '<circle cx="75" cy="88" r="1.7" fill="#4A2E1C"/>';
+  return d;
+}
+
+function peinadoAtras(a) {
+  const { peinado: p, pelo: color } = a;
+  switch (p) {
+    case 'largo': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v52 q-12 6 -20 0 v-40 h-40 v40 q-8 6 -20 0 z" fill="${color}"/>`;
+    case 'coleta': return `<ellipse cx="100" cy="66" rx="12" ry="20" fill="${color}" transform="rotate(20 100 66)"/>`;
+    case 'afro': return `<circle cx="60" cy="58" r="50" fill="${color}"/>`;
+    case 'bob': return `<path d="M18 70 q0 -50 42 -50 q42 0 42 50 v26 q-6 6 -14 4 v-30 h-56 v30 q-8 2 -14 -4 z" fill="${color}"/>`;
+    case 'colitas': return `<ellipse cx="14" cy="54" rx="11" ry="17" fill="${color}" transform="rotate(-25 14 54)"/>
+      <ellipse cx="106" cy="54" rx="11" ry="17" fill="${color}" transform="rotate(25 106 54)"/>`;
+    case 'trenzas': return [22, 98].map((x) => [88, 101, 114, 127].map((y) => `<ellipse cx="${x}" cy="${y}" rx="7" ry="8" fill="${color}"/>`).join('')
+      + `<circle cx="${x}" cy="137" r="4" fill="${a.colorAcc}"/>`).join('');
+    default: return '';
+  }
+}
+function peinadoFrente(a) {
+  const { peinado: p, pelo: color } = a;
+  const raya = `<path d="M22 66 q0 -44 38 -44 q38 0 38 44 q-14 -22 -38 -22 q-24 0 -38 22 z" fill="${color}"/>`;
   switch (p) {
     case 'corto': return `<path d="M22 66 q0 -44 38 -44 q38 0 38 44 q-10 -16 -24 -18 q-8 8 -30 6 q-14 2 -22 12 z" fill="${color}"/>`;
     case 'largo': return `<path d="M22 70 q0 -46 38 -46 q38 0 38 46 q-6 -18 -18 -24 q-14 10 -40 8 q-12 4 -18 16 z" fill="${color}"/>`;
     case 'chongo': return `<circle cx="60" cy="24" r="14" fill="${color}"/><path d="M22 64 q2 -40 38 -40 q36 0 38 40 q-12 -20 -38 -20 q-26 0 -38 20 z" fill="${color}"/>`;
     case 'rizado': return [[30, 46], [44, 34], [60, 30], [76, 34], [90, 46], [24, 60], [96, 60]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="13" fill="${color}"/>`).join('');
-    case 'coleta': return `<path d="M22 66 q0 -44 38 -44 q38 0 38 44 q-14 -22 -38 -22 q-24 0 -38 22 z" fill="${color}"/>`;
+    case 'coleta': return raya;
+    case 'afro': return `<path d="M22 64 q0 -42 38 -42 q38 0 38 42 q-8 -14 -18 -16 q-10 6 -20 2 q-10 4 -20 -2 q-10 2 -18 16 z" fill="${color}"/>`;
+    case 'bob': return `<path d="M22 64 q0 -42 38 -42 q38 0 38 42 v-6 q-2 -2 -6 -2 h-64 q-4 0 -6 2 z" fill="${color}"/>`;
+    case 'copete': return `<path d="M22 62 q0 -40 38 -40 q38 0 38 40 q-6 -14 -16 -18 q-20 -2 -40 0 q-14 4 -20 18 z" fill="${color}"/>
+      <path d="M30 40 q16 -32 56 -14 q-6 8 -20 8 q-20 -4 -36 6 z" fill="${color}"/>`;
+    case 'colitas': return `${raya}<circle cx="24" cy="50" r="4.5" fill="${a.colorAcc}"/><circle cx="96" cy="50" r="4.5" fill="${a.colorAcc}"/>`;
+    case 'trenzas': return raya;
     default: return ''; // calvo
   }
 }
@@ -390,9 +586,18 @@ function accesorio(a, color) {
     case 'boina': return `<path d="M24 46 q4 -26 40 -26 q34 0 34 22 q-30 -8 -74 4 z" fill="${color}"/><circle cx="62" cy="19" r="4" fill="${color}"/>`;
     case 'audifonos': return `<path d="M20 70 q0 -52 40 -52 q40 0 40 52" fill="none" stroke="${color}" stroke-width="6"/><rect x="12" y="62" width="14" height="22" rx="6" fill="${color}"/><rect x="94" y="62" width="14" height="22" rx="6" fill="${color}"/>`;
     case 'moño': return `<g transform="translate(86 34) rotate(20)"><path d="M0 0 l-12 -8 v16 z M0 0 l12 -8 v16 z" fill="${color}"/><circle r="4" fill="${color}" stroke="#fff" stroke-width="1.5"/></g>`;
+    case 'gorro': return `<path d="M20 58 q0 -44 40 -44 q40 0 40 44 z" fill="${color}"/><rect x="18" y="50" width="84" height="13" rx="6.5" fill="${color}"/>
+      <path d="M28 52 v9 M38 52 v9 M48 52 v9 M58 52 v9 M68 52 v9 M78 52 v9 M88 52 v9" stroke="rgba(0,0,0,0.15)" stroke-width="2"/>
+      <circle cx="60" cy="14" r="9" fill="#FFFFFF"/>`;
+    case 'sombrero': return `<path d="M34 44 q0 -28 26 -28 q26 0 26 28 z" fill="#E9C77B"/><rect x="34" y="35" width="52" height="8" fill="${color}"/>
+      <ellipse cx="60" cy="45" rx="54" ry="9" fill="#E9C77B" stroke="#C9A55B" stroke-width="1.5"/>`;
+    case 'diadema': return `<path d="M22 62 q2 -40 38 -40 q36 0 38 40" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>${flor(82, 30, color, 5)}`;
+    case 'flor': return flor(86, 38, color, 6);
     default: return '';
   }
 }
+
+let svgN = 0; // para que cada dibujo tenga su propio recorte
 
 /**
  * SVG completo de un cliente.
@@ -401,21 +606,27 @@ function accesorio(a, color) {
  */
 export function dibujarCliente(cliente, emocion = 'normal') {
   const a = cliente.apariencia;
+  const clip = 'cuerpo' + (++svgN);
+  const r = ropa(a, clip);
   const bufanda = a.accesorio === 'bufanda'
     ? `<path d="M30 112 q30 14 60 0 v12 q-30 14 -60 0 z" fill="${a.colorAcc}"/><rect x="66" y="118" width="12" height="28" rx="4" fill="${a.colorAcc}"/>`
     : '';
   return `
   <svg viewBox="0 0 120 210" class="cliente-svg" aria-hidden="true">
-    <ellipse cx="60" cy="204" rx="38" ry="6" fill="rgba(27,42,85,0.18)"/>
-    ${peinadoAtras(a.peinado, a.pelo)}
-    <!-- cuerpo -->
-    <path d="M18 206 q0 -86 42 -86 q42 0 42 86 z" fill="${a.ropa}"/>
-    <path d="M44 122 q16 14 32 0" stroke="rgba(255,255,255,0.5)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <defs><clipPath id="${clip}"><path d="${CUERPO}"/></clipPath></defs>
+    <ellipse cx="60" cy="204" rx="38" ry="6" fill="${SOMBRA}"/>
+    ${peinadoAtras(a)}
+    <!-- cuerpo y ropa -->
+    ${r.abajo}
     <!-- cuello y cabeza -->
     <rect x="50" y="100" width="20" height="22" rx="8" fill="${a.piel}"/>
+    ${r.encima}
+    ${extra(a)}
     <circle cx="60" cy="68" r="40" fill="${a.piel}"/>
     <ellipse cx="20" cy="72" rx="6" ry="9" fill="${a.piel}"/><ellipse cx="100" cy="72" rx="6" ry="9" fill="${a.piel}"/>
-    ${peinadoFrente(a.peinado, a.pelo)}
+    ${a.aretes ? '<circle cx="20" cy="84" r="3" fill="#FFD84D"/><circle cx="100" cy="84" r="3" fill="#FFD84D"/>' : ''}
+    ${detallesCara(a)}
+    ${peinadoFrente(a)}
     <g class="cara">${caraSVG(emocion)}</g>
     ${a.corazon ? '<path d="M60 152 l-9 -9 a5.5 5.5 0 0 1 9 -7 a5.5 5.5 0 0 1 9 7 z" fill="#FF4FA3" stroke="#fff" stroke-width="1.5"/>' : ''}
     ${a.bigote ? `<path d="M46 80 q7 -6 14 0 q7 -6 14 0 q-7 6 -14 2 q-7 4 -14 -2 z" fill="${a.pelo}"/>` : ''}

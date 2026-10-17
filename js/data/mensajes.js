@@ -29,6 +29,31 @@ export const FORMAS_NINO = [
   '¡Yo quiero la crepa {pedido}! ¡Bien bonita! ✨',
 ];
 
+// Cada tipo de cliente tiene su manera de hablar
+export const FORMAS_POR_TIPO = {
+  tranquilo: [
+    'Hola, buenas 😌 Cuando puedas, una crepa {pedido}. Sin prisa.',
+    'Qué bonito lugar 🌸 Me das una crepa {pedido}, porfa.',
+    'Tómate tu tiempo: una crepa {pedido}, por favor ☺️',
+  ],
+  apurado: [
+    '¡Rápido, porfa! Una crepa {pedido}, que se me hace tarde ⏱️',
+    'Una crepa {pedido}... ¡para ayer! 🏃',
+    'Tengo junta en 5 minutos: ¡una crepa {pedido}! 📱',
+    '¡Hola-hola! Una {pedido}, pero rapidito 😅',
+  ],
+  exigente: [
+    'Una crepa {pedido}. Y fíjate bien, que la última vez me la dieron mal 😒',
+    'Quiero una crepa {pedido}. Exactamente así, ¿eh?',
+    'Buenas. Una crepa {pedido}. Ni más ni menos ☝️',
+  ],
+  gourmet: [
+    'Mmm, veamos... una crepa {pedido}. Sorpréndame 🧐',
+    'Bonjour. Una crepa {pedido}, s\'il vous plaît. Espero perfección.',
+    'He probado crepas en París. A ver qué tal la suya: {pedido} 🎩',
+  ],
+};
+
 // Clientes VIP: piden "lo de siempre"
 export const SALUDOS_VIP = [
   '¡Hola de nuevo! Lo de siempre: una crepa {pedido} 😉',

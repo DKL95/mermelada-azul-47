@@ -125,6 +125,7 @@ function sincronizar() {
 function crearElemento(c) {
   const el = document.createElement('div');
   el.className = 'cliente caminando' + (c.tipo === 'nino' ? ' nino' : '');
+  el.dataset.tipo = c.tipo; // cada tipo espera a su manera (ver escenas.css)
   el.style.left = (c.lugar < LUGARES / 2 ? -20 : 120) + '%'; // entra por el lado más cercano
   el.innerHTML = `
     <div class="sobre-cabeza"></div>

@@ -107,8 +107,9 @@
   box-shadow: var(--sombra);
 }
 
-/* Repisa con frascos */
+/* Repisa con frascos (decorativa: en pantallas bajitas se esconde) */
 .repisa { flex: 0 0 auto; height: 56px; padding: 0 12px; }
+@media (max-height: 760px) { .repisa { display: none; } }
 .repisa svg { width: 100%; height: 100%; display: block; }
 
 /* Mostrador con la plancha */
@@ -127,10 +128,13 @@
   box-shadow: inset 0 6px 10px rgba(27,42,85,0.1);
 }
 /* Escenario: plancha o plato con la crepa encima */
+/* La plancha toma el espacio que sobre y se encoge (cuadrada) para que
+   los botones del panel siempre quepan, aun con las barras de Safari. */
 .escenario {
   position: relative;
-  flex: 0 0 auto;
-  width: min(66vw, 270px, 31vh);
+  flex: 1 1 0;
+  min-height: 96px;
+  max-height: min(66vw, 270px);
   aspect-ratio: 1;
   touch-action: none; /* que arrastrar no haga scroll */
   cursor: pointer;
@@ -206,6 +210,7 @@
 
 /* Panel de controles de cada estación */
 .panel-estacion {
+  flex: 0 0 auto;
   width: 100%;
   max-width: 420px;
   padding: 0 12px;
@@ -455,6 +460,21 @@
 .cliente.brinco .cuerpo-cliente { animation: brinquito 0.45s ease-in-out 3; }
 @keyframes brinquito { 50% { transform: translateY(-16px); } }
 .cliente.saliendo { pointer-events: none; }
+
+/* Personalidad mientras esperan (va en el dibujo, para no chocar
+   con las animaciones de caminar, brincar o azotar) */
+.cliente-svg { transform-origin: 50% 100%; }
+.cliente:not(.caminando)[data-tipo="apurado"] .cliente-svg { animation: prisa 0.5s ease-in-out infinite; }
+.cliente:not(.caminando)[data-tipo="nino"] .cliente-svg { animation: saltitos 2.2s ease-in-out infinite; }
+.cliente:not(.caminando)[data-tipo="tranquilo"] .cliente-svg { animation: mecerse 3.2s ease-in-out infinite; }
+.cliente:not(.caminando)[data-tipo="exigente"] .cliente-svg { animation: cruzado 4s ease-in-out infinite; }
+.cliente:not(.caminando)[data-tipo="gourmet"] .cliente-svg { animation: altivo 5s ease-in-out infinite; }
+@keyframes prisa { 50% { transform: translateY(-3px); } }
+@keyframes saltitos { 0%, 60%, 100% { transform: none; } 70% { transform: translateY(-10px) scaleY(1.03); } 80% { transform: scaleY(0.96); } }
+@keyframes mecerse { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+@keyframes cruzado { 0%, 70%, 100% { transform: none; } 78%, 92% { transform: rotate(-4deg); } }
+@keyframes altivo { 0%, 60%, 100% { transform: none; } 70%, 90% { transform: rotate(3deg) translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) { .cliente .cliente-svg { animation: none !important; } }
 
 .sobre-cabeza {
   position: absolute;
