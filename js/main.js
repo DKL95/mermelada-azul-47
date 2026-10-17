@@ -12,6 +12,7 @@ import { TIPOS_CLIENTE } from './data/clientes.js';
 import { EVENTOS } from './data/eventos.js';
 import { avisarLogros } from './tienda.js';
 import { pantallaInicio, bienvenida, revisarSorpresa, sorpresaDesbloqueada, abrirCarta, creditos } from './romance.js';
+import { abrirRanking } from './ranking.js';
 import { iniciarTutorial } from './tutorial.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -124,6 +125,11 @@ function abrirAjustes() {
         <button data-valor="desafio">Desafío</button>
       </div>
     </div>
+    ${CONFIG.tablaEnLinea ? `
+    <div class="ajuste">
+      <span>🏆 Tabla en línea<small class="ajuste-nota">Compite con otros jugadores por la mejor ganancia</small></span>
+      <button class="btn btn-secundario" id="aj-ranking">Ver</button>
+    </div>` : ''}
     <div class="ajuste">
       <span>❓ Ayuda</span>
       <button class="btn btn-secundario" id="aj-ayuda">¿Cómo se juega?</button>
@@ -202,6 +208,7 @@ function abrirAjustes() {
   });
   cont.querySelector('#aj-carta')?.addEventListener('click', () => abrirCarta());
   cont.querySelector('#aj-creditos').addEventListener('click', () => { sonidos.click(); creditos(); });
+  cont.querySelector('#aj-ranking')?.addEventListener('click', () => { sonidos.click(); abrirRanking(); });
 
   // Reiniciar partida (con confirmación)
   cont.querySelector('#aj-reiniciar').addEventListener('click', async () => {

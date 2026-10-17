@@ -98,6 +98,15 @@ El juego guarda una copia para funcionar sin internet. Al publicar cambios, sube
 
 Para tenerlo como app instalable en Android, sigue [`GUIA_APK.md`](GUIA_APK.md) (Capacitor + Android Studio).
 
+## 🏆 Tabla en línea
+
+En ⚙️ Ajustes → **Tabla en línea** cada jugador elige su nombre y ve la tabla (mejor día y acumulado). Al terminar cada día la ganancia se sube sola; sin internet se guarda y se manda después.
+
+- Usa un proyecto gratis de [Supabase](https://supabase.com) (`candy-crepas`). La tabla se crea con [`supabase.sql`](supabase.sql) en el *SQL Editor*.
+- La URL y la clave *publishable* están en `js/config.js` (`tablaEnLinea`). Esa clave puede ser pública: la base solo deja **leer y agregar**, no cambiar ni borrar. Para apagar la tabla, pon `tablaEnLinea: null`.
+- Como el código es público, alguien muy curioso podría subir puntuaciones inventadas (dentro de límites razonables). Para borrar una, en Supabase: *Table Editor* → `puntuaciones`.
+- Supabase pausa los proyectos gratis tras ~1 semana sin uso; si la tabla deja de cargar, entra al panel y dale *Restore*.
+
 ---
 
 ## 🗂️ Estructura
@@ -121,6 +130,7 @@ js/
   tienda.js           tienda y logros
   romance.js          inicio, PIN, cartitas, créditos
   tutorial.js         tutorial de la primera vez
+  ranking.js          tabla de puntuaciones en línea
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,
                       mejoras, eventos, logros

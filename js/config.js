@@ -50,6 +50,14 @@ export const CONFIG = {
   // Solo aparecen en estas dificultades:
   bebidasEnDificultades: ['desafio'],
 
+  // Tabla de puntuaciones en línea (Supabase). La clave "publishable" es
+  // pública a propósito: la base solo deja leer y agregar puntuaciones.
+  // null = sin tabla en línea.
+  tablaEnLinea: {
+    url: 'https://dcczvcaiwouprlfliucj.supabase.co',
+    clave: 'sb_publishable_klsUMU0uZKXmVhfu9bXGvQ_vS0lCbQz',
+  },
+
   // Herramientas de prueba en Ajustes. Apagadas al publicar.
   // Truco: abrir el juego con ?dev=1 al final del enlace las activa en ese
   // dispositivo (y ?dev=0 las vuelve a apagar).

@@ -15,6 +15,7 @@ import { nivel } from './data/mejoras.js';
 import { evento } from './data/eventos.js';
 import { LOGROS } from './data/logros.js';
 import { revisarSorpresa } from './romance.js';
+import { tieneNombre } from './ranking.js';
 import { dibujarCliente, caraSVG, caraCliente, tipoDe } from './clientes.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
@@ -591,6 +592,9 @@ async function mostrarFinDia() {
         <div><span>😤 Clientes que se fueron</span><b>${h.perdidos}</b></div>
         <div><span>🔥 Crepas quemadas</span><b>${h.quemadas}</b></div>
         ${neto > 0 && neto >= e.records.mejorDia ? '<div class="record">🏅 ¡Nuevo récord de ganancia!</div>' : ''}
+        ${CONFIG.tablaEnLinea ? `<div class="ranking-aviso">${tieneNombre()
+          ? '🏆 Tu ganancia va a la tabla en línea'
+          : '🏆 Para competir en línea, ponte un nombre en ⚙️ → Tabla en línea'}</div>` : ''}
         ${logrosHoy.length ? `<div class="logros-hoy"><span>🏆 Logros de hoy</span>${logrosHoy.map((l) => `<span class="chip-logro">${l.emoji} ${l.nombre}</span>`).join('')}</div>` : ''}
         ${desglose}
         ${mejor ? tarjetaResena({ ...mejor, leida: true }, '👑 Mejor reseña') : ''}

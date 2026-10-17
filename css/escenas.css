@@ -926,6 +926,7 @@
 .resumen-dia .baja { color: #D62828; }
 .resumen-dia > .record { justify-content: center; background: var(--amarillo); font-weight: 700; }
 .resumen-dia > .evento-resumen { justify-content: center; background: none; padding: 0; font-weight: 600; }
+.resumen-dia > .ranking-aviso { justify-content: center; background: none; padding: 0; font-size: 14px; color: var(--texto-suave); text-align: center; }
 .resumen-dia > .logros-hoy { flex-wrap: wrap; gap: 6px; justify-content: flex-start; }
 .resumen-dia > .logros-hoy > span:first-child { flex-basis: 100%; }
 .chip-logro { padding: 4px 10px; border-radius: 999px; background: #FFF3C4; font-size: 13px; font-weight: 600; }

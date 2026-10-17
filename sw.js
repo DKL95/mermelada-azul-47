@@ -4,7 +4,7 @@
    (cómodo mientras desarrollamos); si no, se usa la copia guardada.
    Cambia VERSION_CACHE cuando publiques una versión nueva.
    ============================================================ */
-const VERSION_CACHE = 'creperia-v10';
+const VERSION_CACHE = 'creperia-v12';
 
 // Archivos mínimos para que el juego arranque sin conexión
 const ARCHIVOS = [
@@ -29,6 +29,7 @@ const ARCHIVOS = [
   './js/tienda.js',
   './js/romance.js',
   './js/tutorial.js',
+  './js/ranking.js',
   './js/data/eventos.js',
   './js/data/logros.js',
   './js/data/ingredientes.js',
@@ -63,6 +64,8 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  // La tabla en línea siempre va directo a internet (nada de copias viejas)
+  if (new URL(e.request.url).hostname.endsWith('.supabase.co')) return;
   e.respondWith(
     fetch(e.request)
       .then((resp) => {
