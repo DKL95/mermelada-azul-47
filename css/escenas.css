@@ -883,8 +883,8 @@
 .vaso-btn.preparando .llenado { animation: llenar 2.2s linear forwards; }
 @keyframes llenar { to { height: 100%; } }
 
-/* Gatito */
-.miau { font-size: 18px; color: var(--candy); }
+/* Perrita */
+.guau { font-size: 18px; color: var(--candy); }
 
 /* Doblado bloqueado */
 .btn-doblado.bloqueado { opacity: 0.45; }

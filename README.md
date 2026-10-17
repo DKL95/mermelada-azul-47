@@ -32,7 +32,7 @@ Todo lo personal está en **un solo archivo**:
 | `mensajeSorpresa`, `diaSorpresa` | Cartita que se abre al llegar a ese día |
 | `firma` | Firma de la cartita y los créditos |
 | `hashPin` | Hash del PIN de entrada (`null` = sin PIN) |
-| `nombreMascota` | Nombre del gatito de la tienda |
+| `nombreMascota` | Nombre de la perrita de la tienda |
 | `bebidasEnDificultades` | En qué dificultades existe la barra de bebidas |
 
 ### Cambiar el PIN

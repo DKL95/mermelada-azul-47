@@ -66,7 +66,7 @@ export function montar(contenedor) {
     abrirTienda();
   });
   raiz.querySelector('#barra-bebidas').addEventListener('click', prepararBebida);
-  raiz.querySelector('#svg-mostrador').addEventListener('click', (ev) => { if (ev.target.closest('#gatito')) acariciarGatito(); });
+  raiz.querySelector('#svg-mostrador').addEventListener('click', (ev) => { if (ev.target.closest('#perrita')) acariciarPerrita(); });
   pintarDecorado();
   pintarCharola();
   pintarBuzon();
@@ -435,7 +435,7 @@ function pintarDecorado(e = estado()) {
   claveDecorado = clave;
   raiz.querySelector('#svg-fachada').innerHTML = svgFachada(CONFIG.nombreCreperia, { letrero: nivel(e, 'letrero'), luces: nivel(e, 'luces') });
   raiz.querySelector('#calle').innerHTML = svgCalle({ plantas: nivel(e, 'plantas'), mesitas: nivel(e, 'mesitas'), clima: e.evento });
-  raiz.querySelector('#svg-mostrador').innerHTML = svgMostrador({ gatito: nivel(e, 'mascota'), terminal: nivel(e, 'caja') });
+  raiz.querySelector('#svg-mostrador').innerHTML = svgMostrador({ perrita: nivel(e, 'mascota'), terminal: nivel(e, 'caja') });
   const clima = raiz.querySelector('#clima');
   clima.className = 'clima ' + (e.evento || '');
   clima.innerHTML = e.evento === 'san_valentin'
@@ -444,13 +444,13 @@ function pintarDecorado(e = estado()) {
   pintarBarraBebidas();
 }
 
-function acariciarGatito() {
+function acariciarPerrita() {
   sonidos.pop();
-  const g = raiz.querySelector('#gatito');
+  const g = raiz.querySelector('#perrita');
   const r = g.getBoundingClientRect(), rApp = document.getElementById('app').getBoundingClientRect();
   const h = document.createElement('div');
-  h.className = 'texto-cobro miau';
-  h.textContent = '¡Miau! 💕';
+  h.className = 'texto-cobro guau';
+  h.textContent = '¡Guau! 💕';
   h.style.left = r.left + r.width / 2 - rApp.left + 'px';
   h.style.top = r.top - rApp.top + 'px';
   document.getElementById('app').appendChild(h);
@@ -746,19 +746,31 @@ function svgCalle(op = {}) {
   </svg>`;
 }
 
-/** Gatito dormido sobre el mostrador. */
-function svgGatito() {
+/** Perrita French Poodle blanca dormida sobre el mostrador. */
+function svgPerrita() {
+  // Bolitas de pelo rizado: se pintan dos veces (contorno y relleno) para que el borde quede de una pieza
+  const pelo = `
+    <path d="M46 13 L53 4" stroke-width="2.5"/>
+    <circle cx="54" cy="3" r="4.5"/>
+    <ellipse cx="28" cy="16" rx="20" ry="7"/>
+    <circle cx="15" cy="11" r="6.5"/><circle cx="24" cy="9" r="7"/><circle cx="34" cy="9" r="7"/><circle cx="42" cy="12" r="6"/>
+    <circle cx="45" cy="20" r="4"/>
+    <circle cx="1" cy="21" r="3.5"/><circle cx="8" cy="22" r="3.5"/>
+    <circle cx="8" cy="10" r="8"/>
+    <circle cx="3" cy="2" r="4.5"/><circle cx="9" cy="0" r="4.5"/><circle cx="14" cy="3" r="4"/>
+    <ellipse cx="0" cy="13" rx="5.5" ry="3.8"/>`;
   return `
-    <g id="gatito" transform="translate(178 4)" style="cursor:pointer">
-      <path d="M44 14 q14 -2 12 8 q-2 4 -8 2" stroke="#F2A65A" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <ellipse cx="26" cy="14" rx="22" ry="10" fill="#F2A65A"/>
-      <path d="M14 8 q6 6 0 12 M26 5 q6 7 0 14" stroke="#D98A3E" stroke-width="2.5" fill="none"/>
-      <circle cx="8" cy="10" r="9" fill="#F2A65A"/>
-      <path d="M2 4 l1 -8 l5 5 z M10 2 l5 -6 l1 8 z" fill="#F2A65A"/>
-      <path d="M3 3 l1 -4 l2 3 z" fill="#FFB8C8"/>
-      <path d="M3 11 q2 2 4 0 M9 11 q2 2 4 0" stroke="#5A3A22" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-      <circle cx="8" cy="14" r="1" fill="#FF8FB8"/>
-      <text x="16" y="-6" font-family="Fredoka, sans-serif" font-size="9" fill="#3B4F86" opacity="0.7">z<animate attributeName="opacity" values="0;0.8;0" dur="2.5s" repeatCount="indefinite"/></text>
+    <g id="perrita" transform="translate(178 4)" style="cursor:pointer">
+      <g fill="#D8D2E6" stroke="#D8D2E6" stroke-width="3">${pelo}</g>
+      <g fill="#FFFFFF" stroke="#FFFFFF">${pelo}</g>
+      <path d="M20 13 q3 -3 6 0 M31 12 q3 -3 6 0 M40 17 q2 -2 4 0" stroke="#E6E1F0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="13" cy="13" rx="4.2" ry="7.5" fill="#F3F0F8" stroke="#D8D2E6" stroke-width="1.5"/>
+      <path d="M2 9 q2.5 2.5 5 0" stroke="#3B2A2A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <circle cx="-4.5" cy="12.5" r="1.6" fill="#3B2A2A"/>
+      <circle cx="5" cy="13" r="1.3" fill="#FF8FB8"/>
+      <path d="M12 -4 l-5 -3.5 l0 7 z M12 -4 l5 -3.5 l0 7 z" fill="#FF4FA3"/>
+      <circle cx="12" cy="-4" r="1.6" fill="#E0237F"/>
+      <text x="20" y="-6" font-family="Fredoka, sans-serif" font-size="9" fill="#3B4F86" opacity="0.7">z<animate attributeName="opacity" values="0;0.8;0" dur="2.5s" repeatCount="indefinite"/></text>
     </g>`;
 }
 
@@ -778,7 +790,7 @@ function svgMostrador(op = {}) {
       <path d="M0 18 L10 4 L90 4 L100 18 Z" fill="#E9D2BA" stroke="#C9A27C" stroke-width="2"/>
     </g>
 
-    ${op.gatito ? svgGatito() : ''}
+    ${op.perrita ? svgPerrita() : ''}
 
     <!-- caja registradora -->
     <g transform="translate(250 -26)">

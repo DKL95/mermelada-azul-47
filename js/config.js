@@ -18,8 +18,8 @@ export const CONFIG = {
   // accesorio: 'ninguno' | 'gorra' | 'lentes' | 'moño' | 'bufanda' | 'boina' | 'audifonos'
   aparienciaNovio: { piel: '#E8B08A', pelo: '#2B1B12', ropa: '#1F5FFF', peinado: 'corto', accesorio: 'ninguno', colorAcc: '#FF4FA3' },
 
-  // Nombre del gatito mascota (se compra en la tienda)
-  nombreMascota: 'Michi',
+  // Nombre de la perrita mascota (se compra en la tienda)
+  nombreMascota: 'Candy',
 
   // Mensaje de bienvenida: sale la primera vez que abre el juego.
   // (Puedes usar varios párrafos separándolos con \n\n)
