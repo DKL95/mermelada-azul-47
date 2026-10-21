@@ -11,7 +11,7 @@ import {
   TIPOS_CLIENTE, VIPS, FAMOSA, MULT_PACIENCIA, PIELES, PELOS, PELOS_FANTASIA, ROPAS, SACOS, MEZCLILLAS,
   PEINADOS, ACCESORIOS, VESTIMENTAS, ESTAMPADOS, EXTRAS, ESTILOS,
 } from './data/clientes.js';
-import { DOBLADOS, COMBOS, ingrediente, disponibles, comboDisponible, dobladoDisponible } from './data/ingredientes.js';
+import { DOBLADOS, COMBOS, ingrediente, disponibles, disponiblesDe, comboDisponible, dobladoDisponible } from './data/ingredientes.js';
 import { FORMAS_DE_PEDIR, FORMAS_POR_TIPO, FORMAS_NINO, SALUDOS_VIP, SALUDOS_FAMOSA, FORMAS_NOVIO, alAzar } from './data/mensajes.js';
 import { CONFIG } from './config.js';
 import { multPaciencia } from './data/mejoras.js';
@@ -53,13 +53,14 @@ export function nombreEnFrase(id) {
   const i = ingrediente(id);
   if (!i) return 'eso';
   if (i.categoria === 'masa') return i.frase ? i.frase.replace(/^en /, '') : 'clásica';
-  return i.marca ? i.nombre : i.nombre.toLowerCase();
+  return i.enFrase || (i.marca ? i.nombre : i.nombre.toLowerCase());
 }
 
 /** Copia un combo como pedido (sin tocar el original). */
 function pedidoDeCombo(c) {
   return {
     combo: c.id,
+    salado: !!c.salado,
     masa: c.masa || 'masa_clasica',
     rellenos: { ...c.rellenos },
     toppings: { ...c.toppings },
@@ -69,14 +70,20 @@ function pedidoDeCombo(c) {
   };
 }
 
+/** ¿Se le puede pedir "doble" a este relleno? (untables y, en las saladas, sus rellenos) */
+const doblable = (id) => ['untable', 'salado'].includes(ingrediente(id).categoria);
+
 /** Cambios típicos a un combo: "sin plátano", "doble Nutella", "extra crema". */
 function aplicarCambio(p, e) {
   const opciones = [];
   const quitables = [...Object.keys(p.rellenos), ...Object.keys(p.toppings), ...p.salsas];
+  // La crema de cada sabor: batida en las dulces, ácida en las saladas
+  const crema = p.salado ? 'crema_acida' : 'crema_batida';
+  const otrasMasas = disponiblesDe(!!p.salado, e, 'masa').filter((i) => i.id !== 'masa_clasica');
   if (quitables.length >= 3) opciones.push('sin');
-  if (Object.keys(p.rellenos).some((id) => ingrediente(id).categoria === 'untable')) opciones.push('doble');
-  if (p.toppings.crema_batida || disponibles(e, 'frio').some((i) => i.id === 'crema_batida')) opciones.push('crema');
-  if (p.masa === 'masa_clasica' && disponibles(e, 'masa').length > 1) opciones.push('masa');
+  if (Object.keys(p.rellenos).some(doblable)) opciones.push('doble');
+  if (p.toppings[crema] || disponibles(e, 'frio').some((i) => i.id === crema)) opciones.push('crema');
+  if (p.masa === 'masa_clasica' && otrasMasas.length) opciones.push('masa');
   if (!opciones.length) return;
   switch (alAzar(opciones)) {
     case 'sin': {
@@ -88,19 +95,19 @@ function aplicarCambio(p, e) {
       break;
     }
     case 'doble': {
-      const id = Object.keys(p.rellenos).find((x) => ingrediente(x).categoria === 'untable');
+      const id = Object.keys(p.rellenos).find(doblable);
       if (p.rellenos[id] > 1) return;
       p.rellenos[id] = 2;
       p.cambios.push(`con doble ${nombreEnFrase(id)}`);
       break;
     }
     case 'crema':
-      if (p.toppings.crema_batida > 1) return;
-      p.cambios.push(p.toppings.crema_batida ? 'con extra crema' : 'con crema batida');
-      p.toppings.crema_batida = (p.toppings.crema_batida || 0) + 1;
+      if (p.toppings[crema] > 1) return;
+      p.cambios.push(p.toppings[crema] ? 'con extra crema' : `con ${nombreEnFrase(crema)}`);
+      p.toppings[crema] = (p.toppings[crema] || 0) + 1;
       break;
     case 'masa': {
-      const m = alAzar(disponibles(e, 'masa').filter((i) => i.id !== 'masa_clasica'));
+      const m = alAzar(otrasMasas);
       p.masa = m.id;
       p.cambios.push(m.frase);
       break;
@@ -112,18 +119,18 @@ function aplicarCambio(p, e) {
 const DULCES_NINO = ['nutella', 'lechera', 'choco_blanco', 'choco_oscuro', 'cajeta'];
 const TOPPINGS_NINO = ['grageas', 'malvaviscos', 'chispas', 'oreo', 'cereal', 'crema_batida', 'helado_chocolate', 'helado_fresa', 'helado_vainilla'];
 
-/** Pedido armado al gusto (sin combo). */
+/** Pedido dulce armado al gusto (sin combo). */
 function pedidoLibre(tipo, e) {
   const p = { combo: null, masa: 'masa_clasica', rellenos: {}, toppings: {}, salsas: [], doblado: 'triangulo', cambios: [] };
   const nino = tipo.id === 'nino';
   const [min, max] = tipo.complejidad;
   let n = entre(min, max);
 
-  const masas = disponibles(e, 'masa').filter((i) => i.id !== 'masa_clasica');
+  const masas = disponiblesDe(false, e, 'masa').filter((i) => i.id !== 'masa_clasica');
   if (masas.length && Math.random() < (nino ? 0.3 : 0.15)) p.masa = alAzar(masas).id;
 
   // Casi siempre llevan un untable de base (a veces "doble")
-  let untables = disponibles(e, 'untable');
+  let untables = disponiblesDe(false, e, 'untable');
   if (nino) untables = untables.filter((i) => DULCES_NINO.includes(i.id));
   if (untables.length && Math.random() < 0.85) {
     p.rellenos[elegirConAntojo(untables, e).id] = Math.random() < (nino ? 0.3 : 0.12) ? 2 : 1;
@@ -141,7 +148,7 @@ function pedidoLibre(tipo, e) {
     const total = vivas.reduce((s, [, w]) => s + w, 0);
     let r = Math.random() * total, cat = vivas[0][0];
     for (const [c, w] of vivas) { r -= w; if (r <= 0) { cat = c; break; } }
-    let lista = disponibles(e, cat).filter((i) => !p.rellenos[i.id] && !p.toppings[i.id] && !p.salsas.includes(i.id));
+    let lista = disponiblesDe(false, e, cat).filter((i) => !p.rellenos[i.id] && !p.toppings[i.id] && !p.salsas.includes(i.id));
     if (nino && (cat === 'crujiente' || cat === 'frio')) lista = lista.filter((i) => TOPPINGS_NINO.includes(i.id));
     if (!lista.length) { usados[cat] = 99; continue; }
     const ing = elegirConAntojo(lista, e);
@@ -153,12 +160,12 @@ function pedidoLibre(tipo, e) {
   }
   // Los niños siempre quieren al menos una salsa
   if (nino && !p.salsas.length) {
-    const s = disponibles(e, 'salsa');
+    const s = disponiblesDe(false, e, 'salsa');
     if (s.length) p.salsas.push(alAzar(s).id);
   }
   // Si quedó vacía, al menos una fruta
   if (!Object.keys(p.rellenos).length && !Object.keys(p.toppings).length && !p.salsas.length) {
-    p.rellenos[alAzar(disponibles(e, 'fruta')).id] = 1;
+    p.rellenos[alAzar(disponiblesDe(false, e, 'fruta')).id] = 1;
   }
   // El triángulo es el doblado más común en las creperías; los niños aman el cono
   const doblados = DOBLADOS.filter((d) => dobladoDisponible(d.id, e)).map((d) => d.id);
@@ -166,6 +173,51 @@ function pedidoLibre(tipo, e) {
   if (nino && doblados.includes('cono') && r < 0.5) p.doblado = 'cono';
   else p.doblado = r < 0.45 ? 'triangulo' : alAzar(doblados);
   return p;
+}
+
+/** Pedido salado armado al gusto: uno o dos rellenos salados de base
+ *  y lo demás repartido entre más relleno, toppings, salsas y espolvorear. */
+function pedidoSalado(tipo, e) {
+  const p = { combo: null, salado: true, masa: 'masa_clasica', rellenos: {}, toppings: {}, salsas: [], doblado: 'triangulo', cambios: [] };
+  const [min, max] = tipo.complejidad;
+  let n = entre(min, max);
+
+  const masas = disponiblesDe(true, e, 'masa');
+  if (masas.length && Math.random() < 0.3) p.masa = alAzar(masas).id;
+
+  const rellenos = disponiblesDe(true, e, 'salado');
+  p.rellenos[elegirConAntojo(rellenos, e).id] = 1;
+  n--;
+
+  // [de dónde sale, peso, máximo]
+  const reparto = [['salado', 3, 2], ['crujiente', 1.5, 1], ['frio', 1, 1], ['salsa', 1.5, 1], ['decoracion', 1, 1]];
+  const usados = {};
+  for (let intentos = 0; n > 0 && intentos < 30; intentos++) {
+    const vivas = reparto.filter(([cat, , tope]) => (usados[cat] || 0) < tope);
+    if (!vivas.length) break;
+    const total = vivas.reduce((s, [, w]) => s + w, 0);
+    let r = Math.random() * total, cat = vivas[0][0];
+    for (const [c, w] of vivas) { r -= w; if (r <= 0) { cat = c; break; } }
+    const lista = disponiblesDe(true, e, cat).filter((i) => !p.rellenos[i.id] && !p.toppings[i.id] && !p.salsas.includes(i.id));
+    if (!lista.length) { usados[cat] = 99; continue; }
+    const ing = elegirConAntojo(lista, e);
+    if (cat === 'salado') p.rellenos[ing.id] = 1;
+    else if (cat === 'salsa') p.salsas.push(ing.id);
+    else p.toppings[ing.id] = 1;
+    usados[cat] = (usados[cat] || 0) + 1;
+    n--;
+  }
+  // En las saladas se lleva más el sobre y el triángulo
+  const doblados = DOBLADOS.filter((d) => dobladoDisponible(d.id, e)).map((d) => d.id);
+  const r = Math.random();
+  p.doblado = r < 0.4 ? 'triangulo' : r < 0.7 && doblados.includes('sobre') ? 'sobre' : alAzar(doblados);
+  return p;
+}
+
+/** ¿Este cliente quiere algo salado? (los niños, siempre dulce) */
+function quiereSalado(tipo, e) {
+  if (tipo.id === 'nino' || disponiblesDe(true, e, 'salado').length < 2) return false;
+  return Math.random() < (tipo.id === 'gourmet' ? 0.4 : 0.3);
 }
 
 /** Elige al azar, pero con antojo de los favoritos del evento del día. */
@@ -192,7 +244,8 @@ export function crearPedido(tipo, comboFijo = null) {
 
 function armarPedido(tipo, comboFijo, e) {
   if (comboFijo) return pedidoDeCombo(combo(comboFijo));
-  const combos = COMBOS.filter((c) => comboDisponible(c, e));
+  const salado = quiereSalado(tipo, e);
+  const combos = COMBOS.filter((c) => comboDisponible(c, e) && !!c.salado === salado);
   if (combos.length && Math.random() < tipo.combo) {
     // Los gourmet prefieren los combos más elaborados
     const elaborados = combos.filter((c) => Object.keys({ ...c.rellenos, ...c.toppings }).length + c.salsas.length >= 3);
@@ -204,7 +257,7 @@ function armarPedido(tipo, comboFijo, e) {
     }
     return p;
   }
-  return pedidoLibre(tipo, e);
+  return salado ? pedidoSalado(tipo, e) : pedidoLibre(tipo, e);
 }
 
 /** Texto natural del pedido:
@@ -218,10 +271,11 @@ export function describirPedido(pedido) {
   }
   const conPorciones = ([id, n]) => (n > 1 ? `doble ${nombreEnFrase(id)}` : nombreEnFrase(id));
   const rellenos = Object.entries(pedido.rellenos).map(conPorciones);
-  const hayUntable = Object.keys(pedido.rellenos).some((id) => ingrediente(id).categoria === 'untable');
+  // "de Nutella con fresa" / "de jamón con queso"; si solo hay fruta: "con fresa"
+  const hayBase = Object.keys(pedido.rellenos).some((id) => ['untable', 'salado'].includes(ingrediente(id).categoria));
   const partes = [];
   if (rellenos.length) {
-    if (hayUntable) {
+    if (hayBase) {
       const [primero, ...resto] = rellenos;
       partes.push(`de ${primero}${resto.length ? ` con ${unirY(resto)}` : ''}`);
     } else {

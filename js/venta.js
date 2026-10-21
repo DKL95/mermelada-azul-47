@@ -621,6 +621,11 @@ async function mostrarNuevoDia() {
   const ev = evento(e.evento);
   let html = '';
   if (ev) html += `<div class="tarjeta-evento grande"><b>${ev.emoji} Hoy: ${ev.nombre}</b><small>${ev.descripcion}</small></div>`;
+  // El día que llegan los primeros ingredientes salados
+  if (ingredientes.some((i) => i.salado) && !INGREDIENTES.some((i) => i.salado && i.dia < e.dia)) {
+    html += `<div class="tarjeta-evento grande"><b>🧀 ¡Llegan las crepas saladas!</b>
+      <small>Ahora también te pueden pedir jamón, quesos y más. Están en las pestañitas «Salados» de la cocina.</small></div>`;
+  }
   if (ingredientes.length) {
     html += `<h3 class="menu-titulo">✨ Ingredientes nuevos</h3><div class="novedades">
       ${ingredientes.map((i) => `<span class="det-item">${iconoIngrediente(i.id)}${i.nombre}</span>`).join('')}</div>`;

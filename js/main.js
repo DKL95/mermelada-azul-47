@@ -275,6 +275,7 @@ function abrirAyuda() {
     titulo: '¿Cómo se juega?',
     contenido: `
       <p>🛎️ <strong>Venta:</strong> llegan clientes y te piden una crepa. ¡No los hagas esperar mucho!</p>
+      <p>🧀 <strong>Dulces y saladas:</strong> desde el día 2 también piden crepas saladas. Sus ingredientes están en las pestañitas «Salados» de cada estación.</p>
       <p>🍳 <strong>Cocina:</strong> prepara la crepa paso a paso: masa, cocción, relleno, doblado, toppings y decoración.</p>
       <p>〰️ <strong>Salsas:</strong> en Decorar, elige una salsa y arrastra el dedo sobre la crepa para dibujar. Ni muy poquita ni exagerada (¡a los niños sí les gusta exagerada!).</p>
       <p>📖 <strong>Menú:</strong> en la Cocina puedes ver las crepas de la casa y qué es cada ingrediente.</p>

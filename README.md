@@ -1,6 +1,6 @@
 # 🥞 Creepy Crepas
 
-Juego casual de crepería para el celular: los clientes llegan a la ventanilla, piden su crepa y tú la preparas paso a paso (masa, cocción, relleno, doblado, toppings y decoración con el dedo). Se califica cada crepa, los clientes dejan reseñas y con las ganancias compras mejoras para el local.
+Juego casual de crepería para el celular: los clientes llegan a la ventanilla, piden su crepa (dulce o salada) y tú la preparas paso a paso (masa, cocción, relleno, doblado, toppings y decoración con el dedo). Se califica cada crepa, los clientes dejan reseñas y con las ganancias compras mejoras para el local.
 
 Es para todo público, con una versión especial para Devany que se desbloquea con un código (botón 🔒 en la esquina de la pantalla de inicio). Está hecho con HTML, CSS y JavaScript sin frameworks, todos los dibujos son SVG/código y funciona sin internet como app (PWA).
 

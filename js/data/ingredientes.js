@@ -4,7 +4,9 @@
    Cada ingrediente:
      id        identificador interno (sin espacios ni acentos)
      nombre    como se muestra en el juego
-     categoria 'masa' | 'untable' | 'fruta' | 'crujiente' | 'frio' | 'salsa' | 'decoracion' | 'bebida'
+     categoria 'masa' | 'untable' | 'fruta' | 'salado' | 'crujiente' | 'frio' | 'salsa' | 'decoracion' | 'bebida'
+     salado    true = es para crepas saladas (no se mezcla con lo dulce)
+     enFrase   cómo se escribe dentro de una frase, si no es el nombre en minúsculas
      costo     costo del insumo en pesos por porción
      precio    lo que paga el cliente por porción (en la masa: precio base)
      color     color principal para dibujarlo
@@ -14,9 +16,10 @@
      marca     true = nombre propio (se escribe con mayúscula en las frases)
 
    En qué estación se pone cada categoría:
-     Relleno  → untable, fruta        (dentro de la crepa)
-     Toppings → crujiente, frio       (encima, ya doblada)
+     Relleno  → untable, fruta, salado (dentro de la crepa)
+     Toppings → crujiente, frio        (encima, ya doblada)
      Decorar  → salsa (se dibuja con el dedo), decoracion
+   Lo salado de toppings y decorar va en su propia pestañita.
      Bebidas  → se preparan en la barra de la ventanilla (mejora "Barra de bebidas")
    ============================================================ */
 import { CONFIG } from '../config.js';
@@ -29,6 +32,8 @@ export const INGREDIENTES = [
     descripcion: 'La masa clásica con cacao en polvo. Queda morenita y huele delicioso.' },
   { id: 'masa_integral', nombre: 'Masa integral', categoria: 'masa', costo: 7, precio: 46, color: '#C9965E', dia: 4, frase: 'en masa integral',
     descripcion: 'Con harina integral: más rústica, con sabor a nuez.' },
+  { id: 'masa_sarraceno', nombre: 'Masa de sarraceno', categoria: 'masa', costo: 8, precio: 48, color: '#8C6544', dia: 3, frase: 'en masa de sarraceno', salado: true,
+    descripcion: 'Trigo sarraceno, como las galettes de Bretaña: morenita y perfecta para lo salado.' },
 
   // --- Untables (se embarran adentro) ---
   { id: 'nutella', nombre: 'Nutella', categoria: 'untable', costo: 8, precio: 20, color: '#6B3E2E', dia: 1, marca: true,
@@ -80,6 +85,30 @@ export const INGREDIENTES = [
   { id: 'pina', nombre: 'Piña', categoria: 'fruta', costo: 4, precio: 9, color: '#FFD84D', dia: 5, forma: 'cubo', colores: ['#FFD84D', '#FFF0A0'],
     descripcion: 'Trocitos de piña.' },
 
+  // --- Salados (rellenos de las crepas saladas) ---
+  { id: 'jamon', nombre: 'Jamón', categoria: 'salado', costo: 6, precio: 14, color: '#F2A3A0', dia: 2, forma: 'loncha', colores: ['#F2A3A0', '#FBD3CF'], salado: true,
+    descripcion: 'Jamón de pierna en rebanadas. El clásico de las saladas.' },
+  { id: 'queso_manchego', nombre: 'Queso manchego', categoria: 'salado', costo: 6, precio: 14, color: '#F7D774', dia: 2, forma: 'cubo', colores: ['#F7D774', '#FFF0B3'], salado: true,
+    descripcion: 'Queso manchego en cubitos: se derrite delicioso.' },
+  { id: 'queso_oaxaca', nombre: 'Queso Oaxaca', enFrase: 'queso Oaxaca', categoria: 'salado', costo: 7, precio: 15, color: '#FFF6DC', dia: 2, forma: 'hebras', colores: ['#FFF6DC', '#E9DDB8'], salado: true,
+    descripcion: 'Quesillo deshebrado: hace hilos al morderlo.' },
+  { id: 'jitomate', nombre: 'Jitomate', categoria: 'salado', costo: 3, precio: 8, color: '#E8463C', dia: 2, forma: 'rodaja', colores: ['#E8463C', '#F7887E', '#F4D35E'], salado: true,
+    descripcion: 'Rodajas de jitomate fresco.' },
+  { id: 'pollo', nombre: 'Pollo deshebrado', categoria: 'salado', costo: 8, precio: 18, color: '#E2B67E', dia: 3, forma: 'hebras', colores: ['#E2B67E', '#C9955A'], salado: true,
+    descripcion: 'Pechuga de pollo cocida y deshebrada.' },
+  { id: 'champinones', nombre: 'Champiñones', categoria: 'salado', costo: 5, precio: 12, color: '#CDB79E', dia: 3, forma: 'champi', colores: ['#CDB79E', '#F2E8DA'], salado: true,
+    descripcion: 'Champiñones salteados con mantequilla y ajo.' },
+  { id: 'espinaca', nombre: 'Espinaca', categoria: 'salado', costo: 4, precio: 10, color: '#3E8E41', dia: 3, forma: 'hojita', colores: ['#3E8E41', '#6BBF5E'], salado: true,
+    descripcion: 'Hojas de espinaca fresca.' },
+  { id: 'elote', nombre: 'Elote', categoria: 'salado', costo: 3, precio: 9, color: '#F7D23E', dia: 4, forma: 'granos', colores: ['#F7D23E', '#FFEB8A'], salado: true,
+    descripcion: 'Granitos de elote dulce.' },
+  { id: 'rajas', nombre: 'Rajas de poblano', categoria: 'salado', costo: 5, precio: 12, color: '#3F7D3A', dia: 4, forma: 'tiras', colores: ['#3F7D3A', '#6FA862'], salado: true,
+    descripcion: 'Chile poblano asado en tiritas: sabroso y casi no pica.' },
+  { id: 'salami', nombre: 'Salami', categoria: 'salado', costo: 8, precio: 16, color: '#B5383A', dia: 4, forma: 'rodaja_carne', colores: ['#B5383A', '#F3C6BE'], salado: true,
+    descripcion: 'Rodajas de salami italiano.' },
+  { id: 'pavo', nombre: 'Pechuga de pavo', categoria: 'salado', costo: 7, precio: 16, color: '#F3D2C1', dia: 5, forma: 'loncha', colores: ['#F3D2C1', '#FFF0E8'], salado: true,
+    descripcion: 'Pechuga de pavo en rebanadas finas.' },
+
   // --- Crujientes (toppings) ---
   { id: 'nuez', nombre: 'Nuez picada', categoria: 'crujiente', costo: 5, precio: 10, color: '#A86B3C', dia: 1, forma: 'trozos',
     descripcion: 'Nuez en trocitos, combina perfecto con cajeta.' },
@@ -100,6 +129,13 @@ export const INGREDIENTES = [
   { id: 'cereal', nombre: 'Cereal', categoria: 'crujiente', costo: 3, precio: 7, color: '#FF8A3D', dia: 4, forma: 'aros',
     descripcion: 'Aritos de cereal de colores.' },
 
+  { id: 'tocino', nombre: 'Tocino crujiente', categoria: 'crujiente', costo: 6, precio: 14, color: '#B5482F', dia: 3, forma: 'trozos', salado: true,
+    descripcion: 'Tocino dorado y picadito.' },
+  { id: 'cebolla_crujiente', nombre: 'Cebolla crujiente', categoria: 'crujiente', costo: 3, precio: 8, color: '#D9A04E', dia: 4, forma: 'cebollitas', salado: true,
+    descripcion: 'Aritos de cebolla fritos, bien crujientes.' },
+  { id: 'queso_gratinado', nombre: 'Queso gratinado', categoria: 'crujiente', costo: 6, precio: 14, color: '#F5C542', dia: 2, forma: 'gratinado', salado: true,
+    descripcion: 'Queso derretido y doradito por encima.' },
+
   // --- Fríos y cremosos (toppings) ---
   { id: 'crema_batida', nombre: 'Crema batida', categoria: 'frio', costo: 4, precio: 10, color: '#FFFFFF', dia: 1, forma: 'crema',
     descripcion: 'Chantilly: crema batida con azúcar.' },
@@ -109,6 +145,11 @@ export const INGREDIENTES = [
     descripcion: 'Una bola de helado de chocolate.' },
   { id: 'helado_fresa', nombre: 'Helado de fresa', categoria: 'frio', costo: 8, precio: 18, color: '#FFB3C6', dia: 3, forma: 'bola',
     descripcion: 'Una bola de helado de fresa.' },
+
+  { id: 'aguacate', nombre: 'Aguacate', categoria: 'frio', costo: 7, precio: 15, color: '#9BC152', dia: 3, forma: 'cubitos', colores: ['#9BC152', '#D8E89A'], salado: true,
+    descripcion: 'Cubitos de aguacate. ¡Muy mexicano!' },
+  { id: 'crema_acida', nombre: 'Crema ácida', categoria: 'frio', costo: 3, precio: 8, color: '#FAF6EC', dia: 4, forma: 'crema', salado: true,
+    descripcion: 'Crema agria, fresquita, para las saladas.' },
 
   // --- Salsas (se dibujan con el dedo) ---
   { id: 'jarabe_chocolate', nombre: 'Jarabe de chocolate', categoria: 'salsa', costo: 3, precio: 8, color: '#4A2618', dia: 1,
@@ -124,6 +165,13 @@ export const INGREDIENTES = [
   { id: 'jarabe_fresa', nombre: 'Jarabe de fresa', categoria: 'salsa', costo: 3, precio: 7, color: '#E23B5A', dia: 3,
     descripcion: 'Jarabe rojo de fresa.' },
 
+  { id: 'bechamel', nombre: 'Salsa bechamel', categoria: 'salsa', costo: 3, precio: 8, color: '#F3EAD3', dia: 2, salado: true,
+    descripcion: 'Salsa blanca de leche y mantequilla.' },
+  { id: 'chipotle', nombre: 'Aderezo de chipotle', categoria: 'salsa', costo: 3, precio: 8, color: '#C2491D', dia: 3, salado: true,
+    descripcion: 'Cremoso y ahumado, con su toque picosito.' },
+  { id: 'pesto', nombre: 'Pesto', categoria: 'salsa', costo: 4, precio: 9, color: '#5A8A23', dia: 4, salado: true,
+    descripcion: 'Albahaca, queso parmesano, nuez y aceite de oliva.' },
+
   // --- Decoración final (se espolvorea o se coloca) ---
   { id: 'azucar_glass', nombre: 'Azúcar glass', categoria: 'decoracion', costo: 1, precio: 4, color: '#FFFFFF', dia: 1, forma: 'polvo',
     descripcion: 'Azúcar finita, como nieve. Se espolvorea con un coladorcito.' },
@@ -131,6 +179,13 @@ export const INGREDIENTES = [
     descripcion: 'Canela en polvo, perfecta con manzana.' },
   { id: 'menta', nombre: 'Hojitas de menta', categoria: 'decoracion', costo: 2, precio: 5, color: '#3FB56B', dia: 3, forma: 'hoja',
     descripcion: 'Para que se vea de restaurante.' },
+
+  { id: 'oregano', nombre: 'Orégano', categoria: 'decoracion', costo: 1, precio: 3, color: '#6B8E23', dia: 2, forma: 'polvo', salado: true,
+    descripcion: 'Orégano seco: huele a pizza.' },
+  { id: 'parmesano', nombre: 'Queso parmesano', categoria: 'decoracion', costo: 3, precio: 7, color: '#F5E6A8', dia: 3, forma: 'polvo', salado: true,
+    descripcion: 'Parmesano rallado finito.' },
+  { id: 'arugula', nombre: 'Arúgula', categoria: 'decoracion', costo: 3, precio: 7, color: '#4C9A3B', dia: 5, forma: 'hoja', salado: true,
+    descripcion: 'Hojitas de arúgula: un toque picantito y elegante.' },
 
   // --- Bebidas (venta extra; necesitan la mejora "Barra de bebidas") ---
   { id: 'cafe', nombre: 'Café americano', categoria: 'bebida', costo: 5, precio: 25, color: '#5B3A29', dia: 1,
@@ -163,7 +218,7 @@ export function dobladoDisponible(id, e) {
 
 /* Crepas "de la casa": combos con nombre.
    masa (opcional, si no: clásica), rellenos y toppings {id: porciones},
-   salsas [ids], doblado. */
+   salsas [ids], doblado. salado: true = crepa salada. */
 export const COMBOS = [
   { id: 'clasica', nombre: 'Clásica', descripcion: 'La original de París: gotitas de limón y azúcar glass.',
     rellenos: { limon: 1 }, toppings: { azucar_glass: 1 }, salsas: [], doblado: 'triangulo' },
@@ -189,6 +244,20 @@ export const COMBOS = [
     rellenos: { mango: 1, kiwi: 1 }, toppings: { coco: 1 }, salsas: ['miel'], doblado: 'sobre' },
   { id: 'pistache_royale', nombre: 'Pistache Royale', descripcion: 'La elegante: pistache, frambuesa y menta.',
     masa: 'masa_integral', rellenos: { pistache: 1, frambuesa: 1 }, toppings: { menta: 1 }, salsas: [], doblado: 'triangulo' },
+
+  // --- Saladas ---
+  { id: 'jamon_queso', nombre: 'Jamón y queso', descripcion: 'La salada de toda la vida.', salado: true,
+    rellenos: { jamon: 1, queso_manchego: 1 }, toppings: {}, salsas: [], doblado: 'triangulo' },
+  { id: 'pollo_chipotle', nombre: 'Pollo al chipotle', descripcion: 'Pollo, queso Oaxaca y aderezo de chipotle.', salado: true,
+    rellenos: { pollo: 1, queso_oaxaca: 1 }, toppings: {}, salsas: ['chipotle'], doblado: 'rollo' },
+  { id: 'florentina', nombre: 'Florentina', descripcion: 'Espinaca, champiñones y queso con bechamel, en masa de sarraceno.', salado: true,
+    masa: 'masa_sarraceno', rellenos: { espinaca: 1, champinones: 1, queso_oaxaca: 1 }, toppings: {}, salsas: ['bechamel'], doblado: 'sobre' },
+  { id: 'italiana', nombre: 'Italiana', descripcion: 'Salami, jitomate y queso, con pesto y orégano.', salado: true,
+    rellenos: { salami: 1, jitomate: 1, queso_oaxaca: 1 }, toppings: { oregano: 1 }, salsas: ['pesto'], doblado: 'sobre' },
+  { id: 'rajas_elote', nombre: 'Rajas con elote', descripcion: 'Rajas de poblano, elote y queso, con crema.', salado: true,
+    rellenos: { rajas: 1, elote: 1, queso_oaxaca: 1 }, toppings: { crema_acida: 1 }, salsas: [], doblado: 'triangulo' },
+  { id: 'campesina', nombre: 'Campesina', descripcion: 'Pavo, manchego, tocino y arúgula, en masa de sarraceno.', salado: true,
+    masa: 'masa_sarraceno', rellenos: { pavo: 1, queso_manchego: 1 }, toppings: { tocino: 1, arugula: 1 }, salsas: [], doblado: 'sobre' },
 ];
 
 /** Busca un ingrediente por id. */
@@ -207,6 +276,11 @@ export function estaDisponible(id, e) {
 /** Ingredientes disponibles de ciertas categorías. */
 export function disponibles(e, ...categorias) {
   return INGREDIENTES.filter((i) => categorias.includes(i.categoria) && estaDisponible(i.id, e));
+}
+
+/** Igual, pero solo lo de un sabor (salado = true / false). */
+export function disponiblesDe(salado, e, ...categorias) {
+  return disponibles(e, ...categorias).filter((i) => !!i.salado === salado);
 }
 
 /** ¿Se puede preparar este combo con lo que hay? */

@@ -16,14 +16,14 @@ import { estado, actualizar } from './state.js';
 import { aviso, mostrarModal, confirmar } from './ui.js';
 import { sonidos } from './audio.js';
 import { Plancha } from './plancha.js';
-import { DOBLADOS, COMBOS, INGREDIENTES, ingrediente, disponibles, comboDisponible, estaDisponible, dobladoDisponible } from './data/ingredientes.js';
+import { DOBLADOS, COMBOS, INGREDIENTES, ingrediente, disponibles, disponiblesDe, comboDisponible, estaDisponible, dobladoDisponible } from './data/ingredientes.js';
 import { MEJORAS, nivel, multVentana, capacidadCharola } from './data/mejoras.js';
 import {
   iconoIngrediente, crepaDoblada, iconoDoblado, iconosPedido, ticketDetalle,
   trazoSalsa, sobreLaCrepa, conteoAdornos,
 } from './dibujos.js';
 import { on, comandas } from './turno.js';
-import { describirPedido, tipoDe } from './clientes.js';
+import { describirPedido, tipoDe, nombreEnFrase } from './clientes.js';
 
 // Las 7 estaciones
 export const ESTACIONES = [
@@ -38,10 +38,18 @@ export const ESTACIONES = [
 
 // Las estaciones con bandeja de ingredientes y sus pestañitas
 const BANDEJAS = {
-  relleno: [['untable', '🫙 Untables'], ['fruta', '🍓 Frutas']],
-  toppings: [['crujiente', '🥜 Crujientes'], ['frio', '🍨 Fríos']],
-  decorar: [['salsa', '〰️ Salsas'], ['decoracion', '✨ Espolvorear']],
+  relleno: [['untable', '🫙 Untables'], ['fruta', '🍓 Frutas'], ['salado', '🧀 Salados']],
+  toppings: [['crujiente', '🥜 Crujientes'], ['frio', '🍨 Fríos'], ['top_salado', '🥓 Salados']],
+  decorar: [['salsa', '〰️ Salsas'], ['decoracion', '✨ Espolvorear'], ['deco_salada', '🌶️ Saladas']],
 };
+
+/** Lo que hay en cada pestañita: lo dulce va por categoría y lo salado
+ *  de toppings y decorar va junto en la suya. */
+function deBandeja(e, pestana) {
+  if (pestana === 'top_salado') return disponiblesDe(true, e, 'crujiente', 'frio');
+  if (pestana === 'deco_salada') return disponiblesDe(true, e, 'salsa', 'decoracion');
+  return disponiblesDe(pestana === 'salado', e, pestana);
+}
 
 // Tiempos de cocción (segundos) y qué tan ancha es la zona perfecta
 // según la dificultad. ventana 0.15 = ±15% del tiempo ideal.
@@ -62,8 +70,10 @@ let coccion = null;          // { lado, inicio, v1, v2, params }
 let rafId = 0;
 let pedidoActivo = null;     // número de comanda que se está preparando
 let trazo = null;            // salsa que se está dibujando { id, tramos: [[x,y]...] }
-// Pestañita elegida en cada bandeja
-const categoria = { relleno: 'untable', toppings: 'crujiente', decorar: 'salsa' };
+// Pestañita elegida en cada bandeja (y la primera de cada sabor)
+const DULCE = { relleno: 'untable', toppings: 'crujiente', decorar: 'salsa' };
+const SALADA = { relleno: 'salado', toppings: 'top_salado', decorar: 'deco_salada' };
+const categoria = { ...DULCE };
 
 const $ = (sel) => raiz.querySelector(sel);
 
@@ -170,6 +180,12 @@ function irA(nueva) {
     el.classList.toggle('hecha', i < idx);
   });
   raiz.querySelector('.estacion.actual')?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+
+  // Si la comanda que se prepara es de otro sabor, la bandeja abre en el suyo
+  const pedido = comandas().find((c) => c.numero === pedidoActivo)?.pedido;
+  if (pedido && DULCE[etapa] && !!pedido.salado !== (categoria[etapa] === SALADA[etapa])) {
+    categoria[etapa] = pedido.salado ? SALADA[etapa] : DULCE[etapa];
+  }
 
   ({
     masa: panelMasa, coccion: panelCoccion, relleno: panelBandeja, doblado: panelDoblado,
@@ -399,6 +415,7 @@ function panelBandeja() {
   const tabs = document.createElement('div');
   tabs.className = 'tabs-bandeja';
   for (const [cat, nombre] of BANDEJAS[est]) {
+    if (!deBandeja(estado(), cat).length) continue; // lo salado aparece hasta que se desbloquea
     const b = document.createElement('button');
     b.className = 'tab-bandeja' + (cat === categoria[est] ? ' activa' : '');
     b.textContent = nombre;
@@ -415,7 +432,7 @@ function panelBandeja() {
   // Ingredientes de la categoría elegida
   const bandeja = document.createElement('div');
   bandeja.className = 'bandeja-ingredientes';
-  for (const ing of disponibles(estado(), categoria[est])) {
+  for (const ing of deBandeja(estado(), categoria[est])) {
     const b = document.createElement('button');
     b.className = 'btn-ingrediente';
     b.dataset.id = ing.id;
@@ -450,7 +467,7 @@ function pintarBandeja() {
   });
   if (!seleccion) return;
   const ing = ingrediente(seleccion);
-  const nombre = ing.marca ? ing.nombre : ing.nombre.toLowerCase();
+  const nombre = nombreEnFrase(ing.id);
   $instr.textContent =
     ing.categoria === 'salsa' ? `Arrastra el dedo sobre la crepa para dibujar con ${nombre} 〰️`
     : ing.forma === 'polvo' ? `Toca la crepa para espolvorear ${nombre} ❄️`
@@ -462,7 +479,7 @@ function ponerRelleno(p) {
   if (!seleccion) { aviso('Primero elige un ingrediente 👇'); return; }
   if (!plancha.hayMasa(p)) { aviso('¡Ponlo encima de la crepa!'); return; }
   const n = crepa.rellenos[seleccion] || 0;
-  if (n >= MAX_PORCIONES) { aviso(`Ya tiene suficiente ${ingrediente(seleccion).nombre.toLowerCase()}`); return; }
+  if (n >= MAX_PORCIONES) { aviso(`Ya tiene suficiente ${nombreEnFrase(seleccion)}`); return; }
   crepa.rellenos[seleccion] = n + 1;
   plancha.agregarRelleno(seleccion, p);
   sonidos.pop();
@@ -475,7 +492,7 @@ function ponerPieza(ev) {
   const { x, y } = a200(ev);
   if (!sobreLaCrepa(crepa.doblado, x, y)) { aviso('¡Ponlo encima de la crepa!'); return; }
   const n = conteoAdornos(crepa).toppings[seleccion] || 0;
-  if (n >= MAX_PORCIONES) { aviso(`Ya tiene suficiente ${ingrediente(seleccion).nombre.toLowerCase()}`); return; }
+  if (n >= MAX_PORCIONES) { aviso(`Ya tiene suficiente ${nombreEnFrase(seleccion)}`); return; }
   crepa.adornos.push({ t: 'p', e: etapa, id: seleccion, x: Math.round(x), y: Math.round(y), s: Math.floor(Math.random() * 1e6) });
   pintarDoblada();
   if (ingrediente(seleccion).forma === 'polvo') { sonidos.espolvorear(); polvito(ev, ingrediente(seleccion).color); }
@@ -765,7 +782,7 @@ function pacienciaRiel() {
 function verMenu() {
   sonidos.click();
   const e = estado();
-  const combos = COMBOS.map((c) => {
+  const tarjeta = (c) => {
     const ok = comboDisponible(c, e);
     const pedido = { masa: c.masa || 'masa_clasica', rellenos: c.rellenos, toppings: c.toppings, salsas: c.salsas, doblado: c.doblado };
     return `
@@ -773,8 +790,10 @@ function verMenu() {
         <div class="menu-combo-cabeza"><b>${ok ? '' : '🔒 '}${c.nombre}</b><small>${c.descripcion}</small></div>
         <div class="ticket-iconos">${iconosPedido(pedido)}</div>
       </div>`;
-  }).join('');
-  const nombresCat = { masa: '🥣 Masas', untable: '🫙 Untables', fruta: '🍓 Frutas', crujiente: '🥜 Crujientes', frio: '🍨 Fríos', salsa: '〰️ Salsas', decoracion: '✨ Decoración' };
+  };
+  const dulces = COMBOS.filter((c) => !c.salado).map(tarjeta).join('');
+  const saladas = COMBOS.filter((c) => c.salado).map(tarjeta).join('');
+  const nombresCat = { masa: '🥣 Masas', untable: '🫙 Untables', fruta: '🍓 Frutas', salado: '🧀 Salados', crujiente: '🥜 Crujientes', frio: '🍨 Fríos', salsa: '〰️ Salsas', decoracion: '✨ Decoración' };
   if (disponibles(e, 'bebida').length) nombresCat.bebida = '☕ Bebidas';
   const ingredientes = Object.entries(nombresCat).map(([cat, titulo]) => `
     <h3 class="menu-titulo">${titulo}</h3>
@@ -786,7 +805,8 @@ function verMenu() {
   mostrarModal({
     titulo: '📖 Menú de la casa',
     contenido: `<div class="menu-casa">
-      <h3 class="menu-titulo">🥞 Crepas de la casa</h3>${combos}
+      <h3 class="menu-titulo">🥞 Crepas dulces de la casa</h3>${dulces}
+      <h3 class="menu-titulo">🧀 Crepas saladas de la casa</h3>${saladas}
       <p class="menu-nota">Los clientes también piden cambios: “sin plátano”, “doble Nutella”, “extra crema”… ¡revisa bien el ticket!</p>
       ${ingredientes}
     </div>`,

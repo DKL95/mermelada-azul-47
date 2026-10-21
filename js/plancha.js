@@ -290,9 +290,9 @@ export class Plancha {
         t.stroke();
       }
     }
-    // Masa integral: puntitos de salvado
-    if (m === 'masa_integral') {
-      t.fillStyle = 'rgba(110,70,35,0.45)';
+    // Masa integral y de sarraceno: puntitos de salvado
+    if (m === 'masa_integral' || m === 'masa_sarraceno') {
+      t.fillStyle = m === 'masa_sarraceno' ? 'rgba(60,38,25,0.5)' : 'rgba(110,70,35,0.45)';
       const rs = aleatorio(99);
       for (let i = 0; i < 120; i++) {
         const a = rs() * Math.PI * 2, d = Math.sqrt(rs()) * R_OBJETIVO;
@@ -427,6 +427,55 @@ function dibujarFruta(t, ing, rnd) {
       regar(7, 14, () => circulo(0, 0, 1.6 + rnd() * 1.5, c2));
       t.globalAlpha = 1;
       circulo(0, 0, 5, c1); circulo(0, 0, 3.8, c2);
+      break;
+    // --- Rellenos salados ---
+    case 'loncha':
+      regar(2, 8, () => {
+        t.fillStyle = c1; t.strokeStyle = oscurecer(c1, 0.2); t.lineWidth = 1;
+        t.beginPath(); t.moveTo(-9, -4); t.quadraticCurveTo(-2, -11, 8, -6); t.quadraticCurveTo(10, 0, 5, 6);
+        t.quadraticCurveTo(-4, 9, -9, 3); t.closePath(); t.fill(); t.stroke();
+        t.strokeStyle = c2; t.lineWidth = 2; t.lineCap = 'round';
+        t.beginPath(); t.moveTo(-6, -1); t.quadraticCurveTo(0, -5, 5, -2); t.stroke();
+      });
+      break;
+    case 'hebras':
+      t.lineCap = 'round';
+      regar(7, 11, (i) => {
+        t.strokeStyle = i % 3 ? c1 : c2; t.lineWidth = 2.4;
+        t.beginPath(); t.moveTo(-7, 0); t.quadraticCurveTo(-3.5, -3, 0, 0); t.quadraticCurveTo(3.5, 3, 7, 0); t.stroke();
+      });
+      break;
+    case 'champi':
+      regar(4, 9, () => {
+        t.fillStyle = c2; t.fillRect(-2, -1, 4, 6);
+        t.fillStyle = c1; t.strokeStyle = oscurecer(c1, 0.2); t.lineWidth = 1;
+        t.beginPath(); t.ellipse(0, 0, 6.5, 5.5, 0, Math.PI, 0); t.closePath(); t.fill(); t.stroke();
+      });
+      break;
+    case 'hojita':
+      regar(5, 10, () => {
+        t.fillStyle = c1;
+        t.beginPath(); t.moveTo(0, 7); t.quadraticCurveTo(-7, 0, 0, -7); t.quadraticCurveTo(7, 0, 0, 7); t.fill();
+        t.strokeStyle = c2; t.lineWidth = 1; t.beginPath(); t.moveTo(0, 6); t.lineTo(0, -5); t.stroke();
+      });
+      break;
+    case 'granos':
+      regar(12, 12, () => { t.fillStyle = oscurecer(c1, 0.15); t.fillRect(-2.2, -2.2, 4.4, 4.4); t.fillStyle = c1; t.fillRect(-1.8, -1.8, 3.6, 3.6); });
+      break;
+    case 'tiras':
+      t.lineCap = 'round';
+      regar(4, 9, () => {
+        t.strokeStyle = c1; t.lineWidth = 3.5;
+        t.beginPath(); t.moveTo(-8, 3); t.quadraticCurveTo(0, -5, 8, 2); t.stroke();
+        t.strokeStyle = c2; t.lineWidth = 1;
+        t.beginPath(); t.moveTo(-5, 1.5); t.quadraticCurveTo(0, -3, 5, 1); t.stroke();
+      });
+      break;
+    case 'rodaja_carne':
+      regar(3, 8, () => {
+        circulo(0, 0, 7, oscurecer(c1, 0.2)); circulo(0, 0, 6.2, c1);
+        [[-2.5, -2], [2, -3], [3, 1.5], [-1.5, 2.5], [0, 0]].forEach(([x, y]) => circulo(x, y, 1, c2));
+      });
       break;
     default:
       circulo(0, 0, 6, ing.color);

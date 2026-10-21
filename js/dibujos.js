@@ -37,6 +37,7 @@ const ESCALA_COCCION = [
 const TINTE_MASA = {
   masa_chocolate: ['#5A3324', 0.62],
   masa_integral: ['#9A6A3E', 0.3],
+  masa_sarraceno: ['#5E4030', 0.45],
 };
 /** Tiñe un color de crepa según la masa. */
 export function tenir(c, masa) {
@@ -134,6 +135,23 @@ export function piezaTopping(id, x, y, semilla = 1, escala = 1) {
         <ellipse cx="0" cy="-7" rx="7" ry="5" fill="#FFFFFF" stroke="#E3E7EE" stroke-width="1.2"/>
         <path d="M-2 -11 q2 -5 4 -3 q-1 2 -4 3 z" fill="#FFFFFF" stroke="#E3E7EE" stroke-width="1"/>`;
       break;
+    case 'cebollitas':
+      cuerpo = regado(7, 12, (px, py, rot) =>
+        `<ellipse transform="translate(${px} ${py}) rotate(${rot})" rx="3.6" ry="2.7" fill="none" stroke="${oscurecer(c, 0.25)}" stroke-width="2.4"/>
+         <ellipse transform="translate(${px} ${py}) rotate(${rot})" rx="3.6" ry="2.7" fill="none" stroke="${c}" stroke-width="1.4"/>`);
+      break;
+    case 'gratinado':
+      cuerpo = `
+        <path d="M-15 0 Q-14 -10 -4 -12 Q6 -15 13 -7 Q18 2 10 10 Q4 13 2 17 Q0 20 -2 14 Q-8 12 -12 8 Q-16 5 -15 0 Z" fill="${c}" stroke="${oscurecer(c, 0.18)}" stroke-width="1"/>
+        ${regado(6, 10, (px, py) => `<ellipse cx="${px}" cy="${py}" rx="${r1(1.5 + rnd() * 2)}" ry="${r1(1 + rnd() * 1.5)}" fill="${oscurecer(c, 0.4)}" opacity="0.55"/>`)}
+        <path d="M-8 -6 q4 -3 9 -2" stroke="#FFFFFF" stroke-width="1.6" fill="none" opacity="0.5" stroke-linecap="round"/>`;
+      break;
+    case 'cubitos': {
+      const [c1, c2] = ing.colores || [c, '#FFFFFF'];
+      cuerpo = regado(7, 12, (px, py, rot) =>
+        `<g transform="translate(${px} ${py}) rotate(${rot})"><rect x="-3.5" y="-3.5" width="7" height="7" rx="1.5" fill="${c1}" stroke="${oscurecer(c1, 0.2)}" stroke-width="0.6"/><rect x="-2.5" y="-2.5" width="3" height="2.5" rx="1" fill="${c2}" opacity="0.8"/></g>`);
+      break;
+    }
     case 'polvo':
       cuerpo = regado(46, 19, (px, py) =>
         `<circle cx="${px}" cy="${py}" r="${r1(0.6 + rnd() * 1)}" fill="${c}" opacity="${id === 'azucar_glass' ? 0.95 : 0.8}"/>`);
@@ -141,8 +159,8 @@ export function piezaTopping(id, x, y, semilla = 1, escala = 1) {
     case 'hoja':
       cuerpo = [-35, 35].map((rot) => `
         <g transform="rotate(${rot}) translate(0 -7)">
-          <path d="M0 8 Q-7 0 0 -9 Q7 0 0 8 Z" fill="#3FB56B" stroke="#2A8A4E" stroke-width="0.8"/>
-          <path d="M0 7 V-7" stroke="#2A8A4E" stroke-width="0.8"/>
+          <path d="M0 8 Q-7 0 0 -9 Q7 0 0 8 Z" fill="${c}" stroke="${oscurecer(c, 0.25)}" stroke-width="0.8"/>
+          <path d="M0 7 V-7" stroke="${oscurecer(c, 0.25)}" stroke-width="0.8"/>
         </g>`).join('');
       break;
     default:
@@ -316,7 +334,16 @@ const ICONOS = {
     <path d="M10 26 h20 l-3 11 h-14 z" fill="#3DA5FF"/>
     ${piezaTopping('crema_batida', 20, 18, 1, 0.95)}`,
   menta: `${piezaTopping('menta', 20, 22, 1, 1.5)}`,
+  arugula: `${piezaTopping('arugula', 20, 22, 1, 1.5)}`,
 };
+
+/** Tablita de madera con el relleno salado picado encima. */
+function tablita(ing) {
+  return `
+    <rect x="3" y="23" width="34" height="11" rx="4" fill="#D9A866" stroke="#B5803F" stroke-width="1.5"/>
+    <path d="M7 27 h22" stroke="#C99555" stroke-width="1" opacity="0.7"/>
+    ${[[12, 21, -20], [20, 17, 15], [28, 21, 40]].map(([x, y, rot]) => piezaFruta(ing.id, x, y, 1.05, rot)).join('')}`;
+}
 
 /** Ícono SVG de cualquier ingrediente. */
 export function iconoIngrediente(id) {
@@ -326,9 +353,11 @@ export function iconoIngrediente(id) {
     switch (ing.categoria) {
       case 'masa': cuerpo = tazonMasa(ing); break;
       case 'untable': cuerpo = frasco(ing); break;
+      case 'salado': cuerpo = tablita(ing); break;
       case 'salsa': cuerpo = botella(ing); break;
       case 'crujiente': cuerpo = tazonCon(ing); break;
-      case 'frio': cuerpo = `<path d="M12 24 h16 l-4 13 h-8 z" fill="#E6B87A" stroke="#C99555" stroke-width="1.2"/>${piezaTopping(id, 20, 17, 1, 0.65)}`; break;
+      // Lo frío dulce va en cono; lo salado (aguacate, crema ácida), en tazón
+      case 'frio': cuerpo = ing.salado ? tazonCon(ing) : `<path d="M12 24 h16 l-4 13 h-8 z" fill="#E6B87A" stroke="#C99555" stroke-width="1.2"/>${piezaTopping(id, 20, 17, 1, 0.65)}`; break;
       case 'decoracion': cuerpo = salero(ing); break;
       case 'bebida': cuerpo = vaso(ing); break;
     }
@@ -361,6 +390,23 @@ function piezaFruta(id, x, y, s = 1, rot = 0) {
         ${[0, 1, 2, 3, 4, 5].map((i) => `<circle cx="${r1(Math.cos(i) * 3.8)}" cy="${r1(Math.sin(i) * 3.8)}" r="0.7" fill="${c3 || '#333'}"/>`).join('')}</g>`;
     case 'gotas':
       return `<g ${t}><path d="M-6 2 A6 6 0 0 1 6 2 Z" fill="${c1}"/><path d="M-4.5 1.5 A4.5 4.5 0 0 1 4.5 1.5 Z" fill="${c2}"/></g>`;
+    case 'loncha':
+      return `<g ${t}><path d="M-7 -3 Q-2 -8 6 -5 Q8 0 4 5 Q-3 7 -7 2 Z" fill="${c1}" stroke="${oscurecer(c1, 0.2)}" stroke-width="0.8"/>
+        <path d="M-5 -1 Q0 -4 4 -2" stroke="${c2}" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>`;
+    case 'hebras':
+      return `<g ${t}>${[-3, 0, 3].map((dy, i) => `<path d="M-6 ${dy} q3 -3 6 0 t6 0" stroke="${i === 1 ? c2 : c1}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`).join('')}</g>`;
+    case 'champi':
+      return `<g ${t}><rect x="-2" y="-1" width="4" height="6" rx="1.5" fill="${c2}" stroke="${oscurecer(c1, 0.15)}" stroke-width="0.6"/>
+        <path d="M-6.5 0 A6.5 5.5 0 0 1 6.5 0 Z" fill="${c1}" stroke="${oscurecer(c1, 0.2)}" stroke-width="0.8"/></g>`;
+    case 'hojita':
+      return `<g ${t}><path d="M0 7 Q-7 0 0 -7 Q7 0 0 7 Z" fill="${c1}" stroke="${oscurecer(c1, 0.2)}" stroke-width="0.6"/><path d="M0 6 V-5" stroke="${c2}" stroke-width="0.9"/></g>`;
+    case 'granos':
+      return `<g ${t}>${[[-3, -2], [2, -3], [-1, 2], [4, 2]].map(([x, y]) => `<rect x="${x - 2}" y="${y - 2}" width="4" height="4" rx="1.6" fill="${c1}" stroke="${oscurecer(c1, 0.2)}" stroke-width="0.5"/>`).join('')}</g>`;
+    case 'tiras':
+      return `<g ${t}><path d="M-7 3 Q0 -5 7 2" stroke="${c1}" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M-5 1.5 Q0 -3 5 1" stroke="${c2}" stroke-width="1" fill="none" stroke-linecap="round"/></g>`;
+    case 'rodaja_carne':
+      return `<g ${t}><circle r="6.5" fill="${c1}" stroke="${oscurecer(c1, 0.25)}" stroke-width="0.8"/>
+        ${[[-2.5, -2], [2, -3], [3, 1.5], [-1.5, 2.5], [0, 0]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.9" fill="${c2}"/>`).join('')}</g>`;
     default:
       return `<g ${t}><path d="M-3 -2 L2 -3 L3 1 L-1 3 Z" fill="${ing.color}"/></g>`;
   }
