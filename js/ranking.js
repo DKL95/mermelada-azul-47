@@ -44,16 +44,21 @@ function jugador() {
   return j;
 }
 
+/** El nombre con el que aparece en la tabla ('' si no tiene). */
+export function nombreJugador() {
+  return jugador().nombre;
+}
+
 export function tieneNombre() {
   return jugador().nombre.length > 0;
 }
 
-function ponerNombre(nombre) {
+export function ponerNombre(nombre) {
   escribir(CLAVE_JUGADOR, { ...jugador(), nombre });
 }
 
 /** Quita espacios de más y caracteres invisibles; máximo 20 letras. */
-function limpiarNombre(texto) {
+export function limpiarNombre(texto) {
   return Array.from(texto.replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2028-\u202E]/g, '').replace(/\s+/g, ' ').trim())
     .slice(0, MAX_NOMBRE).join('');
 }

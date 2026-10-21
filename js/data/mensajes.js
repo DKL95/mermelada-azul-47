@@ -113,7 +113,7 @@ export const RESENAS = {
     '¡Wow! Así sí dan ganas de regresar.',
     'Se nota que la hacen con amor 💕',
     'La crepa de mis sueños, en serio.',
-    '¡Crepa nivel experta! Felicidades a la chef.',
+    '¡Crepa nivel {experta|experto}! Felicidades {a la chef|al chef}.',
   ],
   contento: [
     '¡Qué rica! Me gustó mucho.',

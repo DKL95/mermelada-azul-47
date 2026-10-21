@@ -60,6 +60,10 @@ Eso reescribe `versionEspecial` en `config.js`. Si cambias el código, quien ya 
 
 `js/cartera.js`. Se guardan aparte de la partida (`creperia.cartera`): reiniciar la partida no las borra. Se ganan con crepas perfectas (+1), logros (1 por cada $50 de premio, una sola vez por logro aunque se reinicie) y el premio diario (racha de 7 días: 3, 3, 5, 5, 8, 8, 15). Las mejoras se pueden pagar con pesos o con Chispitas (1 ✨ por cada $50). Los paquetes de compra solo se activan en la app de Android (`window.CandyPagos`).
 
+### 👤 Personaje
+
+`js/personaje.js` (dibujo y creador) y `js/data/personaje.js` (opciones). Se crea la primera vez que se juega y se edita en ⚙️ Ajustes → Mi personaje. Se guarda aparte de la partida (`creperia.personaje`). El sexo cambia los textos con género (`js/genero.js`: `g('Maestra', 'Maestro')` o `{femenino|masculino}` dentro de un texto). Los aretes de corazón solo existen en la versión especial.
+
 ### Herramientas de prueba
 
 Están apagadas. Para verlas en un dispositivo, abre el juego con `?dev=1` al final del enlace (por ejemplo `.../mermelada-azul-47/?dev=1`); aparecen en ⚙️ Ajustes. Con `?dev=0` se apagan.
@@ -145,6 +149,8 @@ js/
   tutorial.js         tutorial de la primera vez
   ranking.js          tabla de puntuaciones en línea
   cartera.js          Chispitas, premio diario y su tienda
+  personaje.js        personaje del jugador: dibujo y creador
+  genero.js           textos según el sexo del personaje
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,
                       mejoras, eventos, logros

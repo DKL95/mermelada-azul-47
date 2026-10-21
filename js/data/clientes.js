@@ -23,7 +23,7 @@ export const TIPOS_CLIENTE = [
   { id: 'nino', nombre: 'Niño', emoji: '👶', nota: 'Le encanta el dulce y la decoración exagerada',
     paciencia: 110, exigencia: 0.35, pago: 0.8, propina: 0.4, complejidad: [3, 5], combo: 0.15, cambios: 0,
     peso: 1.2, porDia: 0, desdeDia: 1 },
-  { id: 'apurado', nombre: 'Apurado', emoji: '⏱️', nota: 'Tiene prisa: si eres rápida, paga bien',
+  { id: 'apurado', nombre: 'Apurado', emoji: '⏱️', nota: 'Tiene prisa: si eres {rápida|rápido}, paga bien',
     paciencia: 65, exigencia: 0.5, pago: 1.1, propina: 1.3, complejidad: [1, 2], combo: 0.5, cambios: 0,
     peso: 1, porDia: 0.15, desdeDia: 2 },
   { id: 'exigente', nombre: 'Exigente', emoji: '😤', nota: 'Castiga cualquier error, pero paga más',

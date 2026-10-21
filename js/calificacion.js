@@ -12,6 +12,7 @@ import { conteoAdornos } from './dibujos.js';
 import { estado } from './state.js';
 import { multPropina } from './data/mejoras.js';
 import { evento } from './data/eventos.js';
+import { conGenero } from './genero.js';
 
 // Cuánto pesa cada parte en la calificación final (suman 1)
 export const PESOS = {
@@ -203,5 +204,5 @@ export function textoResena(r, cliente) {
       default: plantilla = alAzar(RAZONES.espera);
     }
   }
-  return plantilla.replace('{ing}', nombreEnFrase(ing)).replace('{doblado}', doblado);
+  return conGenero(plantilla.replace('{ing}', nombreEnFrase(ing)).replace('{doblado}', doblado));
 }

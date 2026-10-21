@@ -24,6 +24,7 @@ import {
 } from './dibujos.js';
 import { on, comandas } from './turno.js';
 import { describirPedido, tipoDe, nombreEnFrase } from './clientes.js';
+import { conGenero } from './genero.js';
 
 // Las 7 estaciones
 export const ESTACIONES = [
@@ -754,7 +755,7 @@ async function verComanda(n) {
   const v = await mostrarModal({
     titulo: `🧾 Comanda #${n}`,
     contenido: `
-      ${quien ? `<p class="det-quien">${quien}${tipo.nota ? ` · <small>${tipo.nota}</small>` : ''}</p>` : ''}
+      ${quien ? `<p class="det-quien">${quien}${tipo.nota ? ` · <small>${conGenero(tipo.nota)}</small>` : ''}</p>` : ''}
       <p class="det-texto">“Una crepa ${describirPedido(c.pedido)}”</p>
       ${ticketDetalle(c.pedido)}`,
     botones: [

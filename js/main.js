@@ -15,6 +15,7 @@ import { pantallaInicio, bienvenida, revisarSorpresa, sorpresaDesbloqueada, abri
 import { abrirRanking } from './ranking.js';
 import { chispitas, suscribirCartera, iconoChispita, abrirTiendaChispitas, premioDiario, regaloPorLogros, ganarChispitas } from './cartera.js';
 import { LOGROS, chispitasDe } from './data/logros.js';
+import { personaje, editarPersonaje } from './personaje.js';
 import { iniciarTutorial } from './tutorial.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -112,6 +113,10 @@ function abrirAjustes() {
   const cont = document.createElement('div');
   cont.innerHTML = `
     <div class="ajuste">
+      <span>👤 Mi personaje<small class="ajuste-nota">Cambia tu ropa, peinado y accesorios</small></span>
+      <button class="btn btn-secundario" id="aj-personaje">Editar</button>
+    </div>
+    <div class="ajuste">
       <span>🔊 Sonido</span>
       <button class="switch" id="aj-sonido" role="switch" aria-checked="${e.ajustes.sonido}" aria-label="Sonido"></button>
     </div>
@@ -204,6 +209,7 @@ function abrirAjustes() {
   });
 
   cont.querySelector('#aj-ayuda').addEventListener('click', () => { sonidos.click(); abrirAyuda(); });
+  cont.querySelector('#aj-personaje').addEventListener('click', () => { sonidos.click(); editarPersonaje(); });
   cont.querySelector('#aj-tutorial').addEventListener('click', () => {
     sonidos.click();
     document.querySelector('#capa-modal .modal-botones .btn')?.click();
@@ -348,6 +354,7 @@ iniciar();
 (async () => {
   await pantallaInicio();
   await bienvenida();
+  if (!personaje()) await editarPersonaje({ primeraVez: true });
   await regaloPorLogros(LOGROS, chispitasDe);
   if (estado().tutorialVisto) await premioDiario(); // a quien juega por primera vez, desde mañana
   await revisarSorpresa();

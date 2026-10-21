@@ -18,6 +18,8 @@ import { revisarSorpresa, nombreCreperia } from './romance.js';
 import { tieneNombre } from './ranking.js';
 import { dibujarCliente, caraSVG, caraCliente, tipoDe } from './clientes.js';
 import { textoChispitas } from './cartera.js';
+import { conGenero } from './genero.js';
+import { personaje, dibujarPersonaje } from './personaje.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
 import { IMPACIENCIA, SE_VA, GRACIAS, alAzar } from './data/mensajes.js';
@@ -42,6 +44,7 @@ export function montar(contenedor) {
       <div class="zona-clientes" id="zona-clientes">
         <div class="calle" id="calle"></div>
         <div class="clima" id="clima"></div>
+        <div class="chef-venta" id="chef-venta" hidden></div>
         <div class="aviso-zona" id="aviso-zona"></div>
       </div>
       <div class="mostrador-venta">
@@ -62,6 +65,7 @@ export function montar(contenedor) {
   suscribir((e) => { pintarCharola(e); pintarBuzon(e); pintarDecorado(e); });
   // Se puso o quitó el código especial: cambia el nombre del letrero
   window.addEventListener('version:cambio', () => { pintarDecorado(); pintarAvisoZona(); });
+  window.addEventListener('personaje:cambio', () => { chefPintado = false; pintarChef(); });
   raiz.querySelector('#btn-buzon').addEventListener('click', abrirBuzon);
   raiz.querySelector('#btn-logros').addEventListener('click', abrirLogros);
   raiz.querySelector('#btn-tienda').addEventListener('click', () => {
@@ -109,8 +113,20 @@ function pintarAvisoZona() {
 //  Clientes en pantalla
 // ============================================================
 
+/** Con la crepería cerrada, el chef espera detrás del mostrador. */
+let chefPintado = false;
+function pintarChef() {
+  const el = raiz.querySelector('#chef-venta');
+  const p = personaje();
+  el.hidden = juego.abierto || !p;
+  if (el.hidden || chefPintado) return;
+  el.innerHTML = dibujarPersonaje(p, { vista: 'busto', emocion: 'feliz' });
+  chefPintado = true;
+}
+
 function sincronizar() {
   pintarAvisoZona();
+  pintarChef();
   const vivos = new Set(juego.clientes.map((c) => c.id));
 
   // Quitar a los que ya se fueron
@@ -287,7 +303,7 @@ function abrirTarjeta(c) {
   const t = document.createElement('div');
   t.className = 'tarjeta-pedido';
   const tipo = tipoDe(c);
-  const quien = c.novio ? `💕 ${c.nombre} · tu novio` : c.famosa ? `🌟 ${c.nombre} · crítica de comida famosa (¡que quede perfecta!)` : c.nombre ? `${tipo.emoji} ${c.nombre} · cliente VIP` : tipo.nota ? `${tipo.emoji} ${tipo.nombre} · ${tipo.nota}` : '';
+  const quien = c.novio ? `💕 ${c.nombre} · tu novio` : c.famosa ? `🌟 ${c.nombre} · crítica de comida famosa (¡que quede perfecta!)` : c.nombre ? `${tipo.emoji} ${c.nombre} · cliente VIP` : tipo.nota ? `${tipo.emoji} ${tipo.nombre} · ${conGenero(tipo.nota)}` : '';
   t.innerHTML = `
     ${quien ? `<p class="quien">${quien}</p>` : ''}
     <p class="dice">“${c.texto}”</p>
@@ -585,6 +601,7 @@ async function mostrarFinDia() {
     contenido: `
       <div class="resumen-dia">
         ${ev ? `<div class="evento-resumen">${ev.emoji} ${ev.nombre}</div>` : ''}
+        ${personaje() ? `<div class="chef-resumen">${dibujarPersonaje(personaje(), { vista: 'cara', emocion: !deHoy.length || estrellasDia === 3 ? 'normal' : estrellasDia > 3 ? 'feliz' : 'triste' })}</div>` : ''}
         ${deHoy.length ? `<div class="estrellas-dia">${estrellitas(estrellasDia, 'grandes')}</div>` : ''}
         <div><span>🥞 Crepas vendidas</span><b>${h.vendidas}</b></div>
         <div><span>💵 Ventas</span><b>${dinero(h.ventas)}</b></div>

@@ -438,15 +438,16 @@ export function caraSVG(emocion = 'normal') {
 
 // ============================================================
 //  Cuerpo, ropa, peinado y accesorios
+//  (se exportan para armar también el personaje: personaje.js)
 // ============================================================
 
 // Silueta del cuerpo (también sirve para recortar estampados)
-const CUERPO = 'M18 206 q0 -86 42 -86 q42 0 42 86 z';
+export const CUERPO = 'M18 206 q0 -86 42 -86 q42 0 42 86 z';
 const SOMBRA = 'rgba(27,42,85,0.18)';
 const CUELLO = '<path d="M44 122 q16 14 32 0" stroke="rgba(255,255,255,0.5)" stroke-width="4" fill="none" stroke-linecap="round"/>';
 
 /** Florecita de 5 pétalos. */
-function flor(x, y, color, r = 5) {
+export function flor(x, y, color, r = 5) {
   const petalos = [0, 1, 2, 3, 4].map((i) => {
     const ang = (i / 5) * Math.PI * 2 - Math.PI / 2;
     return `<circle cx="${(x + Math.cos(ang) * r).toFixed(1)}" cy="${(y + Math.sin(ang) * r).toFixed(1)}" r="${r * 0.75}" fill="${color}"/>`;
@@ -484,7 +485,7 @@ function estampado(tipo, color, clip) {
 }
 
 /** Ropa: lo que va debajo del cuello y lo que va encima. */
-function ropa(a, clip) {
+export function ropa(a, clip) {
   const c2 = a.ropa2 || a.colorAcc;
   const base = `<path d="${CUERPO}" fill="${a.ropa}"/>`;
   const resorte = `<rect x="0" y="198" width="120" height="8" fill="rgba(27,42,85,0.15)" clip-path="url(#${clip})"/>`;
@@ -550,13 +551,19 @@ function ropa(a, clip) {
         encima: '',
       };
     }
+    case 'filipina': // chaqueta de chef, cruzada, con dos filas de botones
+      return {
+        abajo: `${base}<path d="M60 124 L84 140 V206" stroke="rgba(27,42,85,0.18)" stroke-width="2" fill="none"/>
+          ${[146, 164, 182].map((y) => `<circle cx="50" cy="${y}" r="2.6" fill="${c2}"/><circle cx="72" cy="${y}" r="2.6" fill="${c2}"/>`).join('')}`,
+        encima: `<path d="M44 118 h32 v8 q-16 6 -32 0 z" fill="${a.ropa}" stroke="rgba(27,42,85,0.18)" stroke-width="1.5"/>`,
+      };
     default: // playera
       return { abajo: `${base}${CUELLO}${estampado(a.estampado, c2, clip)}`, encima: '' };
   }
 }
 
 /** Lo que traen colgado o en la mano. */
-function extra(a) {
+export function extra(a) {
   const c = a.colorAcc;
   switch (a.extra) {
     case 'corbata': return `<path d="M56 122 h8 l-1 6 h-6 z" fill="${c}"/><path d="M57 128 L63 128 L66 160 L60 168 L54 160 z" fill="${c}"/>
@@ -592,7 +599,7 @@ function extra(a) {
 }
 
 /** Pecas, lunar y barba (van debajo de los ojos y la boca). */
-function detallesCara(a) {
+export function detallesCara(a) {
   let d = '';
   if (a.barba) d += `<path d="M22 72 Q24 110 60 112 Q96 110 98 72 Q94 96 80 98 Q70 93 60 94 Q50 93 40 98 Q26 96 22 72 Z" fill="${a.pelo}"/>`;
   if (a.pecas) d += `<g fill="#B5653A" opacity="0.5">${[[34, 78], [39, 82], [31, 83], [86, 78], [81, 82], [89, 83]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.4"/>`).join('')}</g>`;
@@ -600,7 +607,7 @@ function detallesCara(a) {
   return d;
 }
 
-function peinadoAtras(a) {
+export function peinadoAtras(a) {
   const { peinado: p, pelo: color } = a;
   switch (p) {
     case 'largo': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v52 q-12 6 -20 0 v-40 h-40 v40 q-8 6 -20 0 z" fill="${color}"/>`;
@@ -614,7 +621,7 @@ function peinadoAtras(a) {
     default: return '';
   }
 }
-function peinadoFrente(a) {
+export function peinadoFrente(a) {
   const { peinado: p, pelo: color } = a;
   const raya = `<path d="M22 66 q0 -44 38 -44 q38 0 38 44 q-14 -22 -38 -22 q-24 0 -38 22 z" fill="${color}"/>`;
   switch (p) {
@@ -632,7 +639,7 @@ function peinadoFrente(a) {
     default: return ''; // calvo
   }
 }
-function accesorio(a, color) {
+export function accesorio(a, color) {
   switch (a) {
     case 'gorra': return `<path d="M22 54 q4 -34 38 -34 q34 0 38 34 z" fill="${color}"/><path d="M60 52 h48 q4 0 2 5 h-50 z" fill="${color}"/><circle cx="60" cy="20" r="4" fill="${color}"/>`;
     case 'lentes': return `<g fill="rgba(255,255,255,0.25)" stroke="#1B2A55" stroke-width="3"><circle cx="46" cy="70" r="10"/><circle cx="74" cy="70" r="10"/></g><path d="M56 69 h8" stroke="#1B2A55" stroke-width="3"/>`;
@@ -647,6 +654,9 @@ function accesorio(a, color) {
       <ellipse cx="60" cy="45" rx="54" ry="9" fill="#E9C77B" stroke="#C9A55B" stroke-width="1.5"/>`;
     case 'diadema': return `<path d="M22 62 q2 -40 38 -40 q36 0 38 40" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>${flor(82, 30, color, 5)}`;
     case 'flor': return flor(86, 38, color, 6);
+    case 'gorro_chef': return `<rect x="30" y="34" width="60" height="16" rx="4" fill="#FFFFFF" stroke="#D9DEE8" stroke-width="1.5"/>
+      ${[[38, 22, 13], [60, 14, 16], [82, 22, 13]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#FFFFFF" stroke="#D9DEE8" stroke-width="1.5"/>`).join('')}
+      <rect x="31" y="27" width="58" height="12" fill="#FFFFFF"/>`;
     default: return '';
   }
 }
