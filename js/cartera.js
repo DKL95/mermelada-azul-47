@@ -82,6 +82,11 @@ export function tieneArticulo(clave) {
   return cartera.inventario.includes(clave);
 }
 
+/** ¿Tiene algo cuyo nombre empiece así? ('traje:', 'local.'...) */
+export function tieneAlgunArticulo(prefijo) {
+  return cartera.inventario.some((c) => c.startsWith(prefijo));
+}
+
 export function agregarArticulos(claves) {
   for (const c of claves) if (!cartera.inventario.includes(c)) cartera.inventario.push(c);
   guardar();

@@ -6,13 +6,13 @@
      premio   pesos que se ganan al conseguirlo (y Chispitas: ver chispitasDe)
      cumple   función (e, ctx) → true si ya se ganó
               e   = estado del juego
-              ctx = { momento: 'entrega' | 'finDia' | 'compra', ... }
+              ctx = { momento: 'entrega' | 'finDia' | 'compra' | 'sinfin', ... }
    Las estadísticas que usan viven en e.stats, e.records y e.hoy.
    ============================================================ */
 import { MEJORAS } from './mejoras.js';
 import { COMBOS } from './ingredientes.js';
 import { VIPS } from './clientes.js';
-import { premiarLogro } from '../cartera.js';
+import { premiarLogro, tieneAlgunArticulo } from '../cartera.js';
 import { g } from '../genero.js';
 
 export const LOGROS = [
@@ -59,6 +59,33 @@ export const LOGROS = [
   { id: 'duena', emoji: '👑', get nombre() { return g('Dueña del changarro', 'Dueño del changarro'); }, descripcion: 'Compra todas las mejoras de la tienda.', premio: 500,
     cumple: (e) => MEJORAS.filter((m) => !m.soloEn || m.soloEn.includes(e.ajustes.dificultad))
       .every((m) => (e.mejoras[m.id] || 0) >= m.precios.length) },
+  // --- Crepas saladas ---
+  { id: 'salada_1', emoji: '🧀', nombre: '¡Qué saladita!', descripcion: 'Vende tu primera crepa salada.', premio: 50,
+    cumple: (e) => e.stats.saladas >= 1 },
+  { id: 'saladas_30', emoji: '🥓', nombre: 'Antojo salado', descripcion: 'Vende 30 crepas saladas.', premio: 200,
+    cumple: (e) => e.stats.saladas >= 30 },
+  // --- Modo sin fin (sus récords viven en e.stats.sinfin) ---
+  { id: 'sf_primera', emoji: '♾️', nombre: 'Sin fin', descripcion: 'Juega una partida del modo sin fin.', premio: 50,
+    cumple: (e) => e.stats.sinfin.partidas >= 1 },
+  { id: 'sf_5000', emoji: '⭐', nombre: 'Cinco mil', descripcion: 'Haz 5,000 puntos en una partida sin fin.', premio: 150,
+    cumple: (e) => e.stats.sinfin.mejor >= 5000 },
+  { id: 'sf_20000', emoji: '🌟', nombre: 'Leyenda de la plancha', descripcion: 'Haz 20,000 puntos en una partida sin fin.', premio: 400,
+    cumple: (e) => e.stats.sinfin.mejor >= 20000 },
+  { id: 'sf_5min', emoji: '⏱️', nombre: 'Aguante', descripcion: 'Dura 5 minutos en el modo sin fin.', premio: 200,
+    cumple: (e) => e.stats.sinfin.maxSegundos >= 300 },
+  { id: 'sf_10min', emoji: '🏃', nombre: 'Maratón', descripcion: 'Dura 10 minutos en el modo sin fin.', premio: 400,
+    cumple: (e) => e.stats.sinfin.maxSegundos >= 600 },
+  { id: 'sf_30crepas', emoji: '🥞', nombre: 'Lluvia de crepas', descripcion: 'Entrega 30 crepas en una partida sin fin.', premio: 300,
+    cumple: (e) => e.stats.sinfin.maxCrepas >= 30 },
+  { id: 'sf_racha', emoji: '🔥', nombre: 'Racha infinita', descripcion: '15 clientes encantados seguidos en el modo sin fin.', premio: 300,
+    cumple: (e) => e.stats.sinfin.maxRacha >= 15 },
+  { id: 'sf_intocable', emoji: '💖', nombre: 'Intocable', descripcion: 'Entrega 15 crepas sin perder un corazón en el modo sin fin.', premio: 300,
+    cumple: (e) => e.stats.sinfin.mejorSinPerder >= 15 },
+  // --- Personalización ---
+  { id: 'disfraz', emoji: '🦸', get nombre() { return g('¡Disfrazada!', '¡Disfrazado!'); }, descripcion: 'Compra un disfraz en la boutique.', premio: 100,
+    cumple: () => tieneAlgunArticulo('traje:') },
+  { id: 'decorador', emoji: '🎨', get nombre() { return g('Decoradora', 'Decorador'); }, descripcion: 'Compra algo de decoración para tu local.', premio: 100,
+    cumple: () => tieneAlgunArticulo('local.') },
   // Va al final para que se gane en la misma revisión que el último de los otros
   { id: 'todos', emoji: '💖', nombre: 'Ay que', descripcion: 'Desbloquea todos los demás logros.', premio: 1000,
     cumple: (e) => LOGROS.every((l) => l.id === 'todos' || e.logros.includes(l.id)) },

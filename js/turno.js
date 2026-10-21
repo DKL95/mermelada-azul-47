@@ -255,6 +255,7 @@ export function entregar(c, indice) {
 /** Estadísticas para los logros. */
 function actualizarStats(e, c, r, racha, total) {
   const s = e.stats;
+  if (c.pedido.salado && r.pct >= 50) s.saladas += 1;
   s.rachaMax = Math.max(s.rachaMax, racha);
   s.dineroTotal += total;
   if (r.estrellas === 5 && c.tipo === 'exigente') s.exigentes5 += 1;

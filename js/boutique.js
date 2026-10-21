@@ -6,7 +6,9 @@
    guarda en la cartera (no se pierde al reiniciar la partida) y
    aparece en el creador (personaje.js).
    ============================================================ */
-import { estado, actualizar } from './state.js';
+import { estado, actualizar, enModoTemporal } from './state.js';
+import { revisarLogros } from './data/logros.js';
+import { avisarLogros } from './tienda.js';
 import { mostrarModal, aviso, dinero } from './ui.js';
 import { sonidos } from './audio.js';
 import { chispitas, gastarChispitas, enChispitas, textoChispitas, tieneArticulo, agregarArticulos } from './cartera.js';
@@ -63,6 +65,8 @@ function clavesDe(art) {
 }
 
 export function abrirBoutique(seccionInicial = 'trajes') {
+  // En el sin fin el dinero es temporal: la boutique espera a que termine
+  if (enModoTemporal()) { aviso('🛍️ La boutique abre al terminar la partida sin fin'); return null; }
   sonidos.click();
   let p = personaje() || personajeInicial();
   let seccion = seccionInicial;
@@ -135,6 +139,9 @@ export function abrirBoutique(seccionInicial = 'trajes') {
     ponerse();
     sonidos.compra();
     aviso(`🛍️ ¡${elegido.nombre} es tuyo!`);
+    let logros = [];
+    actualizar((e) => { logros = revisarLogros(e, { momento: 'compra' }); });
+    if (logros.length) avisarLogros(logros);
   };
 
   cont.addEventListener('click', (ev) => {

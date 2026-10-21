@@ -64,6 +64,9 @@ export function abrirTienda(pestana = 'mejoras') {
       probando = null;
       sonidos.compra();
       aviso(`🎨 ¡${opcion.nombre} para tu local!`);
+      let logros = [];
+      actualizar((s) => { logros = revisarLogros(s, { momento: 'compra' }); });
+      if (logros.length) avisarLogros(logros);
       pintar();
     }
   });

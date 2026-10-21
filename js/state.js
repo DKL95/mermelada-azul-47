@@ -53,6 +53,7 @@ function estadoInicial() {
       combos: [],
       salsaPerfecta: 0,
       dineroTotal: 0,
+      saladas: 0,
       sinfin: { partidas: 0, mejor: 0, maxSegundos: 0, maxCrepas: 0, maxRacha: 0, mejorSinPerder: 0, perfectas: 0 },
     },
     records: {
