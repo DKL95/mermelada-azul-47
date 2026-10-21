@@ -541,6 +541,38 @@ export function dibujarPersonaje(p, { vista = 'completo', emocion = 'normal' } =
 }
 
 // ============================================================
+//  Personajes de otros jugadores (tabla en línea)
+// ============================================================
+
+const COLOR = /^#[0-9A-Fa-f]{6}$/;
+
+/**
+ * El personaje que llega de otro teléfono, revisado campo por campo:
+ * solo pasan ids que existen y colores #RRGGBB (se meten en el SVG).
+ * Lo que no sirva se queda como en el personaje inicial.
+ */
+export function personajeSeguro(x) {
+  if (!x || typeof x !== 'object') return null;
+  const p = personajeInicial(x.sexo === 'hombre' ? 'hombre' : 'mujer');
+  const elegir = (campo, lista) => { if (lista.some((o) => o.id === x[campo])) p[campo] = x[campo]; };
+  const color = (campo) => { if (COLOR.test(x[campo])) p[campo] = x[campo]; };
+  elegir('estatura', ESTATURAS); elegir('complexion', COMPLEXIONES); elegir('peinado', PEINADOS); elegir('vello', VELLO);
+  elegir('arriba', ARRIBA); elegir('estampado', ESTAMPADOS); elegir('abajo', ABAJO); elegir('calzado', CALZADO);
+  ['piel', 'pelo', 'colorArriba', 'colorArriba2', 'colorAbajo', 'colorCalzado'].forEach(color);
+  for (const [cat, { opciones }] of Object.entries(ACCESORIOS)) {
+    if (opciones.some((o) => o.id === x.acc?.[cat])) p.acc[cat] = x.acc[cat];
+    if (COLOR.test(x.colorAcc?.[cat])) p.colorAcc[cat] = x.colorAcc[cat];
+  }
+  return p;
+}
+
+/** Carita para la tabla en línea ('' si no se puede). */
+export function caritaDesdeTabla(x) {
+  const p = personajeSeguro(x);
+  return p ? dibujarPersonaje(p, { vista: 'cara' }) : '';
+}
+
+// ============================================================
 //  Creador
 // ============================================================
 

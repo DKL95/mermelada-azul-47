@@ -127,7 +127,7 @@ Para tenerlo como app instalable en Android, sigue [`GUIA_APK.md`](GUIA_APK.md) 
 
 En ⚙️ Ajustes → **Tabla en línea** cada jugador elige su nombre y ve la tabla (mejor día y acumulado). Al terminar cada día la ganancia se sube sola; sin internet se guarda y se manda después.
 
-- Usa un proyecto gratis de [Supabase](https://supabase.com) (`candy-crepas`). La tabla se crea con [`supabase.sql`](supabase.sql) en el *SQL Editor*.
+- Usa un proyecto gratis de [Supabase](https://supabase.com) (`candy-crepas`). La tabla se crea con [`supabase.sql`](supabase.sql) en el *SQL Editor*, y después se corre una vez [`supabase-v2.sql`](supabase-v2.sql) (carita del personaje y tabla del modo sin fin). Mientras no se corra, todo funciona igual pero sin las caritas ni la tabla sin fin.
 - La URL y la clave *publishable* están en `js/config.js` (`tablaEnLinea`). Esa clave puede ser pública: la base solo deja **leer y agregar**, no cambiar ni borrar. Para apagar la tabla, pon `tablaEnLinea: null`.
 - Como el código es público, alguien muy curioso podría subir puntuaciones inventadas (dentro de límites razonables). Para borrar una, en Supabase: *Table Editor* → `puntuaciones`.
 - Supabase pausa los proyectos gratis tras ~1 semana sin uso; si la tabla deja de cargar, entra al panel y dale *Restore*.
