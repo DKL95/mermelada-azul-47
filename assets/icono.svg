@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#2F86F6"/>
-  <circle cx="256" cy="270" r="170" fill="#F3F9FF"/>
-  <!-- crepa doblada en triángulo -->
-  <path d="M136 214 L376 214 L256 404 Z" fill="#F2C27E" stroke="#D99A4E" stroke-width="10" stroke-linejoin="round"/>
-  <path d="M168 232 Q256 262 344 232" fill="none" stroke="#6B3E2E" stroke-width="16" stroke-linecap="round"/>
-  <circle cx="220" cy="210" r="22" fill="#E8556B"/>
-  <circle cx="290" cy="206" r="22" fill="#E8556B"/>
-  <path d="M170 196 Q200 168 230 196 Q260 168 290 196 Q320 168 350 196" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/>
-  <path d="M256 120 c-14 -22 -44 -8 -30 14 l30 26 l30 -26 c14 -22 -16 -36 -30 -14z" fill="#FF4FA3"/>
+  <rect width="512" height="512" rx="112" fill="#2EC4B6"/>
+  <circle cx="256" cy="268" r="172" fill="#FFF8EE"/>
+  <!-- crepa doblada en triángulo, con zigzag de chocolate y fresas -->
+  <path d="M136 206 Q256 150 376 206" fill="none" stroke="#6B3E2E" stroke-width="18" stroke-linecap="round"/>
+  <path d="M136 214 Q256 176 376 214 L256 410 Z" fill="#F2C27E" stroke="#D99A4E" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M182 250 L214 232 L210 272 L248 248 L242 292 L282 262 L270 312 L306 276" fill="none" stroke="#6B3E2E" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(224 340) rotate(-15)"><path d="M0 -22 C20 -22 25 -5 20 8 C12 20 0 25 0 25 C0 25 -12 20 -20 8 C-25 -5 -20 -22 0 -22 Z" fill="#E8414F" stroke="#FFFFFF" stroke-width="5"/><path d="M-12 -22 Q0 -34 12 -22" stroke="#3FB56B" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+  <g transform="translate(296 320) rotate(20)"><path d="M0 -22 C20 -22 25 -5 20 8 C12 20 0 25 0 25 C0 25 -12 20 -20 8 C-25 -5 -20 -22 0 -22 Z" fill="#E8414F" stroke="#FFFFFF" stroke-width="5"/><path d="M-12 -22 Q0 -34 12 -22" stroke="#3FB56B" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+  <circle cx="200" cy="168" r="16" fill="#FF7A1A"/><circle cx="312" cy="166" r="16" fill="#FF7A1A"/>
 </svg>

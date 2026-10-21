@@ -125,7 +125,7 @@ El juego guarda una copia para funcionar sin internet. Al publicar cambios, sube
 
 ## 🤖 Android (APK)
 
-Para tenerlo como app instalable en Android, sigue [`GUIA_APK.md`](GUIA_APK.md) (Capacitor + Android Studio).
+Para publicarlo en Google Play (o instalarlo a mano en Android), sigue [`GUIA_PLAY_STORE.md`](GUIA_PLAY_STORE.md) (Capacitor + Android Studio + Play Console).
 
 ## 🏆 Tabla en línea
 

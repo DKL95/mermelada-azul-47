@@ -6,8 +6,9 @@
    lo comprado en la boutique (inventario).
 
    Se ganan jugando: crepas perfectas, logros y el premio diario.
-   En la app de Android también se podrán comprar (window.CandyPagos,
-   lo pone la app nativa; en la web los paquetes salen como "Pronto").
+   En la app de Android también se pueden comprar (window.CandyPagos,
+   lo pone pagos-android.js, que además las acredita; en la web los
+   paquetes salen como "Pronto").
 
    Uso:
      import { chispitas, ganarChispitas, gastarChispitas } from './cartera.js';
@@ -228,12 +229,8 @@ export function abrirTiendaChispitas() {
     const p = PAQUETES.find((x) => x.id === b.dataset.paquete);
     b.disabled = true;
     try {
-      if ((await pagos.comprar(p.id))?.ok) {
-        ganarChispitas(p.chispitas);
-        sonidos.compra();
-        aviso(`✨ +${p.chispitas} Chispitas. ¡Gracias!`);
-        cont.querySelector('.tienda-dinero b').innerHTML = textoChispitas(cartera.chispitas);
-      }
+      // pagos-android.js acredita las Chispitas cuando Google Play confirma el pago
+      if ((await pagos.comprar(p.id))?.ok) cont.querySelector('.tienda-dinero b').innerHTML = textoChispitas(cartera.chispitas);
     } catch (err) {
       console.warn('No se pudo completar la compra.', err);
       aviso('No se pudo completar la compra');

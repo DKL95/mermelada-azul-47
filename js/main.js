@@ -369,6 +369,11 @@ function iniciar() {
   // Pide al navegador no borrar la partida guardada por falta de espacio
   navigator.storage?.persist?.().catch(() => {});
 
+  // Dentro de la app de Android: pagos con Google Play
+  if (window.Capacitor?.isNativePlatform?.()) {
+    import('./pagos-android.js').then((m) => m.iniciarPagos()).catch((err) => console.warn('Pagos no disponibles', err));
+  }
+
   // Service worker (juego sin internet). Solo funciona en http(s), no en file://
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('sw.js').catch((err) => console.warn('SW no registrado', err));
