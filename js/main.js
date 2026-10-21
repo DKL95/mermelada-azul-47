@@ -2,7 +2,7 @@
    main.js — arranque del juego y navegación entre pestañas.
    ============================================================ */
 import { CONFIG } from './config.js';
-import { estado, actualizar, suscribir, reiniciarPartida } from './state.js';
+import { estado, actualizar, suscribir, reiniciarPartida, enModoTemporal } from './state.js';
 import { mostrarModal, confirmar, aviso, dinero, estrellasSVG, rebotar } from './ui.js';
 import { sonidos, silenciar } from './audio.js';
 import * as cocina from './cocina.js';
@@ -18,6 +18,7 @@ import { LOGROS, chispitasDe } from './data/logros.js';
 import { personaje, editarPersonaje } from './personaje.js';
 import { abrirBoutique } from './boutique.js';
 import { aplicarDecoracion } from './local.js';
+import { reloj } from './sinfin.js';
 import { iniciarTutorial } from './tutorial.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -44,8 +45,24 @@ export function horaDelJuego(segundos) {
 const ultimo = {};
 
 function pintarBarra(e) {
+  // Sin fin: puntos, ♾️, corazones y tiempo en lugar de dinero, día, reputación y hora
+  document.getElementById('app').classList.toggle('modo-sinfin', !!e.sinfin);
+  if (e.sinfin) {
+    const sf = e.sinfin;
+    const clave = `${sf.puntos}|${sf.vidas}|${Math.floor(sf.segundos)}`;
+    if (ultimo.sinfin === clave) return;
+    if (ultimo.sinfin && sf.puntos !== ultimo.puntosSinfin) rebotar($('#ind-dinero'));
+    if (ultimo.sinfin && sf.vidas < ultimo.vidas) rebotar($('#ind-reputacion'));
+    $('#valor-dinero').textContent = `⭐ ${sf.puntos.toLocaleString('es-MX')}`;
+    $('#valor-dia').textContent = '♾️';
+    $('#valor-reputacion').innerHTML = `<span class="corazones">${'❤️'.repeat(Math.max(0, sf.vidas))}${'🖤'.repeat(Math.max(0, 3 - sf.vidas))}</span>`;
+    $('#valor-reloj').textContent = reloj(sf.segundos);
+    Object.assign(ultimo, { sinfin: clave, puntosSinfin: sf.puntos, vidas: sf.vidas, dinero: undefined, dia: undefined, rep: undefined, hora: undefined });
+    return;
+  }
+  ultimo.sinfin = null;
   if (ultimo.dinero !== e.dinero) {
-    if (ultimo.dinero !== undefined) rebotar($('#ind-dinero'));
+    if (ultimo.dinero !== undefined && ultimo.dinero !== null) rebotar($('#ind-dinero'));
     $('#valor-dinero').textContent = dinero(e.dinero);
     ultimo.dinero = e.dinero;
   }
@@ -228,6 +245,7 @@ function abrirAjustes() {
 
   // Reiniciar partida (con confirmación)
   cont.querySelector('#aj-reiniciar').addEventListener('click', async () => {
+    if (enModoTemporal()) { aviso('Termina primero la partida sin fin ♾️'); return; }
     const ok = await confirmar(
       '¿Reiniciar partida?',
       'Se borrará todo: dinero, días, mejoras y reseñas. No se puede deshacer.',
@@ -298,6 +316,7 @@ function abrirAyuda() {
       <p>🧾 Toca una comanda para prepararla; tócala otra vez para ver el pedido completo.</p>
       <p>🛒 <strong>Tienda:</strong> con lo que ganes compra mejoras y, en «Decoración», cambia el toldo, el letrero, el cielo y más. Ábrela desde la ventanilla cuando esté cerrado.</p>
       <p>🏆 <strong>Logros:</strong> cada uno da un premio en efectivo y Chispitas. ¡Y hay días con eventos especiales!</p>
+      <p>♾️ <strong>Modo sin fin:</strong> desde la ventanilla, cuando está cerrado. Atiende sin parar hasta perder tus 3 corazones. No cambia tu partida normal.</p>
       <p>🛍️ <strong>Boutique:</strong> ropa, accesorios y disfraces para tu personaje. Pruébatelos antes de comprar, con pesos o con Chispitas.</p>
       <p>✨ <strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.</p>
       <p>⭐ Entre mejor quede, más propina y más estrellas de reputación.</p>

@@ -1285,3 +1285,15 @@
 .barra-compra { position: sticky; bottom: -4px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: 8px; margin-top: 6px; border-radius: var(--radio-chico); background: var(--fondo-2); }
 #app[data-cielo="noche"] .sub-abrir { color: #FFFFFF; }
+
+/* ================= MODO SIN FIN ================= */
+.btn-sinfin { margin-top: 10px; background: linear-gradient(135deg, #8B5CF6, #FF4FA3); color: #FFFFFF; font-weight: 700; box-shadow: var(--sombra); }
+.btn-rendirse { position: absolute; top: 8px; left: 8px; border: none; cursor: pointer; z-index: 3; }
+.btn-rendirse[hidden] { display: none; }
+.corazones { font-size: 13px; letter-spacing: -1px; }
+#app.modo-sinfin #barra-superior { background: linear-gradient(90deg, #8B5CF6, #FF4FA3); }
+.reglas-sinfin p { margin: 0 0 8px; }
+.reglas-sinfin ul { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 4px; font-size: 15px; }
+.record-sinfin { text-align: center; font-size: 16px; }
+.puntos-sinfin { text-align: center; font-size: 40px; font-weight: 700; color: var(--candy); }
+.puntos-sinfin small { font-size: 18px; }

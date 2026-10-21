@@ -4,7 +4,7 @@
    (cómodo mientras desarrollamos); si no, se usa la copia guardada.
    Cambia VERSION_CACHE cuando publiques una versión nueva.
    ============================================================ */
-const VERSION_CACHE = 'creperia-v30';
+const VERSION_CACHE = 'creperia-v31';
 
 // Archivos mínimos para que el juego arranque sin conexión
 const ARCHIVOS = [
@@ -36,6 +36,7 @@ const ARCHIVOS = [
   './js/boutique.js',
   './js/escenario.js',
   './js/local.js',
+  './js/sinfin.js',
   './js/data/local.js',
   './js/data/personaje.js',
   './js/data/eventos.js',

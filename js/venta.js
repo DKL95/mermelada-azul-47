@@ -23,6 +23,7 @@ import { personaje, dibujarPersonaje } from './personaje.js';
 import { abrirBoutique } from './boutique.js';
 import { svgFachada, svgCalle, svgMostrador } from './escenario.js';
 import { decoracion } from './local.js';
+import { empezarSinFin, puedeJugarSinFin, rendirse } from './sinfin.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
 import { IMPACIENCIA, SE_VA, GRACIAS, alAzar } from './data/mensajes.js';
@@ -49,6 +50,7 @@ export function montar(contenedor) {
         <div class="calle" id="calle"></div>
         <div class="clima" id="clima"></div>
         <div class="chef-venta" id="chef-venta" hidden></div>
+        <button class="pildora btn-rendirse" id="btn-rendirse" hidden>✖ Terminar</button>
         <div class="aviso-zona" id="aviso-zona"></div>
       </div>
       <div class="mostrador-venta">
@@ -78,6 +80,7 @@ export function montar(contenedor) {
     abrirTienda();
   });
   raiz.querySelector('#btn-boutique').addEventListener('click', () => abrirBoutique());
+  raiz.querySelector('#btn-rendirse').addEventListener('click', () => { sonidos.click(); rendirse(); });
   raiz.querySelector('#barra-bebidas').addEventListener('click', prepararBebida);
   raiz.querySelector('#svg-mostrador').addEventListener('click', (ev) => { if (ev.target.closest('#perrita')) acariciarPerrita(); });
   pintarDecorado();
@@ -101,11 +104,15 @@ function pintarAvisoZona() {
     const ev = evento(e.evento);
     el.innerHTML = `<button class="btn btn-primario btn-abrir" id="btn-abrir">${texto}</button>
       <span class="sub-abrir">Día ${e.dia}</span>
-      ${ev ? `<div class="tarjeta-evento"><b>${ev.emoji} ${ev.nombre}</b><small>${ev.descripcion}</small></div>` : ''}`;
+      ${ev ? `<div class="tarjeta-evento"><b>${ev.emoji} ${ev.nombre}</b><small>${ev.descripcion}</small></div>` : ''}
+      ${puedeJugarSinFin() ? '<button class="btn btn-sinfin" id="btn-sinfin">♾️ Modo sin fin</button>' : ''}`;
     el.querySelector('#btn-abrir').addEventListener('click', () => {
       abrir();
       if (ev) aviso(`${ev.emoji} Hoy: ${ev.nombre}`);
     });
+    el.querySelector('#btn-sinfin')?.addEventListener('click', () => empezarSinFin());
+  } else if (e.sinfin) {
+    el.innerHTML = '';
   } else if (diaTerminado()) {
     el.innerHTML = `<span class="pildora">🌙 Ya cerramos: atiende a los que faltan</span>`;
   } else if (juego.clientes.length === 0) {
@@ -133,6 +140,7 @@ function pintarChef() {
 function sincronizar() {
   pintarAvisoZona();
   pintarChef();
+  raiz.querySelector('#btn-rendirse').hidden = !(estado().sinfin && juego.abierto);
   const vivos = new Set(juego.clientes.map((c) => c.id));
 
   // Quitar a los que ya se fueron
@@ -367,7 +375,7 @@ async function elegirCrepaPara(c) {
 //  Cobro: monedas volando a la barra de dinero
 // ============================================================
 
-function animarCobro({ cliente, total, resultado, bonos, faltoBebida }) {
+function animarCobro({ cliente, total, puntos, resultado, bonos, faltoBebida }) {
   if (faltoBebida) aviso('☕ ¡Faltó su bebida! Prepárala en la barra antes de entregar');
   const el = elementos.get(cliente.id);
   const app = document.getElementById('app');
@@ -380,7 +388,7 @@ function animarCobro({ cliente, total, resultado, bonos, faltoBebida }) {
   // Texto "+$85" flotando
   const txt = document.createElement('div');
   txt.className = 'texto-cobro';
-  txt.textContent = '+' + dinero(total);
+  txt.textContent = estado().sinfin ? `+${puntos.toLocaleString('es-MX')} pts` : '+' + dinero(total);
   txt.style.left = ox + 'px';
   txt.style.top = oy + 'px';
   app.appendChild(txt);
@@ -405,7 +413,7 @@ function animarCobro({ cliente, total, resultado, bonos, faltoBebida }) {
   const pantalla = raiz.querySelector('#pantalla-caja');
   if (pantalla) pantalla.textContent = dinero(total);
 
-  if (resultado) setTimeout(() => mostrarCalificacion(cliente, resultado, bonos), 900);
+  if (resultado) setTimeout(() => mostrarCalificacion(cliente, resultado, bonos, estado().sinfin ? puntos : null), 900);
 }
 
 /** Estrellitas en texto: llenas y vacías */
@@ -427,11 +435,14 @@ function barrasPartes(partes) {
 // ============================================================
 
 let temporizadorCalif = 0;
-function mostrarCalificacion(c, r, bonos = []) {
+function mostrarCalificacion(c, r, bonos = [], puntos = null) {
   $zona.querySelector('.tarjeta-calif')?.remove();
   const t = document.createElement('div');
   t.className = 'tarjeta-calif' + (r.pct >= 90 ? ' excelente' : r.pct < 50 ? ' mala' : '');
-  const lineas = [
+  const lineas = puntos !== null ? [
+    `<span>⭐ Puntos</span><b>+${puntos.toLocaleString('es-MX')}</b>`,
+    ...(r.estrellas <= 1 ? ['<span>💔 ¡Perdiste un corazón!</span><b></b>'] : []),
+  ] : [
     `<span>Crepa</span><b>${dinero(c.precio)}</b>`,
     `<span>Propina</span><b>${r.propina ? '+' + dinero(r.propina) : '—'}</b>`,
     ...bonos.map((b) => `<span>${b.texto}</span><b>+${dinero(b.monto)}${b.chispitas ? ` · +${textoChispitas(b.chispitas)}` : ''}</b>`),

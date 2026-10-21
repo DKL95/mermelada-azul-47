@@ -59,7 +59,52 @@ export function abrir() {
   emitir('cambio');
 }
 
+// ---------- Modo sin fin (ver sinfin.js) ----------
+// El estado temporal trae e.sinfin = { vidas, puntos, crepas, perfectas, racha, rachaMax, segundos, perdioVida }
+
+/** Empieza la partida sin fin (el estado temporal ya debe estar puesto). */
+export function abrirSinFin() {
+  juego.clientes = [];
+  juego.siguienteNumero = 1;
+  juego.bebidas = {};
+  juego.famosaVino = false;
+  juego.novioHoy = false;
+  juego.enHoraPico = false;
+  juego.forzarTipo = null;
+  juego.abierto = true;
+  juego.proximaLlegada = 2;
+  sonidos.campana();
+  emitir('cambio');
+}
+
+/** Quita una vida; con la última, se acaba la partida. */
+function perderVida(e) {
+  if (!e.sinfin.perdioVida) e.sinfin.crepasAlPerder = e.sinfin.crepas; // para el logro de no perder vidas
+  e.sinfin.vidas -= 1;
+  e.sinfin.perdioVida = true;
+  e.sinfin.racha = 0;
+  if (e.sinfin.vidas <= 0) setTimeout(terminarSinFin, 1200); // que se alcance a ver lo que pasó
+}
+
+/** Se acaba la partida sin fin (sin vidas o porque la terminó). */
+export function terminarSinFin() {
+  if (!estado().sinfin || !juego.abierto) return;
+  juego.abierto = false;
+  juego.clientes = [];
+  emitir('cambio');
+  emitir('finSinFin', { ...estado().sinfin });
+}
+
+/** Avisa a las pantallas que cambió el estado del juego. */
+export function refrescar() { emitir('cambio'); }
+
+/** Puntos de una crepa entregada: hasta 1,000 por calidad, más bono de racha. */
+export function puntosDe(pct, racha) {
+  return Math.round(pct * 10 * (1 + Math.min(racha, 10) * 0.1));
+}
+
 export function diaTerminado() {
+  if (estado().sinfin) return false; // el sin fin no cierra
   return estado().segundosTurno >= CONFIG.duracionTurnoSegundos;
 }
 
@@ -161,7 +206,18 @@ export function entregar(c, indice) {
   const total = precio + r.propina + extra;
 
   let logros = [];
+  let puntos = 0;
   actualizar((e) => {
+    if (e.sinfin) {
+      const sf = e.sinfin;
+      sf.racha = r.pct >= 90 ? sf.racha + 1 : 0;
+      sf.rachaMax = Math.max(sf.rachaMax, sf.racha);
+      puntos = puntosDe(r.pct, sf.racha);
+      sf.puntos += puntos;
+      sf.crepas += 1;
+      if (r.pct >= 95) sf.perfectas += 1;
+      if (r.estrellas <= 1) perderVida(e);
+    }
     e.charola.splice(indice, 1);
     e.dinero += total;
     e.hoy.vendidas += 1;
@@ -182,6 +238,7 @@ export function entregar(c, indice) {
     e.reputacion = limitar(e.reputacion + cambio);
 
     guardarResena(e, c, r);
+    if (e.sinfin) return; // los logros del sin fin se revisan al terminar la partida (sinfin.js)
     logros = revisarLogros(e, { momento: 'entrega' });
     e.hoy.logros.push(...logros.map((l) => l.id));
   });
@@ -190,7 +247,7 @@ export function entregar(c, indice) {
   c.resultado = r;
   c.salidaEn = SEG_DESPEDIDA + 1.5; // se queda un poco más para reaccionar
   sonidos.ching();
-  emitir('cobro', { cliente: c, total, resultado: r, bonos, faltoBebida: bebida && !conBebida });
+  emitir('cobro', { cliente: c, total, puntos, resultado: r, bonos, faltoBebida: bebida && !conBebida });
   if (logros.length) emitir('logros', logros);
   emitir('cambio');
 }
@@ -240,6 +297,8 @@ window.addEventListener('modal:cerrado', () => { juego.pausas = Math.max(0, jueg
 
 function intervaloLlegada() {
   const e = estado();
+  // Sin fin: cada vez más seguido (de ~24 s hasta 7 s)
+  if (e.sinfin) return Math.max(7, 24 - e.sinfin.segundos / 20) * (0.85 + Math.random() * 0.3);
   const dif = e.ajustes.dificultad;
   const [min, max] = dif === 'relajado' ? [38, 52] : dif === 'desafio' ? [20, 30] : [28, 40];
   // Cada día llega la gente un poquito más seguido
@@ -268,42 +327,51 @@ function ciclo(ahora) {
 
   // Reloj del día (se guarda cada medio segundo, no en cada cuadro)
   const cerrando = diaTerminado();
+  const sinfin = !!estado().sinfin;
   if (!cerrando) {
     acumReloj += dt;
     if (acumReloj >= 0.5) {
       const suma = acumReloj;
       acumReloj = 0;
-      actualizar((e) => { e.segundosTurno = Math.min(CONFIG.duracionTurnoSegundos, e.segundosTurno + suma); });
+      actualizar((e) => {
+        if (e.sinfin) {
+          // Sin fin: cuenta el tiempo y cada 45 s llegan clientes más difíciles (como si pasaran días)
+          e.sinfin.segundos += suma;
+          e.dia = Math.min(12, 1 + Math.floor(e.sinfin.segundos / 45));
+        } else {
+          e.segundosTurno = Math.min(CONFIG.duracionTurnoSegundos, e.segundosTurno + suma);
+        }
+      });
     }
   }
 
   // Hora pico
   const avance = avanceDia();
-  const pico = avance >= HORA_PICO.desde && avance < HORA_PICO.hasta;
+  const pico = !sinfin && avance >= HORA_PICO.desde && avance < HORA_PICO.hasta;
   if (pico !== juego.enHoraPico) {
     juego.enHoraPico = pico;
     if (pico) { juego.proximaLlegada = Math.min(juego.proximaLlegada, 2); emitir('horaPico'); }
   }
 
   // La crítica famosa llega una vez, ya avanzado el día
-  if (estado().evento === 'famoso' && !juego.famosaVino && avance > 0.25 && !juego.forzarTipo) {
+  if (!sinfin && estado().evento === 'famoso' && !juego.famosaVino && avance > 0.25 && !juego.forzarTipo) {
     juego.forzarTipo = 'famosa';
     juego.proximaLlegada = Math.min(juego.proximaLlegada, 1);
   }
 
   // El novio pasa a verte a media tarde (algunos días)
-  if (juego.novioHoy && !juego.novioVino && avance > 0.5 && !juego.forzarTipo && estado().dia >= 2 && esRomantica()) {
+  if (!sinfin && juego.novioHoy && !juego.novioVino && avance > 0.5 && !juego.forzarTipo && estado().dia >= 2 && esRomantica()) {
     juego.forzarTipo = 'novio';
   }
   // Tutorial: el primer cliente llega rapidito y es tranquilo
-  if (!estado().tutorialVisto && !juego.clientes.length && !juego.forzarTipo) {
+  if (!sinfin && !estado().tutorialVisto && !juego.clientes.length && !juego.forzarTipo) {
     juego.forzarTipo = 'tranquilo';
     juego.proximaLlegada = Math.min(juego.proximaLlegada, 3);
   }
 
   // Llegadas (dejan de llegar 15 s antes de cerrar)
   juego.proximaLlegada -= dt;
-  const quedaTiempo = estado().segundosTurno < CONFIG.duracionTurnoSegundos - 15;
+  const quedaTiempo = sinfin || estado().segundosTurno < CONFIG.duracionTurnoSegundos - 15;
   if (juego.proximaLlegada <= 0 && quedaTiempo) {
     const lugar = lugarLibre();
     if (lugar >= 0) {
@@ -335,6 +403,7 @@ function ciclo(ahora) {
         actualizar((e) => {
           e.hoy.perdidos += 1;
           e.hoy.racha = 0;
+          if (e.sinfin) { perderVida(e); return; }
           e.reputacion = limitar(e.reputacion - (c.famosa ? 0.4 : 0.1));
           guardarResena(e, c, { estrellas: 1, pct: 0, texto: alAzar(ABANDONO), emocion: 'furioso', partes: null });
         });

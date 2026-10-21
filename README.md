@@ -72,6 +72,10 @@ Eso reescribe `versionEspecial` en `config.js`. Si cambias el código, quien ya 
 
 `js/local.js` y `js/data/local.js`. En la 🛒 tienda, pestaña «Decoración»: toldo (estilo y color), letrero, mostrador, azulejos de la cocina, cielo y decoración de fiesta (cumpleaños, San Valentín, fiestas patrias, Halloween, Día de Muertos, Navidad). Aparte de las mejoras; se paga con pesos o Chispitas y no se pierde al reiniciar la partida. Los dibujos del local están en `js/escenario.js`.
 
+### ♾️ Modo sin fin
+
+`js/sinfin.js` (y sus reglas en `js/turno.js`). Se entra desde la ventanilla con la crepería cerrada. Usa un estado temporal (`entrarModoTemporal` en `state.js`): la partida normal no cambia y no se guarda nada mientras dura. 3 corazones; los clientes llegan cada vez más seguido. Puntos por calidad y racha; 1 ✨ por cada 2,500 puntos; los récords quedan en `stats.sinfin` y la partida se sube a la tabla en línea (pestaña «Sin fin»).
+
 ### Herramientas de prueba
 
 Están apagadas. Para verlas en un dispositivo, abre el juego con `?dev=1` al final del enlace (por ejemplo `.../mermelada-azul-47/?dev=1`); aparecen en ⚙️ Ajustes. Con `?dev=0` se apagan.
@@ -161,6 +165,7 @@ js/
   boutique.js         tienda de ropa, accesorios y disfraces
   escenario.js        dibujos del local (fachada, calle, mostrador)
   local.js            decoración elegida para el local
+  sinfin.js           modo sin fin
   genero.js           textos según el sexo del personaje
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,

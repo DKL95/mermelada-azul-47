@@ -53,6 +53,7 @@ function estadoInicial() {
       combos: [],
       salsaPerfecta: 0,
       dineroTotal: 0,
+      sinfin: { partidas: 0, mejor: 0, maxSegundos: 0, maxCrepas: 0, maxRacha: 0, mejorSinPerder: 0, perfectas: 0 },
     },
     records: {
       mejorDia: 0,          // dinero ganado en el mejor día
@@ -131,6 +132,7 @@ export function suscribir(fn) {
 export function guardar() {
   clearTimeout(temporizadorGuardado);
   temporizadorGuardado = null;
+  if (guardada) return; // modo sin fin: no se guarda nada
   try {
     localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(_estado));
   } catch (err) {
@@ -142,6 +144,31 @@ export function guardar() {
 function programarGuardado() {
   if (temporizadorGuardado) return;
   temporizadorGuardado = setTimeout(guardar, 400);
+}
+
+// ---------- Estado temporal (modo sin fin) ----------
+// Mientras dura, el juego usa otro estado y NO se guarda nada: la
+// partida normal queda intacta (también si se cierra la app).
+let guardada = null;
+
+export function enModoTemporal() {
+  return guardada !== null;
+}
+
+/** Cambia a un estado temporal (lo arma fn a partir de una copia de la partida). */
+export function entrarModoTemporal(fn) {
+  guardar();
+  guardada = _estado;
+  _estado = fn(structuredClone(_estado));
+  oyentes.forEach((o) => o(_estado));
+}
+
+/** Regresa a la partida normal tal como estaba. */
+export function salirModoTemporal() {
+  if (!guardada) return;
+  _estado = guardada;
+  guardada = null;
+  oyentes.forEach((o) => o(_estado));
 }
 
 /** Borra la partida y empieza de cero. */
