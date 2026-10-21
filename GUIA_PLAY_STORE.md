@@ -86,7 +86,7 @@ Google pide un archivo de llave para firmar. En Android Studio (`npx cap open an
 
 1. **Crear app**: nombre *Creepy Crepas*, idioma *Español (Latinoamérica)*, *Juego*, *Gratis*.
 2. **Contenido de la app** (Play Console te va guiando):
-   - **Política de privacidad**: `https://dkl95.github.io/mermelada-azul-47/privacidad.html` (antes cambia `[TU_CORREO]` en `privacidad.html` por un correo de contacto y súbelo).
+   - **Política de privacidad**: `https://dkl95.github.io/mermelada-azul-47/privacidad.html` (ya tiene el correo de contacto).
    - **Anuncios**: no tiene anuncios.
    - **Clasificación de contenido**: llena el cuestionario (sin violencia, sin apuestas; tiene compras dentro de la app e interacción con otros usuarios solo por apodos en una tabla).
    - **Público objetivo**: te recomiendo **13 años o más**. Si eliges menores de 13, Google aplica la política de *Familias*, que es más estricta.
