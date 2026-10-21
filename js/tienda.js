@@ -5,7 +5,8 @@ import { estado, actualizar } from './state.js';
 import { mostrarModal, aviso, dinero } from './ui.js';
 import { sonidos } from './audio.js';
 import { MEJORAS, nivel, mejoraVisible } from './data/mejoras.js';
-import { LOGROS, revisarLogros } from './data/logros.js';
+import { LOGROS, revisarLogros, chispitasDe } from './data/logros.js';
+import { chispitas, gastarChispitas, enChispitas, textoChispitas } from './cartera.js';
 
 const SECCIONES = { cocina: '🍳 Para la cocina', local: '🏡 Para el local' };
 
@@ -23,7 +24,7 @@ export function abrirTienda() {
   cont.addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-comprar]');
     if (!b) return;
-    comprar(b.dataset.comprar);
+    comprar(b.dataset.comprar, b.dataset.moneda);
     pintar();
   });
   return mostrarModal({ titulo: '🛒 Tienda', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
@@ -31,7 +32,8 @@ export function abrirTienda() {
 
 function htmlTienda() {
   const e = estado();
-  let html = `<div class="tienda-dinero">Tienes <b>${dinero(e.dinero)}</b></div>`;
+  const ch = chispitas();
+  let html = `<div class="tienda-dinero">Tienes <b>${dinero(e.dinero)}</b> y <b>${textoChispitas(ch)}</b></div>`;
   for (const [sec, titulo] of Object.entries(SECCIONES)) {
     html += `<h3 class="menu-titulo">${titulo}</h3>`;
     for (const m of MEJORAS.filter((x) => x.seccion === sec && mejoraVisible(x, e))) {
@@ -40,9 +42,14 @@ function htmlTienda() {
       const precio = m.precios[n];
       const puntos = max > 1 ? `<span class="niveles">${Array.from({ length: max }, (_, i) => `<i class="${i < n ? 'lleno' : ''}"></i>`).join('')}</span>` : '';
       const efecto = n > 0 ? m.efectos[n - 1] : m.efectos[0];
+      // Se paga con pesos o con Chispitas
+      const precioCh = enChispitas(precio);
       const boton = n >= max
         ? '<span class="comprado">✓ Tuyo</span>'
-        : `<button class="btn ${e.dinero >= precio ? 'btn-primario' : ''}" data-comprar="${m.id}" ${e.dinero >= precio ? '' : 'disabled'}>${dinero(precio)}</button>`;
+        : `<span class="precios">
+            <button class="btn ${e.dinero >= precio ? 'btn-primario' : ''}" data-comprar="${m.id}" data-moneda="pesos" ${e.dinero >= precio ? '' : 'disabled'}>${dinero(precio)}</button>
+            <button class="btn btn-chispitas" data-comprar="${m.id}" data-moneda="chispitas" ${ch >= precioCh ? '' : 'disabled'}>${textoChispitas(precioCh)}</button>
+          </span>`;
       html += `
         <div class="mejora${n >= max ? ' tenida' : ''}">
           <span class="mejora-emoji">${m.emoji}</span>
@@ -58,15 +65,16 @@ function htmlTienda() {
   return html;
 }
 
-function comprar(id) {
+function comprar(id, moneda = 'pesos') {
   const m = MEJORAS.find((x) => x.id === id);
   const e = estado();
   const n = nivel(e, id);
   const precio = m.precios[n];
-  if (precio === undefined || e.dinero < precio) return;
+  if (precio === undefined) return;
+  if (moneda === 'chispitas' ? !gastarChispitas(enChispitas(precio)) : e.dinero < precio) return;
   let logros = [];
   actualizar((s) => {
-    s.dinero -= precio;
+    if (moneda === 'pesos') s.dinero -= precio;
     s.mejoras[id] = n + 1;
     logros = revisarLogros(s, { momento: 'compra' });
   });
@@ -92,7 +100,7 @@ export function abrirLogros() {
           const ok = e.logros.includes(l.id);
           return `<div class="logro${ok ? ' ganado' : ''}">
             <span class="logro-emoji">${ok ? l.emoji : '🔒'}</span>
-            <span><b>${l.nombre}</b><small>${l.descripcion}</small><small class="premio">Premio: ${dinero(l.premio)}</small></span>
+            <span><b>${l.nombre}</b><small>${l.descripcion}</small><small class="premio">Premio: ${dinero(l.premio)} · ${textoChispitas(chispitasDe(l))}</small></span>
           </div>`;
         }).join('')}
       </div>`,
@@ -107,7 +115,7 @@ export function avisarLogros(lista) {
     sonidos.logro();
     const el = document.createElement('div');
     el.className = 'aviso-logro';
-    el.innerHTML = `<span class="logro-emoji">${l.emoji}</span><span><small>¡Logro desbloqueado!</small><b>${l.nombre}</b><small>+${dinero(l.premio)}</small></span>`;
+    el.innerHTML = `<span class="logro-emoji">${l.emoji}</span><span><small>¡Logro desbloqueado!</small><b>${l.nombre}</b><small>+${dinero(l.premio)} · +${textoChispitas(chispitasDe(l))}</small></span>`;
     capa.appendChild(el);
     setTimeout(() => el.remove(), 3600);
   }, i * 1800));

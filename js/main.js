@@ -13,6 +13,8 @@ import { EVENTOS } from './data/eventos.js';
 import { avisarLogros } from './tienda.js';
 import { pantallaInicio, bienvenida, revisarSorpresa, sorpresaDesbloqueada, abrirCarta, creditos, esRomantica, nombreCreperia } from './romance.js';
 import { abrirRanking } from './ranking.js';
+import { chispitas, suscribirCartera, iconoChispita, abrirTiendaChispitas, premioDiario, regaloPorLogros, ganarChispitas } from './cartera.js';
+import { LOGROS, chispitasDe } from './data/logros.js';
 import { iniciarTutorial } from './tutorial.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -159,6 +161,7 @@ function abrirAjustes() {
         <div class="modal-botones">
           <button class="btn" data-dev="dinero">+$100</button>
           <button class="btn" data-dev="dinero1000">+$1000</button>
+          <button class="btn" data-dev="chispitas">+50 ✨</button>
           <button class="btn" data-dev="dia">+1 día</button>
           <button class="btn" data-dev="rep">±½ ⭐</button>
           <button class="btn" data-dev="reloj">+1 hora</button>
@@ -231,6 +234,7 @@ function abrirAjustes() {
       const tipo = b.dataset.dev;
       if (tipo === 'dinero') s.dinero += 100;
       if (tipo === 'dinero1000') s.dinero += 1000;
+      if (tipo === 'chispitas') ganarChispitas(50);
       if (tipo === 'dia') s.dia += 1;
       if (tipo === 'cliente') juego.proximaLlegada = 0;
       if (tipo === 'todo') {
@@ -281,7 +285,8 @@ function abrirAyuda() {
       <p>📖 <strong>Menú:</strong> en la Cocina puedes ver las crepas de la casa y qué es cada ingrediente.</p>
       <p>🧾 Toca una comanda para prepararla; tócala otra vez para ver el pedido completo.</p>
       <p>🛒 <strong>Tienda:</strong> con lo que ganes compra mejoras y decoración. Ábrela desde la ventanilla cuando esté cerrado.</p>
-      <p>🏆 <strong>Logros:</strong> cada uno da un premio en efectivo. ¡Y hay días con eventos especiales!</p>
+      <p>🏆 <strong>Logros:</strong> cada uno da un premio en efectivo y Chispitas. ¡Y hay días con eventos especiales!</p>
+      <p>✨ <strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.</p>
       <p>⭐ Entre mejor quede, más propina y más estrellas de reputación.</p>
       <p style="color:var(--texto-suave);font-size:14px">¿Quieres repetir el tutorial? Está en ⚙️ Ajustes.</p>`,
     botones: [{ texto: '¡Entendido!', clase: 'btn-primario' }],
@@ -309,6 +314,15 @@ function iniciar() {
   // Barra superior reactiva
   suscribir(pintarBarra);
   pintarBarra(estado());
+  $('#ind-chispitas .ind-chispita').innerHTML = iconoChispita();
+  const pintarChispitas = (n) => {
+    const v = $('#valor-chispitas');
+    if (v.textContent !== String(n) && v.textContent !== '') rebotar($('#ind-chispitas'));
+    v.textContent = n;
+  };
+  $('#valor-chispitas').textContent = chispitas();
+  suscribirCartera(pintarChispitas);
+  $('#ind-chispitas').addEventListener('click', () => abrirTiendaChispitas());
 
   cambiarPestana(estado().pestana || 'cocina');
   window.addEventListener('ayuda', () => { sonidos.click(); abrirAyuda(); });
@@ -334,6 +348,8 @@ iniciar();
 (async () => {
   await pantallaInicio();
   await bienvenida();
+  await regaloPorLogros(LOGROS, chispitasDe);
+  if (estado().tutorialVisto) await premioDiario(); // a quien juega por primera vez, desde mañana
   await revisarSorpresa();
   if (!estado().tutorialVisto) {
     cambiarPestana('venta');

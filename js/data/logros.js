@@ -2,7 +2,7 @@
    data/logros.js — logros / medallas.
 
      id, emoji, nombre, descripcion
-     premio   pesos que se ganan al conseguirlo
+     premio   pesos que se ganan al conseguirlo (y Chispitas: ver chispitasDe)
      cumple   función (e, ctx) → true si ya se ganó
               e   = estado del juego
               ctx = { momento: 'entrega' | 'finDia' | 'compra', ... }
@@ -11,6 +11,7 @@
 import { MEJORAS } from './mejoras.js';
 import { COMBOS } from './ingredientes.js';
 import { VIPS } from './clientes.js';
+import { premiarLogro } from '../cartera.js';
 
 export const LOGROS = [
   { id: 'primera', emoji: '🥞', nombre: '¡Primera crepa!', descripcion: 'Vende tu primera crepa.', premio: 20,
@@ -61,9 +62,14 @@ export const LOGROS = [
     cumple: (e) => LOGROS.every((l) => l.id === 'todos' || e.logros.includes(l.id)) },
 ];
 
+/** Chispitas que da un logro: una por cada $50 de premio (mínimo una). */
+export function chispitasDe(logro) {
+  return Math.max(1, Math.round(logro.premio / 50));
+}
+
 /**
  * Revisa qué logros nuevos se cumplen. Los marca en el estado y
- * suma su premio. Devuelve la lista de los recién ganados.
+ * suma su premio (pesos y Chispitas). Devuelve la lista de los recién ganados.
  * (Llamar dentro de actualizar()).
  */
 export function revisarLogros(e, ctx) {
@@ -73,6 +79,7 @@ export function revisarLogros(e, ctx) {
     if (l.cumple(e, ctx)) {
       e.logros.push(l.id);
       e.dinero += l.premio;
+      premiarLogro(l.id, chispitasDe(l));
       nuevos.push(l);
     }
   }

@@ -21,6 +21,7 @@ import { ingrediente } from './data/ingredientes.js';
 import { multIntervalo, multReputacion } from './data/mejoras.js';
 import { EVENTOS, HORA_PICO, evento } from './data/eventos.js';
 import { revisarLogros } from './data/logros.js';
+import { ganarChispitas } from './cartera.js';
 import { sonidos } from './audio.js';
 import { esRomantica } from './romance.js';
 
@@ -152,7 +153,7 @@ export function entregar(c, indice) {
   // Bonos: crepa perfecta y racha de clientes encantados seguidos
   const bonos = [];
   const racha = r.pct >= 90 ? (estado().hoy.racha || 0) + 1 : 0;
-  if (r.pct >= 95) bonos.push({ texto: '✨ ¡Crepa perfecta!', monto: 10 });
+  if (r.pct >= 95) bonos.push({ texto: '✨ ¡Crepa perfecta!', monto: 10, chispitas: 1 });
   if (racha >= 2) bonos.push({ texto: `🔥 Racha x${racha}`, monto: Math.min(25, 5 * (racha - 1)) });
   const extra = bonos.reduce((s, b) => s + b.monto, 0);
   // Si faltó la bebida, no se cobra
@@ -184,6 +185,7 @@ export function entregar(c, indice) {
     logros = revisarLogros(e, { momento: 'entrega' });
     e.hoy.logros.push(...logros.map((l) => l.id));
   });
+  ganarChispitas(bonos.reduce((s, b) => s + (b.chispitas || 0), 0));
   c.estado = 'atendido';
   c.resultado = r;
   c.salidaEn = SEG_DESPEDIDA + 1.5; // se queda un poco más para reaccionar

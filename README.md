@@ -56,6 +56,10 @@ Eso reescribe `versionEspecial` en `config.js`. Si cambias el código, quien ya 
 
 > ⚠️ **Es una barrera, no seguridad total.** Con un código corto (6 números), alguien con conocimientos podría probar todas las combinaciones; cada intento es lento a propósito (PBKDF2, 600 000 vueltas), pero no imposible.
 
+### ✨ Chispitas (moneda premium)
+
+`js/cartera.js`. Se guardan aparte de la partida (`creperia.cartera`): reiniciar la partida no las borra. Se ganan con crepas perfectas (+1), logros (1 por cada $50 de premio, una sola vez por logro aunque se reinicie) y el premio diario (racha de 7 días: 3, 3, 5, 5, 8, 8, 15). Las mejoras se pueden pagar con pesos o con Chispitas (1 ✨ por cada $50). Los paquetes de compra solo se activan en la app de Android (`window.CandyPagos`).
+
 ### Herramientas de prueba
 
 Están apagadas. Para verlas en un dispositivo, abre el juego con `?dev=1` al final del enlace (por ejemplo `.../mermelada-azul-47/?dev=1`); aparecen en ⚙️ Ajustes. Con `?dev=0` se apagan.
@@ -140,6 +144,7 @@ js/
   romance.js          inicio, código especial, cartitas, créditos
   tutorial.js         tutorial de la primera vez
   ranking.js          tabla de puntuaciones en línea
+  cartera.js          Chispitas, premio diario y su tienda
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,
                       mejoras, eventos, logros

@@ -184,3 +184,51 @@
   10%, 85% { opacity: 1; transform: none; }
   100% { opacity: 0; transform: translateY(-6px); }
 }
+
+/* ===== Chispitas ✨ (moneda premium) ===== */
+.icono-chispita { width: 1.15em; height: 1.15em; display: inline-block; vertical-align: -0.2em; flex: 0 0 auto; }
+.monto-chispitas { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; white-space: nowrap; color: #7A45C2; }
+#ind-chispitas { flex: 0 0 auto; border: none; padding: 0 9px; cursor: pointer; }
+#ind-chispitas .icono-chispita { width: 20px; height: 20px; animation: destello 3.2s ease-in-out infinite; }
+@keyframes destello {
+  0%, 80%, 100% { transform: scale(1) rotate(0); }
+  88% { transform: scale(1.25) rotate(20deg); }
+}
+
+/* Mejoras: dos botones (pesos y Chispitas) */
+.precios { display: flex; flex-direction: column; gap: 4px; flex: 0 0 auto; }
+.precios .btn { min-height: 34px; padding: 0 10px; font-size: 14px; }
+.btn-chispitas { background: linear-gradient(135deg, #FFF3B8, #FFD6EC 55%, #E3DBFF); color: #6B3FA0; }
+
+/* Regalo de Chispitas y premio diario */
+.regalo-chispitas { text-align: center; }
+.regalo-chispitas p { margin: 0 0 8px; }
+.chispita-grande .icono-chispita { width: 84px; height: 84px; animation: destello 2.4s ease-in-out infinite; filter: drop-shadow(0 4px 10px rgba(255, 111, 181, 0.45)); }
+.regalo-total { font-size: 30px; }
+.diario-nota { margin: 0 0 10px; text-align: center; color: var(--texto-suave); }
+.diario-dias { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.diario-dia {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 2px; border-radius: var(--radio-chico);
+  background: var(--fondo-2); font-size: 15px;
+}
+.diario-dia small { font-size: 11px; color: var(--texto-suave); }
+.diario-dia .icono-chispita { width: 26px; height: 26px; }
+.diario-dia.recogido { opacity: 0.45; }
+.diario-dia.hoy { background: linear-gradient(135deg, #FFF3B8, #FFD6EC 55%, #E3DBFF); box-shadow: 0 0 0 3px var(--candy); }
+.diario-dia.hoy .icono-chispita { animation: destello 1.6s ease-in-out infinite; }
+.diario-dia:last-child { grid-column: span 2; }
+
+/* Tienda de Chispitas */
+.paquetes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0; }
+.paquete {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 6px; border-radius: var(--radio);
+  background: linear-gradient(160deg, #FFFBEA, #FFEAF5);
+  box-shadow: var(--sombra);
+}
+.paquete-icono .icono-chispita { width: 40px; height: 40px; }
+.paquete-cantidad { font-size: 24px; font-weight: 700; color: #6B3FA0; }
+.paquete small { font-size: 12px; color: var(--candy); font-weight: 600; }
+.paquete .btn { width: 100%; min-height: 36px; margin-top: 4px; }
+.ganar-chispitas { margin: 0; padding-left: 4px; list-style: none; display: grid; gap: 6px; font-size: 15px; }

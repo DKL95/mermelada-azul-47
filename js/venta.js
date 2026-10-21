@@ -17,6 +17,7 @@ import { LOGROS } from './data/logros.js';
 import { revisarSorpresa, nombreCreperia } from './romance.js';
 import { tieneNombre } from './ranking.js';
 import { dibujarCliente, caraSVG, caraCliente, tipoDe } from './clientes.js';
+import { textoChispitas } from './cartera.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
 import { IMPACIENCIA, SE_VA, GRACIAS, alAzar } from './data/mensajes.js';
@@ -411,7 +412,7 @@ function mostrarCalificacion(c, r, bonos = []) {
   const lineas = [
     `<span>Crepa</span><b>${dinero(c.precio)}</b>`,
     `<span>Propina</span><b>${r.propina ? '+' + dinero(r.propina) : '—'}</b>`,
-    ...bonos.map((b) => `<span>${b.texto}</span><b>+${dinero(b.monto)}</b>`),
+    ...bonos.map((b) => `<span>${b.texto}</span><b>+${dinero(b.monto)}${b.chispitas ? ` · +${textoChispitas(b.chispitas)}` : ''}</b>`),
   ].map((l) => `<div class="linea">${l}</div>`).join('');
   t.innerHTML = `
     <div class="calif-cabeza">
