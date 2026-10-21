@@ -17,6 +17,7 @@ import { chispitas, suscribirCartera, iconoChispita, abrirTiendaChispitas, premi
 import { LOGROS, chispitasDe } from './data/logros.js';
 import { personaje, editarPersonaje } from './personaje.js';
 import { abrirBoutique } from './boutique.js';
+import { aplicarDecoracion } from './local.js';
 import { iniciarTutorial } from './tutorial.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -295,7 +296,7 @@ function abrirAyuda() {
       <p>〰️ <strong>Salsas:</strong> en Decorar, elige una salsa y arrastra el dedo sobre la crepa para dibujar. Ni muy poquita ni exagerada (¡a los niños sí les gusta exagerada!).</p>
       <p>📖 <strong>Menú:</strong> en la Cocina puedes ver las crepas de la casa y qué es cada ingrediente.</p>
       <p>🧾 Toca una comanda para prepararla; tócala otra vez para ver el pedido completo.</p>
-      <p>🛒 <strong>Tienda:</strong> con lo que ganes compra mejoras y decoración. Ábrela desde la ventanilla cuando esté cerrado.</p>
+      <p>🛒 <strong>Tienda:</strong> con lo que ganes compra mejoras y, en «Decoración», cambia el toldo, el letrero, el cielo y más. Ábrela desde la ventanilla cuando esté cerrado.</p>
       <p>🏆 <strong>Logros:</strong> cada uno da un premio en efectivo y Chispitas. ¡Y hay días con eventos especiales!</p>
       <p>🛍️ <strong>Boutique:</strong> ropa, accesorios y disfraces para tu personaje. Pruébatelos antes de comprar, con pesos o con Chispitas.</p>
       <p>✨ <strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.</p>
@@ -322,6 +323,8 @@ function iniciar() {
 
   on('cambio', pintarGlobos);
   on('logros', avisarLogros);
+
+  aplicarDecoracion(); // azulejos y cielo elegidos
 
   // Barra superior reactiva
   suscribir(pintarBarra);

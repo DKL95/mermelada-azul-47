@@ -68,6 +68,10 @@ Eso reescribe `versionEspecial` en `config.js`. Si cambias el código, quien ya 
 
 `js/boutique.js`. Vende lo que en `js/data/personaje.js` tiene `precio` y los disfraces (`TRAJES`, cada uno con sus `piezas`). Todo se paga con pesos o con Chispitas (`enChispitas`). Lo comprado se guarda en la cartera (`inventario`), así que no se pierde al reiniciar la partida. Los disfraces son *inspirados* en personajes conocidos, sin nombres ni logotipos oficiales.
 
+### 🎨 Decoración del local
+
+`js/local.js` y `js/data/local.js`. En la 🛒 tienda, pestaña «Decoración»: toldo (estilo y color), letrero, mostrador, azulejos de la cocina, cielo y decoración de fiesta (cumpleaños, San Valentín, fiestas patrias, Halloween, Día de Muertos, Navidad). Aparte de las mejoras; se paga con pesos o Chispitas y no se pierde al reiniciar la partida. Los dibujos del local están en `js/escenario.js`.
+
 ### Herramientas de prueba
 
 Están apagadas. Para verlas en un dispositivo, abre el juego con `?dev=1` al final del enlace (por ejemplo `.../mermelada-azul-47/?dev=1`); aparecen en ⚙️ Ajustes. Con `?dev=0` se apagan.
@@ -155,6 +159,8 @@ js/
   cartera.js          Chispitas, premio diario y su tienda
   personaje.js        personaje del jugador: dibujo y creador
   boutique.js         tienda de ropa, accesorios y disfraces
+  escenario.js        dibujos del local (fachada, calle, mostrador)
+  local.js            decoración elegida para el local
   genero.js           textos según el sexo del personaje
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,

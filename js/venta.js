@@ -21,6 +21,8 @@ import { textoChispitas } from './cartera.js';
 import { conGenero } from './genero.js';
 import { personaje, dibujarPersonaje } from './personaje.js';
 import { abrirBoutique } from './boutique.js';
+import { svgFachada, svgCalle, svgMostrador } from './escenario.js';
+import { decoracion } from './local.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
 import { IMPACIENCIA, SE_VA, GRACIAS, alAzar } from './data/mensajes.js';
@@ -68,6 +70,7 @@ export function montar(contenedor) {
   // Se puso o quitó el código especial: cambia el nombre del letrero
   window.addEventListener('version:cambio', () => { pintarDecorado(); pintarAvisoZona(); });
   window.addEventListener('personaje:cambio', () => { chefPintado = false; pintarChef(); });
+  window.addEventListener('local:cambio', () => pintarDecorado());
   raiz.querySelector('#btn-buzon').addEventListener('click', abrirBuzon);
   raiz.querySelector('#btn-logros').addEventListener('click', abrirLogros);
   raiz.querySelector('#btn-tienda').addEventListener('click', () => {
@@ -450,18 +453,23 @@ function mostrarCalificacion(c, r, bonos = []) {
 //  Decoración del local (mejoras compradas) y clima del evento
 // ============================================================
 
+// Lo que flota en el aire con cada decoración de fiesta (si no hay evento)
+const PARTICULAS = { navidad: '❄️', halloween: '🦇', muertos: '🌼', valentin: '💗', cumple: '🎈', patrias: '🎉' };
+
 let claveDecorado = '';
 function pintarDecorado(e = estado()) {
-  const clave = JSON.stringify([e.mejoras, e.evento, e.ajustes.dificultad, nombreCreperia()]);
+  const decor = decoracion();
+  const clave = JSON.stringify([e.mejoras, e.evento, e.ajustes.dificultad, nombreCreperia(), decor]);
   if (clave === claveDecorado) return;
   claveDecorado = clave;
-  raiz.querySelector('#svg-fachada').innerHTML = svgFachada(nombreCreperia(), { letrero: nivel(e, 'letrero'), luces: nivel(e, 'luces') });
-  raiz.querySelector('#calle').innerHTML = svgCalle({ plantas: nivel(e, 'plantas'), mesitas: nivel(e, 'mesitas'), clima: e.evento });
-  raiz.querySelector('#svg-mostrador').innerHTML = svgMostrador({ perrita: nivel(e, 'mascota'), terminal: nivel(e, 'caja') });
+  raiz.querySelector('#svg-fachada').innerHTML = svgFachada(nombreCreperia(), { letrero: nivel(e, 'letrero'), luces: nivel(e, 'luces'), decor });
+  raiz.querySelector('#calle').innerHTML = svgCalle({ plantas: nivel(e, 'plantas'), mesitas: nivel(e, 'mesitas'), clima: e.evento, decor });
+  raiz.querySelector('#svg-mostrador').innerHTML = svgMostrador({ perrita: nivel(e, 'mascota'), terminal: nivel(e, 'caja'), decor });
   const clima = raiz.querySelector('#clima');
   clima.className = 'clima ' + (e.evento || '');
-  clima.innerHTML = e.evento === 'san_valentin'
-    ? Array.from({ length: 8 }, (_, i) => `<span style="left:${8 + i * 12}%;animation-delay:${i * 0.9}s">💗</span>`).join('')
+  const particula = e.evento === 'san_valentin' ? '💗' : !e.evento ? PARTICULAS[decor.temporada] : null;
+  clima.innerHTML = particula
+    ? Array.from({ length: 8 }, (_, i) => `<span style="left:${8 + i * 12}%;animation-delay:${i * 0.9}s">${particula}</span>`).join('')
     : '';
   pintarBarraBebidas();
 }
@@ -664,172 +672,4 @@ async function mostrarNuevoDia() {
     cerrarAlTocarFuera: false,
   });
   if (v === 'tienda') abrirTienda();
-}
-
-// ---------- Dibujos SVG ----------
-
-/** Escapa texto para meterlo de forma segura dentro del SVG. */
-function escapar(t) {
-  return String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-}
-
-/** Fachada: letrero con el nombre + toldo a rayas con ondas.
- *  op.letrero = letrero luminoso, op.luces = foquitos de colores */
-function svgFachada(nombre, op = {}) {
-  // Toldo: rayas alternadas azul/blanco y borde de ondas
-  const rayas = [];
-  const ondas = [];
-  const n = 10;
-  const ancho = 380 / n;
-  for (let i = 0; i < n; i++) {
-    const color = i % 2 === 0 ? 'var(--toldo)' : '#FFFFFF';
-    rayas.push(`<rect x="${i * ancho}" y="62" width="${ancho}" height="34" style="fill:${color}"/>`);
-    ondas.push(`<path d="M${i * ancho} 96 a${ancho / 2} ${ancho / 2.6} 0 0 0 ${ancho} 0 z" style="fill:${color}"/>`);
-  }
-  // Tamaño de letra según el largo del nombre
-  const tam = nombre.length > 24 ? 15 : nombre.length > 18 ? 18 : 21;
-  // Guirnalda de foquitos bajo el toldo
-  const colores = ['#FF4FA3', '#FFD84D', '#3DA5FF', '#22C55E', '#FF6B4A'];
-  const luces = !op.luces ? '' : `
-    <path d="M0 104 ${Array.from({ length: 10 }, (_, i) => `Q${i * 38 + 19} 114 ${(i + 1) * 38} 104`).join(' ')}" stroke="#1B2A55" stroke-width="1.2" fill="none"/>
-    ${Array.from({ length: 10 }, (_, i) => `<circle cx="${i * 38 + 19}" cy="110" r="4" fill="${colores[i % colores.length]}">
-      <animate attributeName="opacity" values="1;0.35;1" dur="1.6s" begin="${(i % 3) * 0.5}s" repeatCount="indefinite"/></circle>`).join('')}`;
-  return `
-  <svg viewBox="0 0 380 ${op.luces ? 118 : 120}" aria-hidden="true">
-    <!-- pared superior -->
-    <rect x="0" y="0" width="380" height="64" fill="#DDEEFF"/>
-    <!-- letrero -->
-    ${op.letrero ? `<rect x="44" y="4" width="292" height="56" rx="28" fill="#FFE59A" opacity="0.6"><animate attributeName="opacity" values="0.7;0.25;0.7" dur="2.4s" repeatCount="indefinite"/></rect>` : ''}
-    <rect x="50" y="10" width="280" height="44" rx="22" fill="#1B2A55"/>
-    <rect x="55" y="15" width="270" height="34" rx="17" fill="none" style="stroke:${op.letrero ? 'var(--acento)' : '#FFD84D'}" stroke-width="${op.letrero ? 3 : 2}" stroke-dasharray="${op.letrero ? 'none' : '4 4'}"/>
-    <text x="190" y="38" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600"
-          font-size="${tam}" fill="${op.letrero ? '#FFE59A' : '#FFFFFF'}">${escapar(nombre)}</text>
-    <!-- foquitos -->
-    ${[30, 350].map((x) => `<circle cx="${x}" cy="32" r="7" fill="#FFE59A"><animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/></circle>`).join('')}
-    <!-- toldo -->
-    ${rayas.join('')}
-    ${ondas.join('')}
-    <rect x="0" y="60" width="380" height="5" style="fill:var(--acento)"/>
-    ${luces}
-  </svg>`;
-}
-
-/** Fondo de la calle: nubes, edificios, árboles, faroles y banqueta.
- *  Lienzo angosto (260 de ancho) para que se vea grande en el celular.
- *  op.plantas, op.mesitas = decoración comprada; op.clima = id del evento */
-function svgCalle(op = {}) {
-  const SUELO = 180; // altura donde empieza la banqueta
-  const lluvia = op.clima === 'lluvia';
-  const arbol = (x, s) => `
-    <g transform="translate(${x} ${SUELO}) scale(${s})">
-      <rect x="-5" y="-40" width="10" height="42" rx="4" fill="#A9795A"/>
-      <circle cx="0" cy="-58" r="28" fill="#9ED9B5"/>
-      <circle cx="-18" cy="-44" r="18" fill="#8FD0A8"/>
-      <circle cx="18" cy="-46" r="20" fill="#8FD0A8"/>
-    </g>`;
-  const farol = (x) => `
-    <g transform="translate(${x} ${SUELO})">
-      <rect x="-2.5" y="-92" width="5" height="92" rx="2" fill="#3B4F86"/>
-      <rect x="-9" y="-104" width="18" height="16" rx="5" fill="#3B4F86"/>
-      <rect x="-6" y="-101" width="12" height="10" rx="3" fill="#FFE59A"/>
-    </g>`;
-  const nube = (x, y, s) => `
-    <g transform="translate(${x} ${y}) scale(${s})" fill="${lluvia ? '#B9C4D6' : '#FFFFFF'}" opacity="0.9">
-      <ellipse cx="0" cy="0" rx="22" ry="12"/><ellipse cx="18" cy="-6" rx="16" ry="12"/><ellipse cx="34" cy="2" rx="16" ry="10"/>
-    </g>`;
-  const maceta = (x, flor) => `
-    <g transform="translate(${x} ${SUELO + 4})">
-      <path d="M-9 -12 h18 l-3 14 h-12 z" fill="#E07A4A"/>
-      <rect x="-10" y="-14" width="20" height="4" rx="2" fill="#C9653A"/>
-      <path d="M0 -14 q-8 -10 -4 -20 M0 -14 q6 -12 2 -22 M0 -14 q10 -6 10 -16" stroke="#3FB56B" stroke-width="2.5" fill="none"/>
-      ${[[-4, -34], [2, -36], [10, -30]].map(([fx, fy]) => `<circle cx="${fx}" cy="${fy}" r="4" fill="${flor}"/><circle cx="${fx}" cy="${fy}" r="1.5" fill="#FFD84D"/>`).join('')}
-    </g>`;
-  const mesita = (x, sombrilla) => `
-    <g transform="translate(${x} ${SUELO + 2})">
-      <path d="M0 -44 v40" stroke="#9C948D" stroke-width="2"/>
-      <path d="M-18 -42 q18 -16 36 0 z" fill="${sombrilla}"/>
-      <ellipse cx="0" cy="-18" rx="13" ry="3.5" fill="#FFFFFF" stroke="#C9C2BC" stroke-width="1.2"/>
-      <path d="M0 -18 v16 M-6 -2 h12" stroke="#9C948D" stroke-width="2"/>
-      <path d="M-20 -14 v12 M-20 -14 h-4 v-10 M-20 -8 h-6 v6" stroke="#FF4FA3" stroke-width="2" fill="none"/>
-      <path d="M20 -14 v12 M20 -14 h4 v-10 M20 -8 h6 v6" stroke="#FF4FA3" stroke-width="2" fill="none"/>
-    </g>`;
-  return `
-  <svg viewBox="0 0 260 230" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    ${op.clima === 'calor' ? '<circle cx="225" cy="30" r="22" fill="#FFD84D"/><circle cx="225" cy="30" r="30" fill="#FFD84D" opacity="0.3"/>' : ''}
-    ${nube(20, 30, 0.9)}${nube(180, 50, 0.7)}
-    <g><animateTransform attributeName="transform" type="translate" values="0 0;30 0;0 0" dur="40s" repeatCount="indefinite"/>${nube(100, 18, 0.55)}</g>
-    <!-- edificios lejanos -->
-    <rect x="-6" y="112" width="56" height="70" rx="6" fill="#FFC2E2"/>
-    <rect x="212" y="100" width="54" height="82" rx="6" fill="#C9B8FF"/>
-    ${[4, 28].map((x) => `<rect x="${x}" y="124" width="14" height="14" rx="3" fill="#FFFFFF"/>`).join('')}
-    ${[222, 244].map((x) => `<rect x="${x}" y="112" width="14" height="16" rx="3" fill="#FFFFFF"/>`).join('')}
-    ${arbol(72, 1.05)}${arbol(192, 0.9)}
-    ${farol(24)}${farol(236)}
-    <!-- banqueta -->
-    <rect x="0" y="${SUELO}" width="260" height="${230 - SUELO}" fill="${lluvia ? '#D3DDEA' : '#E6EEF8'}"/>
-    ${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="${i * 50 + 20}" y="${SUELO}" width="2.5" height="${230 - SUELO}" fill="rgba(27,42,85,0.08)"/>`).join('')}
-    <rect x="0" y="${SUELO}" width="260" height="3" fill="rgba(27,42,85,0.1)"/>
-    ${op.mesitas ? mesita(6, '#FF4FA3') + mesita(254, '#3DA5FF') : ''}
-    ${op.plantas ? maceta(46, '#FF4FA3') + maceta(214, '#8B5CF6') : ''}
-  </svg>`;
-}
-
-/** Perrita French Poodle blanca dormida sobre el mostrador. */
-function svgPerrita() {
-  // Bolitas de pelo rizado: se pintan dos veces (contorno y relleno) para que el borde quede de una pieza
-  const pelo = `
-    <path d="M46 13 L53 4" stroke-width="2.5"/>
-    <circle cx="54" cy="3" r="4.5"/>
-    <ellipse cx="28" cy="16" rx="20" ry="7"/>
-    <circle cx="15" cy="11" r="6.5"/><circle cx="24" cy="9" r="7"/><circle cx="34" cy="9" r="7"/><circle cx="42" cy="12" r="6"/>
-    <circle cx="45" cy="20" r="4"/>
-    <circle cx="1" cy="21" r="3.5"/><circle cx="8" cy="22" r="3.5"/>
-    <circle cx="8" cy="10" r="8"/>
-    <circle cx="3" cy="2" r="4.5"/><circle cx="9" cy="0" r="4.5"/><circle cx="14" cy="3" r="4"/>
-    <ellipse cx="0" cy="13" rx="5.5" ry="3.8"/>`;
-  return `
-    <g id="perrita" transform="translate(178 4)" style="cursor:pointer">
-      <g fill="#D8D2E6" stroke="#D8D2E6" stroke-width="3">${pelo}</g>
-      <g fill="#FFFFFF" stroke="#FFFFFF">${pelo}</g>
-      <path d="M20 13 q3 -3 6 0 M31 12 q3 -3 6 0 M40 17 q2 -2 4 0" stroke="#E6E1F0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <ellipse cx="13" cy="13" rx="4.2" ry="7.5" fill="#F3F0F8" stroke="#D8D2E6" stroke-width="1.5"/>
-      <path d="M2 9 q2.5 2.5 5 0" stroke="#3B2A2A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-      <circle cx="-4.5" cy="12.5" r="1.6" fill="#3B2A2A"/>
-      <circle cx="5" cy="13" r="1.3" fill="#FF8FB8"/>
-      <path d="M12 -4 l-5 -3.5 l0 7 z M12 -4 l5 -3.5 l0 7 z" fill="#FF4FA3"/>
-      <circle cx="12" cy="-4" r="1.6" fill="#E0237F"/>
-      <text x="20" y="-6" font-family="Fredoka, sans-serif" font-size="9" fill="#3B4F86" opacity="0.7">z<animate attributeName="opacity" values="0;0.8;0" dur="2.5s" repeatCount="indefinite"/></text>
-    </g>`;
-}
-
-/** Mostrador de madera con caja registradora y charola. */
-function svgMostrador(op = {}) {
-  return `
-  <svg viewBox="0 -30 380 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <!-- cubierta -->
-    <rect x="0" y="20" width="380" height="16" rx="4" fill="#FFFFFF"/>
-    <rect x="0" y="34" width="380" height="4" fill="rgba(27,42,85,0.2)"/>
-    <!-- frente con paneles -->
-    <rect x="0" y="36" width="380" height="84" style="fill:var(--toldo)"/>
-    ${[10, 105, 200, 295].map((x) => `<rect x="${x}" y="48" width="75" height="60" rx="8" style="fill:var(--toldo-oscuro)"/>`).join('')}
-
-    <!-- charola de cartón (aquí llegan las crepas) -->
-    <g transform="translate(40 2)">
-      <path d="M0 18 L10 4 L90 4 L100 18 Z" fill="#E9D2BA" stroke="#C9A27C" stroke-width="2"/>
-    </g>
-
-    ${op.perrita ? svgPerrita() : ''}
-
-    <!-- caja registradora -->
-    <g transform="translate(250 -26)">
-      <rect x="0" y="22" width="96" height="26" rx="6" style="fill:var(--acento)"/>
-      <rect x="10" y="0" width="54" height="22" rx="4" style="fill:var(--acento-oscuro)"/>
-      <rect x="15" y="4" width="44" height="13" rx="2" fill="#E8F6E9"/>
-      <text id="pantalla-caja" x="37" y="14.5" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="9" fill="#2F7A5A">$0</text>
-      ${[0, 1, 2].map((i) => `<rect x="${12 + i * 14}" y="27" width="10" height="7" rx="2" fill="#FFF"/>`).join('')}
-      ${[0, 1, 2].map((i) => `<rect x="${12 + i * 14}" y="37" width="10" height="7" rx="2" fill="#FFF"/>`).join('')}
-      <rect x="62" y="28" width="26" height="16" rx="3" style="fill:var(--acento-oscuro)"/>
-      ${op.terminal ? '<g transform="translate(70 4)"><rect width="18" height="22" rx="3" fill="#1B2A55"/><rect x="3" y="3" width="12" height="7" rx="1" fill="#7FD3FF"/><rect x="3" y="13" width="12" height="6" rx="1" fill="#3B4F86"/></g>' : ''}
-    </g>
-  </svg>`;
 }

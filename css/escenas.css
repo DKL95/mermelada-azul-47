@@ -1263,3 +1263,25 @@
 .boutique-barra { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; }
 .boutique-nombre { font-size: 15px; }
 .precios.en-fila { flex-direction: row; }
+
+/* ================= DECORACIÓN DEL LOCAL (local.js) ================= */
+#app[data-pared="rosa"] .cocina { --aqua: #FFC2E2; }
+#app[data-pared="amarillo"] .cocina { --aqua: #FFE89A; }
+#app[data-pared="blanco"] .cocina { --aqua: #EEF1F6; }
+#app[data-pared="ajedrez"] .cocina { background: repeating-conic-gradient(#2B2B35 0 25%, #FFFFFF 0 50%) 0 0 / 40px 40px; }
+#app[data-cielo="atardecer"] .venta { background: linear-gradient(#FF9A76, #FFD3A5 60%, #FFE9D6); }
+#app[data-cielo="noche"] .venta { background: linear-gradient(#1B2A55, #3B4F86 70%, #5A6FA8); }
+
+/* Pestaña Decoración de la tienda */
+.local-vista { border-radius: var(--radio); overflow: hidden; background: linear-gradient(#CDEBF5, #E8F6FA); margin-bottom: 8px; }
+.local-vista .lv-fachada svg, .local-vista .lv-mostrador svg { width: 100%; display: block; }
+.local-vista .lv-calle { height: 150px; margin-top: -2px; }
+.local-vista .lv-calle svg { width: 100%; height: 100%; display: block; }
+.local-vista .lv-mostrador { margin-top: -14%; position: relative; }
+.local-vista.cielo-atardecer { background: linear-gradient(#FF9A76, #FFD3A5 60%, #FFE9D6); }
+.local-vista.cielo-noche { background: linear-gradient(#1B2A55, #3B4F86 70%, #5A6FA8); }
+.chip .precio-chip { font-size: 11px; opacity: 0.8; margin-left: 4px; }
+.chip.bloqueado { border-style: dashed; }
+.barra-compra { position: sticky; bottom: -4px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px; margin-top: 6px; border-radius: var(--radio-chico); background: var(--fondo-2); }
+#app[data-cielo="noche"] .sub-abrir { color: #FFFFFF; }
