@@ -5,6 +5,7 @@ Se usa [Capacitor](https://capacitorjs.com): mete la página del juego dentro de
 > En iPhone el juego se instala como app desde Safari (ver `README.md`). Una app de iPhone "de verdad" necesita una Mac con Xcode y una cuenta de Apple; esta guía no lo cubre.
 
 **Lo que vas a necesitar:**
+
 - Una cuenta de desarrollador de Google Play: <https://play.google.com/console> (pago único de 25 USD, pide verificar tu identidad; puede tardar unos días).
 - Para vender Chispitas: un **perfil de pagos** de Google (Play Console te lo pide al crear productos) con tu cuenta de banco.
 
@@ -86,11 +87,11 @@ Google pide un archivo de llave para firmar. En Android Studio (`npx cap open an
 
 1. **Crear app**: nombre *Creepy Crepas*, idioma *Español (Latinoamérica)*, *Juego*, *Gratis*.
 2. **Contenido de la app** (Play Console te va guiando):
-   - **Política de privacidad**: `https://dkl95.github.io/mermelada-azul-47/privacidad.html` (ya tiene el correo de contacto).
-   - **Anuncios**: no tiene anuncios.
-   - **Clasificación de contenido**: llena el cuestionario (sin violencia, sin apuestas; tiene compras dentro de la app e interacción con otros usuarios solo por apodos en una tabla).
-   - **Público objetivo**: te recomiendo **13 años o más**. Si eliges menores de 13, Google aplica la política de *Familias*, que es más estricta.
-   - **Seguridad de los datos**: el juego recopila *nombre de usuario (apodo)* e *ID de usuario* (aleatorio) para la tabla en línea; se comparten públicamente en la tabla; se envían cifrados (HTTPS); el usuario puede pedir que se borren. Las compras las procesa Google.
+    - **Política de privacidad**: `https://dkl95.github.io/mermelada-azul-47/privacidad.html` (ya tiene el correo de contacto).
+    - **Anuncios**: no tiene anuncios.
+    - **Clasificación de contenido**: llena el cuestionario (sin violencia, sin apuestas; tiene compras dentro de la app e interacción con otros usuarios solo por apodos en una tabla).
+    - **Público objetivo**: te recomiendo **13 años o más**. Si eliges menores de 13, Google aplica la política de *Familias*, que es más estricta.
+    - **Seguridad de los datos**: el juego recopila *nombre de usuario (apodo)* e *ID de usuario* (aleatorio) para la tabla en línea; se comparten públicamente en la tabla; se envían cifrados (HTTPS); el usuario puede pedir que se borren. Las compras las procesa Google.
 3. **Ficha de Play Store**: descripción, ícono 512×512 (`assets/icono-512.png`), gráfico de funciones 1024×500 y al menos 2 capturas del teléfono.
 
 ## 10. Productos de Chispitas
