@@ -180,7 +180,7 @@ function capaAdornos(crepa) {
 
 const SILUETAS = {
   triangulo: [[100, 184], [28, 66], [50, 44], [75, 32], [100, 28], [125, 32], [150, 44], [172, 66]],
-  rollo: [[22, 72], [172, 72], [181, 82], [181, 118], [172, 128], [22, 128]],
+  rollo: [[18, 60], [111, 60], [111, 100], [182, 100], [182, 144], [89, 144], [89, 104], [18, 104]],
   cono: [[44, 70], [56, 56], [100, 51], [144, 56], [156, 70], [104, 184], [96, 184]],
   sobre: [[38, 38], [162, 38], [162, 162], [38, 162]],
 };
@@ -406,15 +406,58 @@ export function crepaDoblada(crepa) {
   let cuerpo = '';
   switch (crepa.doblado) {
     case 'rollo': {
-      const bandas = untables.map((c, i) => `<ellipse cx="165" cy="100" rx="${9 - i * 2}" ry="${21 - i * 5}" fill="none" stroke="${c}" stroke-width="4"/>`).join('');
-      const fr = piezas.slice(0, 3).map((id, i) => piezaFruta(id, 168 + (i % 2) * 4, 88 + i * 11, 0.8)).join('');
+      // Rollo cortado en dos piezas: en cada corte se ve la espiral con el relleno
+      const espiral = (cx, cy, rx, ry, escala, fase = 0) => {
+        const pts = [];
+        for (let k = 0; k <= 48; k++) {
+          const t = k / 48, a = fase + t * Math.PI * 5, r = (0.18 + 0.78 * t) * escala;
+          pts.push(`${r1(cx + Math.cos(a) * rx * r)} ${r1(cy + Math.sin(a) * ry * r)}`);
+        }
+        return 'M' + pts.join(' L');
+      };
+      // Lo de adentro: el primer untable, o el color de la primera fruta
+      const relleno = untables[0] || (piezas[0] ? ingrediente(piezas[0]).color : null);
+      const capa = mezclar(dentro, '#FFFFFF', 0.25); // las capas de crepa en el corte
+      const pieza = (x, y, ancho, corteDerecha, fr) => {
+        const cy = y + 22;
+        const cx = corteDerecha ? x + ancho : x;   // el lado del corte
+        const punta = corteDerecha ? x : x + ancho; // la otra punta, abierta y de lado
+        const s = corteDerecha ? 1 : -1;
+        // Cuerpo suavecito: un poco abombado por arriba
+        const d = `M${punta} ${y + 8} Q${punta} ${y} ${punta + s * 10} ${y} Q${(punta + cx) / 2} ${y - 4} ${cx} ${y + 1}
+          L${cx} ${y + 43} Q${(punta + cx) / 2} ${y + 46} ${punta + s * 10} ${y + 44} Q${punta} ${y + 44} ${punta} ${y + 36} Z`;
+        // La última capa de crepa se enrolla por encima y termina en una orilla ondulada
+        const paso = (ancho - 12) / 6;
+        const ondas = Array.from({ length: 6 }, (_, i) => `q${r1(-s * paso / 2)} ${i % 2 ? -4 : 4} ${r1(-s * paso)} 0`).join(' ');
+        const orilla = `M${cx - s * 6} ${y + 18} ${ondas}`;
+        const solapa = `M${punta + s * 4} ${y + 3} L${cx - s * 6} ${y + 2} L${cx - s * 6} ${y + 18} ${ondas} Z`;
+        // Relleno escurriendo por el corte
+        const escurre = relleno
+          ? `<path d="M${cx - 7} ${cy + 14} q-1 10 3 14 q4 4 6 -2 q2 -6 4 -12 z" fill="${relleno}" stroke="${oscurecer(relleno, 0.2)}" stroke-width="1.2"/>`
+          : '';
+        const bandas = untables.slice(1).map((c, i) => `<path d="${espiral(cx, cy, 12, 21, 0.9, 2 + i * 1.4)}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`).join('');
+        return `
+          <ellipse cx="${punta}" cy="${cy}" rx="5" ry="19" fill="${relleno || dentro}" stroke="${borde}" stroke-width="2.5"/>
+          <path d="${d}" fill="${fuera}" stroke="${borde}" stroke-width="3" stroke-linejoin="round"/>
+          ${manchas(x + ancho / 2, cy + 8, ancho / 2 - 14, 8, 4)}
+          <path d="${solapa}" fill="${mezclar(fuera, '#FFFFFF', 0.12)}" opacity="0.9"/>
+          <path d="${orilla}" fill="none" stroke="${sombra}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M${punta + s * 12} ${y + 7} L${cx - s * 14} ${y + 5}" stroke="rgba(255,255,255,0.45)" stroke-width="3.5" stroke-linecap="round"/>
+          <ellipse cx="${cx}" cy="${cy}" rx="13" ry="23" fill="${relleno || dentro}" stroke="${borde}" stroke-width="3"/>
+          <path d="${espiral(cx, cy, 12, 21, 1)}" fill="none" stroke="${capa}" stroke-width="3.2" stroke-linecap="round"/>
+          ${bandas}
+          ${escurre}
+          ${fr}`;
+      };
+      const fruta = (desde, cx, cy) => piezas.slice(desde, desde + 2).map((id, i) => piezaFruta(id, cx + (i ? 5 : -3), cy + (i ? 9 : -6), 0.75, i * 60)).join('');
+      // Lo que se salió del corte y quedó en el plato
+      const sueltas = piezas.slice(4, 6).map((id, i) => piezaFruta(id, 40 + i * 18, 130 + i * 4, 0.85, i * 90)).join('');
       cuerpo = `
-        <rect x="22" y="72" width="150" height="56" rx="28" fill="${fuera}" stroke="${borde}" stroke-width="3"/>
-        ${manchas(95, 100, 60, 18)}
-        <path d="M40 80 h110" stroke="rgba(255,255,255,0.35)" stroke-width="5" stroke-linecap="round"/>
-        <ellipse cx="165" cy="100" rx="14" ry="27" fill="${dentro}" stroke="${borde}" stroke-width="3"/>
-        ${bandas}${fr}
-        <path d="M165 100 m0 -6 a6 6 0 1 1 -5 8" fill="none" stroke="${sombra}" stroke-width="2"/>`;
+        <ellipse cx="100" cy="112" rx="92" ry="44" fill="#FFFFFF" stroke="#DCE6F2" stroke-width="3"/>
+        <ellipse cx="100" cy="112" rx="74" ry="32" fill="none" stroke="#EEF3FA" stroke-width="2"/>
+        ${pieza(18, 60, 80, true, fruta(0, 98, 82))}
+        ${sueltas}
+        ${pieza(102, 100, 80, false, fruta(2, 102, 122))}`;
       break;
     }
     case 'cono': {
