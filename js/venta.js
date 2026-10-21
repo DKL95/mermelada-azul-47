@@ -20,6 +20,7 @@ import { dibujarCliente, caraSVG, caraCliente, tipoDe } from './clientes.js';
 import { textoChispitas } from './cartera.js';
 import { conGenero } from './genero.js';
 import { personaje, dibujarPersonaje } from './personaje.js';
+import { abrirBoutique } from './boutique.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
 import { IMPACIENCIA, SE_VA, GRACIAS, alAzar } from './data/mensajes.js';
@@ -39,6 +40,7 @@ export function montar(contenedor) {
         <div class="botones-fachada">
           <button class="btn-buzon" id="btn-logros" aria-label="Logros">🏆</button>
           <button class="btn-buzon" id="btn-tienda" aria-label="Tienda">🛒</button>
+          <button class="btn-buzon" id="btn-boutique" aria-label="Boutique">🛍️</button>
         </div>
       </div>
       <div class="zona-clientes" id="zona-clientes">
@@ -72,6 +74,7 @@ export function montar(contenedor) {
     if (juego.abierto) { aviso('🛒 La tienda abre cuando la crepería está cerrada (antes de abrir o al terminar el día)'); return; }
     abrirTienda();
   });
+  raiz.querySelector('#btn-boutique').addEventListener('click', () => abrirBoutique());
   raiz.querySelector('#barra-bebidas').addEventListener('click', prepararBebida);
   raiz.querySelector('#svg-mostrador').addEventListener('click', (ev) => { if (ev.target.closest('#perrita')) acariciarPerrita(); });
   pintarDecorado();

@@ -431,9 +431,11 @@ export const EMOCIONES = {
   triste: { ojos: 'llorando', cejas: 'preocupadas', boca: 'triste', mejillas: 'ninguna' },
 };
 
-export function caraSVG(emocion = 'normal') {
+/** Cara por piezas. op.sinMejillas: sin chapitas (op.sinCejas: las cejas las pone quien llama). */
+export function caraSVG(emocion = 'normal', op = {}) {
   const e = EMOCIONES[emocion] || EMOCIONES.normal;
-  return `${MEJILLAS[e.mejillas]}${CEJAS[e.cejas]}${OJOS[e.ojos]}${BOCAS[e.boca]}`;
+  const mejillas = op.sinMejillas && e.mejillas === 'rosa' ? '' : MEJILLAS[e.mejillas];
+  return `${mejillas}${op.sinCejas ? '' : CEJAS[e.cejas]}${OJOS[e.ojos]}${BOCAS[e.boca]}`;
 }
 
 // ============================================================

@@ -64,6 +64,10 @@ Eso reescribe `versionEspecial` en `config.js`. Si cambias el código, quien ya 
 
 `js/personaje.js` (dibujo y creador) y `js/data/personaje.js` (opciones). Se crea la primera vez que se juega y se edita en ⚙️ Ajustes → Mi personaje. Se guarda aparte de la partida (`creperia.personaje`). El sexo cambia los textos con género (`js/genero.js`: `g('Maestra', 'Maestro')` o `{femenino|masculino}` dentro de un texto). Los aretes de corazón solo existen en la versión especial.
 
+### 🛍️ Boutique
+
+`js/boutique.js`. Vende lo que en `js/data/personaje.js` tiene `precio` y los disfraces (`TRAJES`, cada uno con sus `piezas`). Todo se paga con pesos o con Chispitas (`enChispitas`). Lo comprado se guarda en la cartera (`inventario`), así que no se pierde al reiniciar la partida. Los disfraces son *inspirados* en personajes conocidos, sin nombres ni logotipos oficiales.
+
 ### Herramientas de prueba
 
 Están apagadas. Para verlas en un dispositivo, abre el juego con `?dev=1` al final del enlace (por ejemplo `.../mermelada-azul-47/?dev=1`); aparecen en ⚙️ Ajustes. Con `?dev=0` se apagan.
@@ -150,6 +154,7 @@ js/
   ranking.js          tabla de puntuaciones en línea
   cartera.js          Chispitas, premio diario y su tienda
   personaje.js        personaje del jugador: dibujo y creador
+  boutique.js         tienda de ropa, accesorios y disfraces
   genero.js           textos según el sexo del personaje
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,

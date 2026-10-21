@@ -16,6 +16,7 @@ import { abrirRanking } from './ranking.js';
 import { chispitas, suscribirCartera, iconoChispita, abrirTiendaChispitas, premioDiario, regaloPorLogros, ganarChispitas } from './cartera.js';
 import { LOGROS, chispitasDe } from './data/logros.js';
 import { personaje, editarPersonaje } from './personaje.js';
+import { abrirBoutique } from './boutique.js';
 import { iniciarTutorial } from './tutorial.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -114,7 +115,10 @@ function abrirAjustes() {
   cont.innerHTML = `
     <div class="ajuste">
       <span>👤 Mi personaje<small class="ajuste-nota">Cambia tu ropa, peinado y accesorios</small></span>
-      <button class="btn btn-secundario" id="aj-personaje">Editar</button>
+      <span class="botones-ajuste">
+        <button class="btn btn-secundario" id="aj-boutique">🛍️</button>
+        <button class="btn btn-secundario" id="aj-personaje">Editar</button>
+      </span>
     </div>
     <div class="ajuste">
       <span>🔊 Sonido</span>
@@ -210,6 +214,7 @@ function abrirAjustes() {
 
   cont.querySelector('#aj-ayuda').addEventListener('click', () => { sonidos.click(); abrirAyuda(); });
   cont.querySelector('#aj-personaje').addEventListener('click', () => { sonidos.click(); editarPersonaje(); });
+  cont.querySelector('#aj-boutique').addEventListener('click', () => abrirBoutique());
   cont.querySelector('#aj-tutorial').addEventListener('click', () => {
     sonidos.click();
     document.querySelector('#capa-modal .modal-botones .btn')?.click();
@@ -292,6 +297,7 @@ function abrirAyuda() {
       <p>🧾 Toca una comanda para prepararla; tócala otra vez para ver el pedido completo.</p>
       <p>🛒 <strong>Tienda:</strong> con lo que ganes compra mejoras y decoración. Ábrela desde la ventanilla cuando esté cerrado.</p>
       <p>🏆 <strong>Logros:</strong> cada uno da un premio en efectivo y Chispitas. ¡Y hay días con eventos especiales!</p>
+      <p>🛍️ <strong>Boutique:</strong> ropa, accesorios y disfraces para tu personaje. Pruébatelos antes de comprar, con pesos o con Chispitas.</p>
       <p>✨ <strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.</p>
       <p>⭐ Entre mejor quede, más propina y más estrellas de reputación.</p>
       <p style="color:var(--texto-suave);font-size:14px">¿Quieres repetir el tutorial? Está en ⚙️ Ajustes.</p>`,

@@ -2,7 +2,8 @@
    cartera.js — las Chispitas ✨ (moneda premium) y el premio diario.
 
    La cartera vive APARTE de la partida: reiniciar la partida no
-   borra las Chispitas (se pueden comprar con dinero de verdad).
+   borra las Chispitas (se pueden comprar con dinero de verdad) ni
+   lo comprado en la boutique (inventario).
 
    Se ganan jugando: crepas perfectas, logros y el premio diario.
    En la app de Android también se podrán comprar (window.CandyPagos,
@@ -40,7 +41,8 @@ export function enChispitas(pesos) {
 
 function nueva() {
   // logrosPagados: cada logro da sus Chispitas una sola vez (aunque se reinicie la partida)
-  return { chispitas: 0, diario: { ultimo: '', racha: 0 }, regaloLogros: false, logrosPagados: [] };
+  // inventario: lo comprado en la boutique ('acc.cabeza:corona', 'traje:mago'...)
+  return { chispitas: 0, diario: { ultimo: '', racha: 0 }, regaloLogros: false, logrosPagados: [], inventario: [] };
 }
 
 function cargar() {
@@ -74,6 +76,15 @@ export function gastarChispitas(n) {
   cartera.chispitas -= n;
   guardar();
   return true;
+}
+
+export function tieneArticulo(clave) {
+  return cartera.inventario.includes(clave);
+}
+
+export function agregarArticulos(claves) {
+  for (const c of claves) if (!cartera.inventario.includes(c)) cartera.inventario.push(c);
+  guardar();
 }
 
 /** Paga las Chispitas de un logro, si no se habían pagado antes. */
