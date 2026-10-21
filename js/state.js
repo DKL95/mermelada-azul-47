@@ -65,7 +65,8 @@ function estadoInicial() {
       costoInsumos: false,  // true = cada crepa descuenta lo que costaron sus ingredientes
     },
     tutorialVisto: false,
-    bienvenidaVista: false,
+    bienvenidaVista: false,         // la romántica
+    bienvenidaPublicaVista: false,
     sorpresaVista: false,
     pestana: 'cocina',
   };

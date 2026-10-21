@@ -33,6 +33,32 @@
   --alto-tabs: 72px;
 
   --fuente: 'Fredoka', 'Nunito', 'Segoe UI Rounded', 'Segoe UI', system-ui, sans-serif;
+
+  /* Colores de los dibujos del local (toldo, mostrador, caja) */
+  --toldo: #2F86F6;
+  --toldo-oscuro: #1F6FE0;
+  --acento: #FF4FA3;
+  --acento-oscuro: #E0237F;
+  --fondo-pc: #CFE4FF;
+}
+
+/* Versión pública (Creepy Crepas): mandarina + turquesa sobre crema.
+   La versión especial se queda con el azul y rosa chicle de arriba.
+   (romance.js pone data-tema en <html>) */
+:root[data-tema="publico"] {
+  --fondo: #FFF8EE;
+  --fondo-2: #FFE7C7;
+  --primario: #2EC4B6;
+  --primario-fuerte: #0E9F91;
+  --candy: #FF7A1A;
+  --lila: #FFC56B;
+  --texto: #2A2A4A;
+  --texto-suave: #6B6680;
+  --toldo: #14A89A;
+  --toldo-oscuro: #0E8C80;
+  --acento: #FF7A1A;
+  --acento-oscuro: #E05F00;
+  --fondo-pc: #FFE2BC;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -40,7 +66,7 @@
 html, body {
   margin: 0;
   height: 100%;
-  background: #CFE4FF; /* fondo detrás del "teléfono" en PC */
+  background: var(--fondo-pc); /* fondo detrás del "teléfono" en PC */
   color: var(--texto);
   font-family: var(--fuente);
   -webkit-tap-highlight-color: transparent;

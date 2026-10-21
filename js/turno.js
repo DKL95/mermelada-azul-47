@@ -22,6 +22,7 @@ import { multIntervalo, multReputacion } from './data/mejoras.js';
 import { EVENTOS, HORA_PICO, evento } from './data/eventos.js';
 import { revisarLogros } from './data/logros.js';
 import { sonidos } from './audio.js';
+import { esRomantica } from './romance.js';
 
 export const LUGARES = 3;           // clientes que caben frente al mostrador
 export const MAX_BEBIDA = 2;        // vasos listos de cada bebida
@@ -289,7 +290,7 @@ function ciclo(ahora) {
   }
 
   // El novio pasa a verte a media tarde (algunos días)
-  if (juego.novioHoy && !juego.novioVino && avance > 0.5 && !juego.forzarTipo && estado().dia >= 2) {
+  if (juego.novioHoy && !juego.novioVino && avance > 0.5 && !juego.forzarTipo && estado().dia >= 2 && esRomantica()) {
     juego.forzarTipo = 'novio';
   }
   // Tutorial: el primer cliente llega rapidito y es tranquilo

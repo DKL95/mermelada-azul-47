@@ -4,7 +4,7 @@
    (cómodo mientras desarrollamos); si no, se usa la copia guardada.
    Cambia VERSION_CACHE cuando publiques una versión nueva.
    ============================================================ */
-const VERSION_CACHE = 'creperia-v16';
+const VERSION_CACHE = 'creperia-v22';
 
 // Archivos mínimos para que el juego arranque sin conexión
 const ARCHIVOS = [
@@ -43,7 +43,7 @@ const ARCHIVOS = [
   './assets/icono-512.png',
   './assets/icono-maskable-512.png',
   // Fuente redondeada (si falla, el juego usa la del sistema)
-  'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap',
+  'https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap',
 ];
 
 self.addEventListener('install', (e) => {

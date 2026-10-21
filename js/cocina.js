@@ -914,7 +914,7 @@ function svgPlancha() {
     <circle class="guia" cx="100" cy="100" r="70.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-dasharray="4 5"/>
     <path d="M45 70 A62 62 0 0 1 95 34" stroke="rgba(255,255,255,0.15)" stroke-width="8" fill="none" stroke-linecap="round"/>
     <circle cx="180" cy="176" r="11" fill="#E7E2DE" stroke="#A69C95" stroke-width="3"/>
-    <rect x="178" y="167" width="4" height="9" rx="2" fill="#FF4FA3"/>
+    <rect x="178" y="167" width="4" height="9" rx="2" style="fill:var(--acento)"/>
     <circle cx="20" cy="176" r="5" fill="#FF8A5B"/>
   </svg>`;
 }
@@ -926,7 +926,7 @@ function svgPlato() {
     <ellipse cx="100" cy="106" rx="98" ry="94" fill="rgba(27,42,85,0.15)"/>
     <circle cx="100" cy="100" r="97" fill="#FFFFFF" stroke="#DDEEFF" stroke-width="2"/>
     <circle cx="100" cy="100" r="80" fill="#F6FAFF" stroke="#E6F0FF" stroke-width="2"/>
-    <circle cx="100" cy="100" r="91" fill="none" stroke="#3DA5FF" stroke-width="1.5" stroke-dasharray="2 6" opacity="0.6"/>
+    <circle cx="100" cy="100" r="91" fill="none" style="stroke:var(--primario)" stroke-width="1.5" stroke-dasharray="2 6" opacity="0.6"/>
   </svg>`;
 }
 
@@ -962,7 +962,7 @@ function svgRepisa() {
   return `
   <svg viewBox="0 0 380 70" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
     ${piezas}
-    <rect x="0" y="58" width="380" height="9" rx="3" fill="#2F86F6"/>
+    <rect x="0" y="58" width="380" height="9" rx="3" style="fill:var(--toldo)"/>
     <rect x="0" y="66" width="380" height="3" fill="rgba(27,42,85,0.2)"/>
   </svg>`;
 }

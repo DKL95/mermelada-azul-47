@@ -24,7 +24,7 @@
 #capa-modal {
   position: absolute;
   inset: 0;
-  z-index: 50;
+  z-index: 250; /* también encima de la pantalla de inicio */
   display: grid;
   place-items: center;
   padding: 20px;
@@ -163,7 +163,7 @@
   left: 0;
   right: 0;
   top: calc(var(--alto-barra-sup) + 12px + env(safe-area-inset-top));
-  z-index: 60;
+  z-index: 260;
   display: flex;
   flex-direction: column;
   align-items: center;

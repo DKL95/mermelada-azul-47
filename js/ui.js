@@ -13,7 +13,9 @@ let cerrarActual = null; // función para cerrar la ventana abierta (si hay)
  * @param {object} op
  * @param {string} op.titulo
  * @param {string|HTMLElement} op.contenido  HTML o elemento
- * @param {Array<{texto:string, clase?:string, valor?:any}>} op.botones
+ * @param {Array<{texto:string, clase?:string, valor?:any, alTocar?:Function}>} op.botones
+ *        alTocar: se llama antes de cerrar; si devuelve false (o una promesa
+ *        de false) la ventana se queda abierta.
  * @param {boolean} [op.cerrarAlTocarFuera=true]
  * @returns {Promise<any>} el `valor` del botón tocado (o null)
  */
@@ -44,7 +46,10 @@ export function mostrarModal({ titulo, contenido, botones = [{ texto: 'Cerrar', 
       const btn = document.createElement('button');
       btn.className = 'btn ' + (b.clase || '');
       btn.textContent = b.texto;
-      btn.addEventListener('click', () => cerrar(b.valor ?? null));
+      btn.addEventListener('click', async () => {
+        if (b.alTocar && !(await b.alTocar())) return;
+        if (cerrarActual === cerrar) cerrar(b.valor ?? null);
+      });
       fila.appendChild(btn);
     }
     caja.appendChild(fila);

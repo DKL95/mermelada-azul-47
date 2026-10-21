@@ -1,8 +1,8 @@
-# 🥞 Candy Crepas
+# 🥞 Creepy Crepas
 
 Juego casual de crepería para el celular: los clientes llegan a la ventanilla, piden su crepa y tú la preparas paso a paso (masa, cocción, relleno, doblado, toppings y decoración con el dedo). Se califica cada crepa, los clientes dejan reseñas y con las ganancias compras mejoras para el local.
 
-Es un regalo personal. Está hecho con HTML, CSS y JavaScript sin frameworks, todos los dibujos son SVG/código y funciona sin internet como app (PWA).
+Es para todo público, con una versión especial para Devany que se desbloquea con un código (botón 🔒 en la esquina de la pantalla de inicio). Está hecho con HTML, CSS y JavaScript sin frameworks, todos los dibujos son SVG/código y funciona sin internet como app (PWA).
 
 ---
 
@@ -25,27 +25,36 @@ Todo lo personal está en **un solo archivo**:
 
 | Campo | Qué es |
 |---|---|
-| `nombreCreperia` | Nombre del letrero y de la pantalla de inicio |
-| `nombreElla`, `nombreNovio` | Nombres para la dedicatoria y el cliente especial |
+| `nombreCreperia` | Nombre del letrero y de la pantalla de inicio (versión pública) |
+| `nombreCreperiaEspecial` | El nombre en la versión especial (Candy Crepas) |
+| `creador` | Quién hizo el juego (créditos de la versión pública) |
+| `mensajeBienvenidaPublico` | Bienvenida de la versión pública |
+| `nombreElla`, `nombreNovio` | Nombres para la dedicatoria y el cliente especial (versión especial) |
 | `aparienciaNovio` | Colores y peinado del cliente especial |
-| `mensajeBienvenida` | Sale la primera vez que se abre el juego |
-| `mensajeSorpresa`, `diaSorpresa` | Cartita que se abre al llegar a ese día |
+| `versionEspecial` | Los mensajes de la versión especial, **cifrados** (ver abajo) |
+| `diaSorpresa` | Día en que se abre la cartita sorpresa |
 | `firma` | Firma de la cartita y los créditos |
-| `hashPin` | Hash del PIN de entrada (`null` = sin PIN) |
 | `nombreMascota` | Nombre de la perrita de la tienda |
 | `bebidasEnDificultades` | En qué dificultades existe la barra de bebidas |
 
-### Cambiar el PIN
+### Versión especial y su código
 
-Solo se guarda el **hash** (no el PIN). Para generarlo, en una terminal (cambia `TU_PIN`):
+Sin el código, el juego es para todo público: sin dedicatoria, sin el cliente novio y sin la cartita sorpresa. En la pantalla de inicio, el botón 🔒 de la esquina pide el código; con él se activa la versión especial en ese dispositivo (el botón cambia a 💕, y tocándolo se puede volver a la normal). La partida es la misma en las dos versiones.
+
+Los mensajes de la versión especial (la bienvenida y la cartita) van **cifrados** en `config.js`: el código es la llave, así que en GitHub no se pueden leer. El código no está guardado en ningún lado; se revisa intentando descifrar los textos.
+
+Para cambiar los mensajes o el código:
+
+1. Edita `textos-especiales.json` (está en `.gitignore`: **no se sube**; guárdalo en un lugar seguro, sin él no se pueden recuperar los textos).
+2. En PowerShell, en la carpeta del juego:
 
 ```powershell
-node -e "console.log(require('crypto').createHash('sha256').update('candy-crepas:' + 'TU_PIN'.trim().toLowerCase()).digest('hex'))"
+node herramientas/cifrar-textos.mjs TU_CODIGO
 ```
 
-Pega el resultado entre comillas en `hashPin`. El PIN se pide una sola vez por dispositivo.
+Eso reescribe `versionEspecial` en `config.js`. Si cambias el código, quien ya tenía la versión especial tendrá que volver a ponerlo.
 
-> ⚠️ **Es una barrera ligera, no seguridad real.** El juego está en una página pública: evita curiosos, pero alguien que revise el código podría saltársela o adivinar un PIN corto. No guardes nada secreto de verdad dentro del juego.
+> ⚠️ **Es una barrera, no seguridad total.** Con un código corto (6 números), alguien con conocimientos podría probar todas las combinaciones; cada intento es lento a propósito (PBKDF2, 600 000 vueltas), pero no imposible.
 
 ### Herramientas de prueba
 
@@ -128,13 +137,14 @@ js/
   calificacion.js     cómo se califica cada crepa
   dibujos.js          íconos e ilustraciones SVG
   tienda.js           tienda y logros
-  romance.js          inicio, PIN, cartitas, créditos
+  romance.js          inicio, código especial, cartitas, créditos
   tutorial.js         tutorial de la primera vez
   ranking.js          tabla de puntuaciones en línea
   audio.js            sonidos sintetizados
   data/               ingredientes, combos, clientes, mensajes,
                       mejoras, eventos, logros
 assets/               íconos de la app
+herramientas/         cifrar-textos.mjs (cifra los mensajes especiales)
 ```
 
 Hecho con 💕 para Devany.

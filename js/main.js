@@ -11,7 +11,7 @@ import { juego, on, comandas } from './turno.js';
 import { TIPOS_CLIENTE } from './data/clientes.js';
 import { EVENTOS } from './data/eventos.js';
 import { avisarLogros } from './tienda.js';
-import { pantallaInicio, bienvenida, revisarSorpresa, sorpresaDesbloqueada, abrirCarta, creditos } from './romance.js';
+import { pantallaInicio, bienvenida, revisarSorpresa, sorpresaDesbloqueada, abrirCarta, creditos, esRomantica, nombreCreperia } from './romance.js';
 import { abrirRanking } from './ranking.js';
 import { iniciarTutorial } from './tutorial.js';
 
@@ -138,12 +138,13 @@ function abrirAjustes() {
       <span>🎓 Tutorial</span>
       <button class="btn btn-secundario" id="aj-tutorial">Verlo otra vez</button>
     </div>
+    ${esRomantica() ? `
     <div class="ajuste">
       <span>💌 Mensaje sorpresa</span>
       ${sorpresaDesbloqueada(e)
         ? '<button class="btn btn-secundario" id="aj-carta">Abrir 💌</button>'
         : `<span class="ajuste-nota">🔒 Se abre el día ${CONFIG.diaSorpresa}</span>`}
-    </div>
+    </div>` : ''}
     <div class="ajuste">
       <span>💝 Créditos</span>
       <button class="btn btn-secundario" id="aj-creditos">Ver</button>
@@ -289,7 +290,7 @@ function abrirAyuda() {
 // ================= Arranque =================
 
 function iniciar() {
-  document.title = CONFIG.nombreCreperia;
+  document.title = nombreCreperia();
 
   // Montar las pantallas una sola vez
   cocina.montar($('#pantalla-cocina'));

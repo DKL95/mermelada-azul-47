@@ -14,7 +14,7 @@ import { INGREDIENTES, COMBOS, disponibles, comboDisponible } from './data/ingre
 import { nivel } from './data/mejoras.js';
 import { evento } from './data/eventos.js';
 import { LOGROS } from './data/logros.js';
-import { revisarSorpresa } from './romance.js';
+import { revisarSorpresa, nombreCreperia } from './romance.js';
 import { tieneNombre } from './ranking.js';
 import { dibujarCliente, caraSVG, caraCliente, tipoDe } from './clientes.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
@@ -59,6 +59,8 @@ export function montar(contenedor) {
   on('bebidas', pintarBarraBebidas);
   on('horaPico', () => aviso('⏰ ¡Hora pico! Va a llegar mucha gente'));
   suscribir((e) => { pintarCharola(e); pintarBuzon(e); pintarDecorado(e); });
+  // Se puso o quitó el código especial: cambia el nombre del letrero
+  window.addEventListener('version:cambio', () => { pintarDecorado(); pintarAvisoZona(); });
   raiz.querySelector('#btn-buzon').addEventListener('click', abrirBuzon);
   raiz.querySelector('#btn-logros').addEventListener('click', abrirLogros);
   raiz.querySelector('#btn-tienda').addEventListener('click', () => {
@@ -84,7 +86,7 @@ function pintarAvisoZona() {
   const el = raiz.querySelector('#aviso-zona');
   const e = estado();
   if (!juego.abierto) {
-    const texto = e.segundosTurno > 0 ? `Seguir con el día ${e.dia}` : `🔑 Abrir ${CONFIG.nombreCreperia}`;
+    const texto = e.segundosTurno > 0 ? `Seguir con el día ${e.dia}` : `🔑 Abrir ${nombreCreperia()}`;
     const ev = evento(e.evento);
     el.innerHTML = `<button class="btn btn-primario btn-abrir" id="btn-abrir">${texto}</button>
       <span class="sub-abrir">Día ${e.dia}</span>
@@ -430,10 +432,10 @@ function mostrarCalificacion(c, r, bonos = []) {
 
 let claveDecorado = '';
 function pintarDecorado(e = estado()) {
-  const clave = JSON.stringify([e.mejoras, e.evento, e.ajustes.dificultad]);
+  const clave = JSON.stringify([e.mejoras, e.evento, e.ajustes.dificultad, nombreCreperia()]);
   if (clave === claveDecorado) return;
   claveDecorado = clave;
-  raiz.querySelector('#svg-fachada').innerHTML = svgFachada(CONFIG.nombreCreperia, { letrero: nivel(e, 'letrero'), luces: nivel(e, 'luces') });
+  raiz.querySelector('#svg-fachada').innerHTML = svgFachada(nombreCreperia(), { letrero: nivel(e, 'letrero'), luces: nivel(e, 'luces') });
   raiz.querySelector('#calle').innerHTML = svgCalle({ plantas: nivel(e, 'plantas'), mesitas: nivel(e, 'mesitas'), clima: e.evento });
   raiz.querySelector('#svg-mostrador').innerHTML = svgMostrador({ perrita: nivel(e, 'mascota'), terminal: nivel(e, 'caja') });
   const clima = raiz.querySelector('#clima');
@@ -654,9 +656,9 @@ function svgFachada(nombre, op = {}) {
   const n = 10;
   const ancho = 380 / n;
   for (let i = 0; i < n; i++) {
-    const color = i % 2 === 0 ? '#2F86F6' : '#FFFFFF';
-    rayas.push(`<rect x="${i * ancho}" y="62" width="${ancho}" height="34" fill="${color}"/>`);
-    ondas.push(`<path d="M${i * ancho} 96 a${ancho / 2} ${ancho / 2.6} 0 0 0 ${ancho} 0 z" fill="${color}"/>`);
+    const color = i % 2 === 0 ? 'var(--toldo)' : '#FFFFFF';
+    rayas.push(`<rect x="${i * ancho}" y="62" width="${ancho}" height="34" style="fill:${color}"/>`);
+    ondas.push(`<path d="M${i * ancho} 96 a${ancho / 2} ${ancho / 2.6} 0 0 0 ${ancho} 0 z" style="fill:${color}"/>`);
   }
   // Tamaño de letra según el largo del nombre
   const tam = nombre.length > 24 ? 15 : nombre.length > 18 ? 18 : 21;
@@ -673,7 +675,7 @@ function svgFachada(nombre, op = {}) {
     <!-- letrero -->
     ${op.letrero ? `<rect x="44" y="4" width="292" height="56" rx="28" fill="#FFE59A" opacity="0.6"><animate attributeName="opacity" values="0.7;0.25;0.7" dur="2.4s" repeatCount="indefinite"/></rect>` : ''}
     <rect x="50" y="10" width="280" height="44" rx="22" fill="#1B2A55"/>
-    <rect x="55" y="15" width="270" height="34" rx="17" fill="none" stroke="${op.letrero ? '#FF4FA3' : '#FFD84D'}" stroke-width="${op.letrero ? 3 : 2}" stroke-dasharray="${op.letrero ? 'none' : '4 4'}"/>
+    <rect x="55" y="15" width="270" height="34" rx="17" fill="none" style="stroke:${op.letrero ? 'var(--acento)' : '#FFD84D'}" stroke-width="${op.letrero ? 3 : 2}" stroke-dasharray="${op.letrero ? 'none' : '4 4'}"/>
     <text x="190" y="38" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600"
           font-size="${tam}" fill="${op.letrero ? '#FFE59A' : '#FFFFFF'}">${escapar(nombre)}</text>
     <!-- foquitos -->
@@ -681,7 +683,7 @@ function svgFachada(nombre, op = {}) {
     <!-- toldo -->
     ${rayas.join('')}
     ${ondas.join('')}
-    <rect x="0" y="60" width="380" height="5" fill="#FF4FA3"/>
+    <rect x="0" y="60" width="380" height="5" style="fill:var(--acento)"/>
     ${luces}
   </svg>`;
 }
@@ -782,8 +784,8 @@ function svgMostrador(op = {}) {
     <rect x="0" y="20" width="380" height="16" rx="4" fill="#FFFFFF"/>
     <rect x="0" y="34" width="380" height="4" fill="rgba(27,42,85,0.2)"/>
     <!-- frente con paneles -->
-    <rect x="0" y="36" width="380" height="84" fill="#2F86F6"/>
-    ${[10, 105, 200, 295].map((x) => `<rect x="${x}" y="48" width="75" height="60" rx="8" fill="#1F6FE0"/>`).join('')}
+    <rect x="0" y="36" width="380" height="84" style="fill:var(--toldo)"/>
+    ${[10, 105, 200, 295].map((x) => `<rect x="${x}" y="48" width="75" height="60" rx="8" style="fill:var(--toldo-oscuro)"/>`).join('')}
 
     <!-- charola de cartón (aquí llegan las crepas) -->
     <g transform="translate(40 2)">
@@ -794,13 +796,13 @@ function svgMostrador(op = {}) {
 
     <!-- caja registradora -->
     <g transform="translate(250 -26)">
-      <rect x="0" y="22" width="96" height="26" rx="6" fill="#FF4FA3"/>
-      <rect x="10" y="0" width="54" height="22" rx="4" fill="#E0237F"/>
+      <rect x="0" y="22" width="96" height="26" rx="6" style="fill:var(--acento)"/>
+      <rect x="10" y="0" width="54" height="22" rx="4" style="fill:var(--acento-oscuro)"/>
       <rect x="15" y="4" width="44" height="13" rx="2" fill="#E8F6E9"/>
       <text id="pantalla-caja" x="37" y="14.5" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="9" fill="#2F7A5A">$0</text>
       ${[0, 1, 2].map((i) => `<rect x="${12 + i * 14}" y="27" width="10" height="7" rx="2" fill="#FFF"/>`).join('')}
       ${[0, 1, 2].map((i) => `<rect x="${12 + i * 14}" y="37" width="10" height="7" rx="2" fill="#FFF"/>`).join('')}
-      <rect x="62" y="28" width="26" height="16" rx="3" fill="#E0237F"/>
+      <rect x="62" y="28" width="26" height="16" rx="3" style="fill:var(--acento-oscuro)"/>
       ${op.terminal ? '<g transform="translate(70 4)"><rect width="18" height="22" rx="3" fill="#1B2A55"/><rect x="3" y="3" width="12" height="7" rx="1" fill="#7FD3FF"/><rect x="3" y="13" width="12" height="6" rx="1" fill="#3B4F86"/></g>' : ''}
     </g>
   </svg>`;
