@@ -7,6 +7,9 @@
    una fila de espera y se manda después (al abrir el juego o al
    volver la conexión). Si la base todavía no tiene la columna del
    personaje (falta correr supabase-v2.sql), se manda sin él.
+   Además, al abrir el juego (y cada vez que cambia) el personaje se
+   sube a la tabla de caritas, para salir con su carita sin esperar
+   a terminar un día (supabase-v3.sql).
 
    El jugador (id al azar + nombre) se guarda aparte de la partida:
    si reinicias la partida sigues siendo el mismo jugador.
@@ -27,6 +30,7 @@ const CLAVE_PENDIENTES = 'creperia.pendientes';
 const MAX_NOMBRE = 20;
 const MAX_PENDIENTES = 60;  // días o partidas guardados sin conexión (los más viejos se tiran)
 const CLAVE_PERSONAJE = 'creperia.personaje';
+const CLAVE_CARA = 'creperia.caraEnviada'; // el último personaje que se subió (para no repetirlo)
 // Lo que se manda del personaje (personaje.js lo revisa al dibujarlo)
 const CAMPOS_PERSONAJE = ['sexo', 'piel', 'estatura', 'complexion', 'peinado', 'pelo', 'vello', 'arriba', 'colorArriba',
   'colorArriba2', 'estampado', 'abajo', 'colorAbajo', 'calzado', 'colorCalzado', 'acc', 'colorAcc'];
@@ -140,7 +144,7 @@ async function enviarPendientes() {
   if (!activa() || enviando || !navigator.onLine) return;
   const j = jugador();
   const pendientes = leer(CLAVE_PENDIENTES, []);
-  if (!j.nombre || !pendientes.length) return;
+  if (!j.nombre || !pendientes.length) { enviarCara(); return; }
 
   enviando = true;
   const personaje = personajeParaTabla();
@@ -173,6 +177,31 @@ async function enviarPendientes() {
   // Solo se quitan los que se mandaron (pudo llegar otro día mientras tanto)
   if (enviados.size) escribir(CLAVE_PENDIENTES, leer(CLAVE_PENDIENTES, []).filter((p) => !enviados.has(p.envio)));
   enviando = false;
+  enviarCara();
+}
+
+let mandandoCara = false;
+
+/** Sube el personaje a la tabla de caritas si cambió desde la última vez. */
+async function enviarCara() {
+  if (!activa() || mandandoCara || !navigator.onLine) return;
+  const j = jugador();
+  const personaje = personajeParaTabla();
+  if (!j.nombre || !personaje) return;
+  const firma = JSON.stringify([j.id, personaje]);
+  if (leer(CLAVE_CARA, '') === firma) return;
+  mandandoCara = true;
+  try {
+    await pedir('caras', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ jugador_id: j.id, personaje }),
+    });
+    escribir(CLAVE_CARA, firma);
+  } catch (err) {
+    console.warn('No se pudo subir el personaje; se reintenta después.', err);
+  }
+  mandandoCara = false;
 }
 
 // ---------- Ventana de la tabla ----------
@@ -323,4 +352,6 @@ export async function abrirRanking() {
 
 on('finDia', registrarDia);
 window.addEventListener('online', enviarPendientes);
+// Al salir del juego (o cambiar de app) se sube el personaje si lo cambió
+document.addEventListener('visibilitychange', () => { if (document.hidden) enviarCara(); });
 enviarPendientes();
