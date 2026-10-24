@@ -208,11 +208,15 @@
   100% { opacity: 0; transform: translateY(-40px) scaleX(1.8); }
 }
 
-/* Panel de controles de cada estación */
+/* Panel de controles de cada estación. Mide siempre lo mismo (lo que ocupa
+   la bandeja, el panel más alto): así la plancha no cambia de tamaño ni
+   brinca al pasar de una estación a otra. */
+.mostrador-cocina { --alto-panel: 232px; }
 .panel-estacion {
   flex: 0 0 auto;
   width: 100%;
   max-width: 420px;
+  height: var(--alto-panel);
   padding: 0 12px;
   display: flex;
   flex-direction: column;
@@ -220,7 +224,10 @@
 }
 .instruccion {
   margin: 0;
-  min-height: 2.6em;
+  flex: 0 0 auto;
+  height: 2.6em;
+  line-height: 1.25;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,7 +236,9 @@
   font-weight: 500;
   color: var(--texto);
 }
-#controles { display: flex; flex-direction: column; gap: 8px; }
+/* Los botones quedan siempre abajo, en el mismo lugar */
+#controles { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+#controles > :first-child { margin-top: auto; }
 .fila-botones { display: flex; gap: 8px; }
 .fila-botones .btn { flex: 1; padding: 0 10px; font-size: 16px; }
 .btn-grande { min-height: 56px; font-size: 19px !important; }
@@ -324,7 +333,7 @@
 .btn-doblado.elegido { border-color: var(--candy); }
 
 /* Resumen de la crepa terminada */
-.resumen-crepa { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.resumen-crepa { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-height: 112px; overflow-y: auto; scrollbar-width: none; }
 .resumen-crepa span {
   padding: 5px 10px;
   border-radius: 999px;
@@ -1297,3 +1306,76 @@
 .record-sinfin { text-align: center; font-size: 16px; }
 .puntos-sinfin { text-align: center; font-size: 40px; font-weight: 700; color: var(--candy); }
 .puntos-sinfin small { font-size: 18px; }
+
+/* ================= SEGUNDA PLANCHA ================= */
+/* Botones 1 y 2 a los lados de la plancha (en medio del espacio que deja el panel) */
+.fogon-btn {
+  position: absolute;
+  top: calc((100% - var(--alto-panel)) / 2);
+  z-index: 4;
+  width: 62px;
+  padding: 6px 4px 8px;
+  border: 3px solid transparent;
+  border-radius: var(--radio-chico);
+  background: rgba(255,255,255,0.85);
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transform: translateY(-50%);
+  font-size: 15px;
+}
+.fogon-btn[hidden] { display: none; }
+.fogon-btn[data-fogon="0"] { left: 6px; }
+.fogon-btn[data-fogon="1"] { right: 6px; }
+.fogon-btn small { font-size: 11px; font-weight: 600; color: var(--texto-suave); white-space: nowrap; }
+.fogon-btn.activo { border-color: var(--candy); background: var(--blanco); }
+.fogon-barra { width: 100%; height: 5px; border-radius: 3px; background: var(--fondo-2); overflow: hidden; }
+.fogon-barra i { display: block; height: 100%; width: 0; background: #F2C27E; }
+.fogon-btn[data-estado="lista"] { animation: latido 0.8s ease-in-out infinite; }
+.fogon-btn[data-estado="lista"] .fogon-barra i { background: #2BD07A; }
+.fogon-btn[data-estado="lista"] small { color: #14935A; }
+.fogon-btn[data-estado="quemando"] .fogon-barra i { background: #B85A2A; }
+.fogon-btn[data-estado="quemando"] small { color: #D62839; }
+/* Con los botones a los lados, la plancha deja lugar para ellos */
+.mostrador-cocina.con-fogones .escenario { max-width: calc(100% - 148px); }
+
+/* ================= TABLETAS ================= */
+@media (min-width: 600px) and (min-height: 600px) {
+  .mostrador-cocina { --alto-panel: 262px; }
+  .escenario { max-height: min(52vh, 480px); }
+  .panel-estacion { max-width: 560px; }
+  .instruccion { font-size: 17px; }
+  .btn-ingrediente { flex-basis: 82px; min-height: 76px; font-size: 12px; }
+  .btn-ingrediente svg { width: 42px; height: 42px; }
+  .btn-doblado svg { height: 56px; }
+  .riel { height: 100px; }
+  .comanda { width: 100px; height: 74px; }
+  .estacion { min-width: 84px; font-size: 14px; }
+  .estaciones { justify-content: center; }
+  .cliente { max-width: 190px; }
+  .globo, .ticket-cabeza { font-size: 15px; }
+  .tarjeta-pedido { width: min(540px, calc(100% - 20px)); margin: 0 auto; }
+  .fogon-btn { width: 76px; font-size: 18px; }
+  .fogon-btn small { font-size: 13px; }
+}
+/* Tableta acostada: la plancha a la izquierda y el panel a la derecha */
+@media (min-width: 900px) and (min-height: 600px) and (orientation: landscape) {
+  .mostrador-cocina { flex-direction: row; justify-content: center; align-items: center; gap: 28px; padding: 56px 24px 12px; }
+  .escenario { flex: 0 0 auto; height: min(calc(100% - 8px), 520px); max-height: none; }
+  .panel-estacion { width: 420px; flex: 0 0 auto; }
+  .fogon-btn { top: 50%; }
+  .mostrador-cocina.con-fogones .escenario { max-width: none; }
+  .mostrador-cocina.con-fogones { padding-left: 100px; padding-right: 24px; }
+  .fogon-btn[data-fogon="1"] { right: auto; left: 6px; top: calc(50% + 70px); }
+  .fogon-btn[data-fogon="0"] { top: calc(50% - 70px); }
+}
+/* Tableta acostada: el local no se estira a lo ancho (si no, no quedaría lugar
+   para los clientes); va centrado y a los lados sigue el cielo */
+@media (min-width: 900px) and (min-height: 600px) and (orientation: landscape) {
+  #pantalla-venta { background: linear-gradient(#CDEBF5, #E8F6FA); }
+  #app[data-cielo="atardecer"] #pantalla-venta { background: linear-gradient(#FF9A76, #FFD3A5 60%, #FFE9D6); }
+  #app[data-cielo="noche"] #pantalla-venta { background: linear-gradient(#1B2A55, #3B4F86 70%, #5A6FA8); }
+  .venta { width: min(100%, 74vh); margin: 0 auto; box-shadow: 0 0 24px rgba(27,42,85,0.12); }
+}

@@ -16,10 +16,10 @@ import { esRomantica } from './romance.js';
 import { tieneArticulo } from './cartera.js';
 import { nombreJugador, ponerNombre, limpiarNombre } from './ranking.js';
 import { g } from './genero.js';
-import { CUERPO, ropa, extra, detallesCara, peinadoAtras, peinadoFrente, accesorio, caraSVG } from './clientes.js';
+import { CUERPO, ropa, extra, detallesCara, peinadoAtras, peinadoFrente, accesorio, caraSVG, flor } from './clientes.js';
 import {
   SEXOS, PIELES, ESTATURAS, COMPLEXIONES, PEINADOS, COLORES_PELO, VELLO, ARRIBA, ESTAMPADOS,
-  ABAJO, CALZADO, ACCESORIOS, COLORES, COLORES_MEZCLILLA, TRAJES, personajeInicial, claveArticulo,
+  ABAJO, CALZADO, ACCESORIOS, COLORES, COLORES_MEZCLILLA, TRAJES, personajeInicial, claveArticulo, piezasDe,
 } from './data/personaje.js';
 
 const CLAVE = 'creperia.personaje';
@@ -192,6 +192,89 @@ const TORSOS = {
       ${[[30, 150], [88, 140], [34, 182], [86, 176]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#3E9142"/>`).join('')}`,
     encima: '',
   }),
+
+  // --- Halloween ---
+  vampiro: (p, clip) => ({
+    manga: '#1B1B2B',
+    abajo: `<path d="${CUERPO}" fill="#1B1B2B"/>
+      <path d="M46 121 L60 152 L74 121 Z" fill="#FFFFFF"/>
+      <path d="M46 121 L58 162 L38 150 Z M74 121 L62 162 L82 150 Z" fill="#2B2B35"/>
+      <path d="M60 129 l-8 -5 v10 z M60 129 l8 -5 v10 z" fill="#B3122E"/><circle cx="60" cy="129" r="2.6" fill="#7A0A1E"/>
+      <circle cx="60" cy="170" r="2" fill="#B3122E"/><circle cx="60" cy="181" r="2" fill="#B3122E"/>
+      <g clip-path="url(#${clip})"><rect x="0" y="191" width="120" height="6" fill="#B3122E"/></g>`,
+    encima: '',
+  }),
+  momia: (p, clip) => ({
+    manga: '#EDE6D3',
+    abajo: `<path d="${CUERPO}" fill="#EDE6D3"/>
+      <g clip-path="url(#${clip})" stroke="#C9BE9F" stroke-width="2" fill="none">
+        ${[126, 138, 150, 162, 174, 186, 198].map((y, i) => `<path d="M0 ${y + (i % 2 ? 5 : -5)} L120 ${y + (i % 2 ? -5 : 5)}"/>`).join('')}
+      </g>
+      <path d="M78 160 q8 6 4 16 q-2 4 2 8" stroke="#EDE6D3" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M78 160 q8 6 4 16 q-2 4 2 8" stroke="#C9BE9F" stroke-width="1" fill="none"/>`,
+    encima: '',
+  }),
+  esqueleto: (p) => ({
+    manga: '#1B1B2B',
+    abajo: `<path d="${CUERPO}" fill="#1B1B2B"/>
+      <rect x="57" y="124" width="6" height="62" rx="3" fill="#F2F2EA"/>
+      ${[136, 148, 160].map((y) => `<path d="M57 ${y} q-14 -4 -20 6 M63 ${y} q14 -4 20 6" stroke="#F2F2EA" stroke-width="4.5" fill="none" stroke-linecap="round"/>`).join('')}
+      <path d="M44 184 q16 -10 32 0 q-4 10 -16 10 q-12 0 -16 -10 z" fill="#F2F2EA"/>`,
+    encima: '',
+  }),
+  calabaza: (p, clip) => ({
+    manga: '#2E7D32',
+    abajo: `<path d="${CUERPO}" fill="#FF7A1A"/>
+      <g clip-path="url(#${clip})" stroke="#E05F00" stroke-width="3" fill="none"><path d="M40 122 q-12 42 0 86 M80 122 q12 42 0 86 M60 120 v88"/></g>
+      <path d="M45 152 l7 -10 l7 10 z M61 152 l7 -10 l7 10 z" fill="#1B1B2B"/>
+      <path d="M42 164 Q60 182 78 164 Q72 170 68 168 L64 174 L60 168 L56 174 L52 168 Q48 170 42 164 Z" fill="#1B1B2B"/>`,
+    encima: `<path d="M48 118 q12 8 24 0 l-2 6 q-10 6 -20 0 z" fill="#2E7D32"/>`,
+  }),
+  bruja: (p, clip) => ({
+    manga: '#2B1B3F',
+    abajo: `<path d="${CUERPO}" fill="#2B1B3F"/>
+      <path d="M44 121 L60 142 L76 121 Z" fill="#6B3FA0"/>
+      <g clip-path="url(#${clip})"><rect x="0" y="182" width="120" height="8" fill="#FF7A1A"/></g>
+      <rect x="54" y="180" width="12" height="12" rx="1" fill="none" stroke="#FFD84D" stroke-width="2.5"/>
+      ${[[34, 152], [86, 160], [44, 198], [80, 200]].map(([x, y]) => estrella(x, y, 4, '#FFD84D')).join('')}`,
+    encima: '',
+  }),
+  monstruo: (p) => ({
+    manga: '#3A3F4B',
+    abajo: `<path d="${CUERPO}" fill="#3A3F4B"/>
+      <path d="M46 121 L60 140 L74 121 Z" fill="#7C8A66"/>
+      <path d="M44 121 L56 160 M76 121 L64 160" stroke="#262A33" stroke-width="3"/>
+      <rect x="32" y="152" width="15" height="13" fill="#5A4E3E" transform="rotate(-8 39 158)"/>
+      <path d="M33 152 l2 3 M38 151 l1 3 M44 150 l1 3" stroke="#C9BE9F" stroke-width="1.2"/>
+      <path d="M68 176 h14 M71 172 v8 M75 172 v8 M79 172 v8" stroke="#1B1B2B" stroke-width="1.5"/>`,
+    encima: '',
+  }),
+  lobo: (p, clip) => ({
+    manga: '#8E2B2B',
+    abajo: `<path d="${CUERPO}" fill="#B23A3A"/>
+      <g clip-path="url(#${clip})" opacity="0.3">${[30, 46, 62, 78, 94].map((x) => `<rect x="${x}" y="110" width="6" height="100" fill="#1B1B2B"/>`).join('')}
+        ${[134, 150, 166, 182, 198].map((y) => `<rect x="0" y="${y}" width="120" height="5" fill="#1B1B2B"/>`).join('')}</g>
+      <path d="M48 121 L60 162 L72 121 Z" fill="#7A5236"/>
+      <path d="M53 130 l3 7 l3 -7 M58 144 l2.5 6 l2.5 -6 M62 131 l3 7 l3 -7" stroke="#5A3A24" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M26 176 l6 -8 l4 8 l5 -9 l4 9" stroke="#5A1A1A" stroke-width="1.5" fill="none"/>`,
+    encima: '',
+  }),
+  diablo: (p, clip) => ({
+    manga: '#C81E2E',
+    abajo: `<path d="M86 186 q20 4 16 22 l7 -1 l-6 9 l-5 -8 l3 0 q2 -12 -15 -16 z" fill="#1B1B2B"/>
+      <path d="${CUERPO}" fill="#E8283A"/>
+      <path d="M46 121 L60 138 L74 121 Z" fill="#1B1B2B"/>
+      <g clip-path="url(#${clip})"><rect x="0" y="182" width="120" height="8" fill="#1B1B2B"/></g>`,
+    encima: '',
+  }),
+  tunica_negra: (p, clip) => ({
+    manga: '#14141C',
+    abajo: `<path d="${CUERPO}" fill="#14141C"/>
+      <path d="M44 121 Q60 150 76 121" stroke="#2B2B35" stroke-width="3" fill="none"/>
+      <g clip-path="url(#${clip})"><rect x="0" y="178" width="120" height="5" fill="#8A6A4A"/></g>
+      <path d="M64 181 q2 10 -2 18 M68 181 q4 8 2 16" stroke="#8A6A4A" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+    encima: '',
+  }),
 };
 
 // ---------- Accesorios nuevos (los que no sabe dibujar clientes.js) ----------
@@ -255,6 +338,26 @@ function accesorioPersonaje(id, c) {
     case 'gorro_dino': return `${[[30, 30], [44, 18], [60, 13], [76, 18], [90, 30]].map(([x, y]) => `<path d="M${x - 7} ${y + 6} L${x} ${y - 9} L${x + 7} ${y + 6} Z" fill="#FFD84D"/>`).join('')}
       <path d="M17 82 Q14 24 60 22 Q106 24 103 82 Q98 46 60 44 Q22 46 17 82 Z" fill="#4CAF50"/>
       <path d="M22 58 Q60 30 98 58" stroke="#3E9142" stroke-width="2" fill="none"/>`;
+    case 'gorro_calabaza': return `<ellipse cx="60" cy="28" rx="27" ry="17" fill="#FF7A1A"/>
+      <path d="M47 14 q-5 14 0 28 M73 14 q5 14 0 28 M60 11 v34" stroke="#E05F00" stroke-width="2.5" fill="none"/>
+      <path d="M58 13 q0 -10 6 -14 l3 3 q-5 3 -5 11 z" fill="#3E9142"/><path d="M64 5 q10 -6 16 2 q-8 4 -16 -2 z" fill="#4CAF50"/>`;
+    case 'corona_flores': return `<path d="M22 52 Q60 22 98 52" stroke="#3E9142" stroke-width="4" fill="none" stroke-linecap="round"/>
+      ${[[26, 48, '#8B5CF6'], [38, 36, '#E8414F'], [52, 29, '#FF7A1A'], [68, 29, '#FF4FA3'], [82, 36, '#FFD84D'], [94, 48, '#3DA5FF']]
+        .map(([x, y, col]) => flor(x, y, col, 6)).join('')}`;
+    case 'vendas_momia': return `<path d="M19 62 Q19 26 60 26 Q101 26 101 62 Q60 50 19 62 Z" fill="#EDE6D3" stroke="#C9BE9F" stroke-width="1.5"/>
+      <path d="M22 50 Q60 36 98 50 M27 40 Q60 26 93 40" stroke="#C9BE9F" stroke-width="1.5" fill="none"/>
+      <path d="M21 86 L44 98 M99 82 L80 96" stroke="#EDE6D3" stroke-width="7" stroke-linecap="round"/>
+      <path d="M98 46 q12 4 14 18" stroke="#EDE6D3" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    case 'tornillos_monstruo': return `<rect x="8" y="80" width="13" height="8" rx="2" fill="#8A8FA3" stroke="#5B6070"/><rect x="99" y="80" width="13" height="8" rx="2" fill="#8A8FA3" stroke="#5B6070"/>
+      <path d="M20 60 V30 H100 V60 Q100 44 60 44 Q20 44 20 60 Z" fill="#1B1B2B"/>
+      <path d="M22 44 H98 L92 55 L86 44 L80 55 L74 44 L68 55 L62 44 L56 55 L50 44 L44 55 L38 44 L32 55 L26 44 Z" fill="#1B1B2B"/>`;
+    case 'orejas_lobo': return [-1, 1].map((s) => {
+      const x = 60 + s * 28;
+      return `<path d="M${x - s * 14} 42 L${x + s * 4} 4 L${x + s * 18} 38 Z" fill="#7A5236" stroke="#5A3A24" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M${x - s * 6} 38 L${x + s * 4} 15 L${x + s * 12} 36 Z" fill="#E8A8A0"/>`;
+    }).join('');
+    case 'capucha_parca': return `<path d="M12 104 Q8 16 60 16 Q112 16 108 104 Q102 62 60 54 Q18 62 12 104 Z" fill="#14141C"/>
+      <path d="M20 96 Q16 32 60 24" stroke="rgba(255,255,255,0.08)" stroke-width="4" fill="none"/>`;
     // --- Ojos ---
     case 'lentes_redondos': return `<g fill="rgba(255,255,255,0.18)" stroke="#2B2B35" stroke-width="1.8"><circle cx="46" cy="70" r="9"/><circle cx="74" cy="70" r="9"/></g>
       <path d="M55 69 q5 -3 10 0 M37 68 L24 66 M83 68 L96 66" stroke="#2B2B35" stroke-width="1.8" fill="none"/>`;
@@ -281,6 +384,21 @@ function caraExtra(id, c) {
       <rect x="31" y="80" width="6" height="8" fill="#E8B88A"/></g>`;
     case 'bigotote': return `<path d="M38 82 q8 -10 22 -4 q14 -6 22 4 q-4 8 -12 6 q-6 -4 -10 -2 q-4 -2 -10 2 q-8 2 -12 -6 z" fill="#3B2219"/>`;
     case 'cicatriz_rayo': return `<path d="M58 34 l7 0 l-4 6 l5 0 l-9 11 l3 -8 l-5 0 z" fill="#B03030" opacity="0.85"/>`;
+    case 'colmillos': return '<path d="M52 85 l2.5 6.5 l2.5 -6.5 z M63 85 l2.5 6.5 l2.5 -6.5 z" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="0.7" stroke-linejoin="round"/>';
+    case 'cara_calavera': return `${[46, 74].map((x) => `<circle cx="${x}" cy="70" r="10" fill="none" stroke="#1B1B2B" stroke-width="4"/>`).join('')}
+      <path d="M57 82 l3 -5 l3 5 z" fill="#1B1B2B"/>
+      <path d="M46 91 h28 M50 88 v6 M55 88.5 v6 M60 89 v6 M65 88.5 v6 M70 88 v6" stroke="#1B1B2B" stroke-width="1.4" stroke-linecap="round"/>`;
+    case 'cara_catrina': {
+      const petalos = (cx) => Array.from({ length: 8 }, (_, k) => {
+        const a = (k * Math.PI) / 4;
+        return `<circle cx="${(cx + Math.cos(a) * 12.5).toFixed(1)}" cy="${(70 + Math.sin(a) * 12.5).toFixed(1)}" r="2.6" fill="${['#FF4FA3', '#FFD84D', '#3DA5FF', '#22C55E'][k % 4]}"/>`;
+      }).join('');
+      return `${[46, 74].map((x) => `<circle cx="${x}" cy="70" r="9.5" fill="none" stroke="#1B1B2B" stroke-width="2.2"/>${petalos(x)}`).join('')}
+        ${corazon(60, 83, 3.5, '#1B1B2B')}
+        <path d="M47 91 h26 M50 88 v6 M55 88.5 v6 M60 89 v6 M65 88.5 v6 M70 88 v6" stroke="#1B1B2B" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M34 92 q-6 5 -1 11 M86 92 q6 5 1 11" stroke="#8B5CF6" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    }
+    case 'cicatriz_monstruo': return '<path d="M72 86 L92 80 M76 81 l2 7 M81 79.5 l2 7 M86 78 l2 7" stroke="#3B2219" stroke-width="1.6" stroke-linecap="round"/>';
     default: return '';
   }
 }
@@ -341,12 +459,31 @@ function enLaMano(id, c) {
       <rect x="97" y="181" width="24" height="5" rx="2" fill="#5B3FA0"/><rect x="106.5" y="186" width="5" height="10" rx="1.5" fill="#6B3E2E"/>`;
     case 'escudo': return `<circle cx="16" cy="182" r="19" fill="#FFD84D" stroke="#E0A800" stroke-width="2"/><circle cx="16" cy="182" r="14" fill="#1F5FFF"/>
       ${estrella(16, 182, 10, '#FFFFFF')}`;
+    case 'escoba': return `<path d="M112 122 L90 246" stroke="#8A5A3C" stroke-width="4" stroke-linecap="round"/>
+      <path d="M83 236 L99 239 L106 274 L74 270 Z" fill="#E0B050" stroke="#B8862E" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M83 244 L99 247" stroke="#B8862E" stroke-width="2.5"/>
+      <path d="M84 252 L80 270 M90 252 L88 271 M96 252 L97 272 M101 252 L103 273" stroke="#B8862E" stroke-width="1"/>`;
+    case 'calabaza_dulces': return `<path d="M86 210 Q99 184 112 210" stroke="#1B1B2B" stroke-width="2" fill="none"/>
+      <circle cx="92" cy="204" r="3.5" fill="#FF4FA3"/><circle cx="99" cy="202" r="3.5" fill="#3DA5FF"/><circle cx="106" cy="204" r="3.5" fill="#FFD84D"/>
+      <ellipse cx="99" cy="215" rx="15" ry="12" fill="#FF7A1A"/>
+      <path d="M90 213 l4 -5 l4 5 z M101 213 l4 -5 l4 5 z" fill="#1B1B2B"/><path d="M92 219 q7 6 14 0" stroke="#1B1B2B" stroke-width="2" fill="none"/>`;
+    case 'tridente': return `<path d="M106 206 V104" stroke="#1B1B2B" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M96 102 V116 Q106 124 116 116 V102" stroke="#1B1B2B" stroke-width="3" fill="none"/>
+      <path d="M92 104 L96 94 L100 104 Z M102 100 L106 88 L110 100 Z M112 104 L116 94 L120 104 Z" fill="#1B1B2B"/>`;
+    case 'guadana': return `<path d="M104 262 L112 98" stroke="#5A3A24" stroke-width="4" stroke-linecap="round"/>
+      <path d="M112 100 Q84 84 58 104 Q84 98 110 112 Z" fill="#C9D2E3" stroke="#8A8FA3" stroke-width="1.2" stroke-linejoin="round"/>`;
     default: return '';
   }
 }
 
+// Alas grandes: van más arriba para que se asomen por encima de los hombros
+const ALAS_ALTAS = ['alas_murcielago', 'alas_dragon', 'alas_mariposa', 'alas_cuervo'];
+
 /** Lo de la espalda: se dibuja detrás del cuerpo (las correas de la mochila, al frente). */
 function espaldaAtras(id, c) {
+  return ALAS_ALTAS.includes(id) ? `<g transform="translate(0 -18)">${dibujoEspalda(id, c)}</g>` : dibujoEspalda(id, c);
+}
+function dibujoEspalda(id, c) {
   switch (id) {
     case 'capa': return `<path d="M34 126 Q20 200 10 276 Q60 286 110 276 Q100 200 86 126 Z" fill="${c}"/>
       <path d="M34 126 Q26 200 22 274" stroke="rgba(0,0,0,0.15)" stroke-width="5" fill="none"/>`;
@@ -356,6 +493,30 @@ function espaldaAtras(id, c) {
     case 'alas_angel': return [-1, 1].map((s) => [0, 1, 2].map((i) => `
       <ellipse cx="${60 + s * (32 + i * 6)}" cy="${140 + i * 14}" rx="${26 - i * 5}" ry="10" transform="rotate(${s * (25 + i * 15)} ${60 + s * (32 + i * 6)} ${140 + i * 14})" fill="#FFFFFF" stroke="#AEB9CF" stroke-width="1.5"/>`).join('')).join('');
     case 'mochila': return `<rect x="28" y="134" width="64" height="60" rx="12" fill="${c}"/>`;
+    case 'alas_murcielago': return [-1, 1].map((s) => {
+      const x = (d) => 60 + s * d;
+      return `<path d="M${x(14)} 136 L${x(38)} 104 L${x(58)} 98 Q${x(57)} 124 ${x(52)} 148 Q${x(45)} 138 ${x(38)} 152 Q${x(32)} 142 ${x(25)} 158 Q${x(20)} 148 ${x(14)} 150 Z" fill="${c}" stroke="rgba(0,0,0,0.3)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M${x(38)} 104 L${x(38)} 152 M${x(38)} 104 L${x(52)} 148 M${x(38)} 104 L${x(25)} 158" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" fill="none"/>`;
+    }).join('');
+    case 'alas_dragon': return [-1, 1].map((s) => {
+      const x = (d) => 60 + s * d;
+      return `<path d="M${x(14)} 132 L${x(42)} 96 L${x(58)} 86 L${x(54)} 110 L${x(58)} 122 L${x(50)} 136 L${x(56)} 154 L${x(42)} 150 L${x(36)} 168 L${x(22)} 156 Z" fill="${c}" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M${x(42)} 96 L${x(50)} 136 M${x(42)} 96 L${x(42)} 150 M${x(42)} 96 L${x(22)} 156" stroke="rgba(0,0,0,0.3)" stroke-width="2" fill="none"/>
+        <path d="M${x(58)} 86 l${s * 2} -6 l${s * -5} 4 z" fill="#F2F2EA"/>`;
+    }).join('');
+    case 'alas_mariposa': return [-1, 1].map((s) => {
+      const x = (d) => 60 + s * d;
+      return `<path d="M${x(8)} 140 C${x(30)} 96 ${x(64)} 98 ${x(56)} 140 C${x(52)} 156 ${x(30)} 152 ${x(8)} 146 Z" fill="${c}" stroke="#1B1B2B" stroke-width="2"/>
+        <path d="M${x(8)} 148 C${x(40)} 150 ${x(50)} 186 ${x(28)} 192 C${x(16)} 194 ${x(10)} 170 ${x(8)} 152 Z" fill="${c}" stroke="#1B1B2B" stroke-width="2"/>
+        <circle cx="${x(40)}" cy="124" r="6" fill="#FFFFFF" opacity="0.8"/><circle cx="${x(28)}" cy="136" r="3.5" fill="#1B1B2B" opacity="0.6"/>
+        <circle cx="${x(26)}" cy="174" r="4" fill="#FFFFFF" opacity="0.8"/>`;
+    }).join('');
+    case 'alas_cuervo': return [-1, 1].map((s) => [0, 1, 2, 3].map((i) => `
+      <ellipse cx="${60 + s * (30 + i * 5)}" cy="${136 + i * 13}" rx="${27 - i * 4}" ry="9" transform="rotate(${s * (20 + i * 14)} ${60 + s * (30 + i * 5)} ${136 + i * 13})" fill="#1B1B2B" stroke="#4A4A58" stroke-width="1.5"/>`).join('')).join('');
+    case 'capa_vampiro': return `<path d="M30 126 Q16 200 6 278 Q60 288 114 278 Q104 200 90 126 Z" fill="#1B1B2B"/>
+      <path d="M36 128 Q26 200 20 270 Q60 278 100 270 Q94 200 84 128 Z" fill="#B3122E"/>
+      <path d="M34 128 L14 82 L44 106 Z M86 128 L106 82 L76 106 Z" fill="#1B1B2B"/>
+      <path d="M36 124 L22 92 L42 108 Z M84 124 L98 92 L78 108 Z" fill="#B3122E"/>`;
     default: return '';
   }
 }
@@ -496,7 +657,7 @@ export function dibujarPersonaje(p, { vista = 'completo', emocion = 'normal' } =
     ? `<path d="M38 59 q8 -5 16 -1 M66 58 q8 -4 16 1" stroke="${p.peinado === 'calvo' ? '#2B1B12' : p.pelo}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
     : '<path d="M40.5 66 l-3.5 -2.5 M79.5 66 l3.5 -2.5" stroke="#1B2A55" stroke-width="2" stroke-linecap="round"/>';
   // Patillas con el pelo corto
-  const patillas = hombre && ['corto', 'copete', 'rizado', 'afro'].includes(p.peinado)
+  const patillas = hombre && ['corto', 'copete', 'rizado', 'afro', 'militar', 'despeinado', 'raya_lado', 'rizos_cortos'].includes(p.peinado)
     ? `<path d="M22 60 h6 v20 q-3 2 -6 0 z M92 60 h6 v20 q-3 2 -6 0 z" fill="${p.pelo}"/>`
     : '';
   // Los pies siempre en el piso: si es más alto, todo sube
@@ -599,9 +760,12 @@ export function tieneOpcion(campo, o) {
 /** Aplica un disfraz completo (todas sus piezas) a una copia del personaje. */
 export function conTraje(p, traje) {
   const nuevo = structuredClone(p);
-  for (const [campo, valor] of Object.entries(traje.piezas)) escribir(nuevo, campo, valor);
+  for (const [campo, valor] of Object.entries(piezasDe(traje, p))) escribir(nuevo, campo, valor);
   return nuevo;
 }
+
+/** Nombre del disfraz (algunos cambian según el personaje: "Bruja" / "Brujo"). */
+export const nombreTraje = (t) => `${t.emoji} ${Array.isArray(t.nombre) ? g(...t.nombre) : t.nombre}`;
 
 /** Las opciones que se pueden elegir: las suyas, sin lo exclusivo si no toca, ni barba en mujer. */
 function opcionesDe(lista, p, campo) {
@@ -631,7 +795,9 @@ const SIN_COLOR = ['ninguno', 'perlas', 'aretes_corazon', 'gorro_chef', 'lentes'
   'banda_samurai', 'mascara_arana', 'capucha_murcielago', 'casco_astronauta', 'sombrero_pirata', 'gorro_dino', 'lentes_redondos',
   'parche', 'pecas', 'estrellitas', 'bigotes_gato', 'curita', 'cicatriz_rayo', 'aretes_estrella', 'aretes_fresa', 'paliacate',
   'brazaletes', 'espatula', 'rosa', 'varita', 'escudo', 'alas_hada', 'alas_angel', 'banda_roja', 'pelo_picos', 'gorro_elfo',
-  'capucha_erizo', 'bigotote', 'guantes_blancos', 'guantes_pelea', 'espada'];
+  'capucha_erizo', 'bigotote', 'guantes_blancos', 'guantes_pelea', 'espada', 'gorro_calabaza', 'corona_flores', 'vendas_momia',
+  'tornillos_monstruo', 'orejas_lobo', 'capucha_parca', 'colmillos', 'cara_calavera', 'cara_catrina', 'cicatriz_monstruo',
+  'escoba', 'calabaza_dulces', 'tridente', 'guadana', 'alas_cuervo', 'capa_vampiro'];
 // Los trajes de disfraz traen sus colores
 const TRAJE_ARRIBA = ARRIBA.filter((o) => o.traje).map((o) => o.id);
 
@@ -646,13 +812,14 @@ function htmlPestana(pestana, p, nombre, conBoutique) {
         + grupo('Estatura', chips('estatura', ESTATURAS, p))
         + grupo('Complexión', chips('complexion', COMPLEXIONES, p));
     case 'cabello':
-      return grupo('Corte', chips('peinado', PEINADOS, p))
+      return [['largo', 'Largo'], ['corto', 'Corto'], ['recogido', 'Recogido']]
+        .map(([estilo, titulo]) => grupo(titulo, chips('peinado', PEINADOS.filter((o) => o.estilo === estilo), p))).join('')
         + grupo('Color', colores('pelo', COLORES_PELO, p))
         + (p.sexo === 'hombre' ? grupo('Barba y bigote', chips('vello', VELLO, p)) : '');
     case 'ropa': {
       const disfraces = TRAJES.filter((t) => tieneArticulo(claveArticulo('traje', t.id)));
       return (disfraces.length ? grupo('🦸 Mis disfraces', `<div class="chips">${disfraces.map((t) =>
-          `<button class="chip especial" data-traje="${t.id}">${t.emoji} ${t.nombre}</button>`).join('')}</div>`) : '')
+          `<button class="chip especial" data-traje="${t.id}">${nombreTraje(t)}</button>`).join('')}</div>`) : '')
         + grupo('Arriba', chips('arriba', ARRIBA, p) + (TRAJE_ARRIBA.includes(p.arriba) && p.arriba !== 'samurai' ? '' : colores('colorArriba', COLORES, p))
           + (CON_COLOR2.includes(p.arriba) || p.arriba === 'samurai' ? `<small class="nota-creador">Detalles</small>${colores('colorArriba2', COLORES, p)}` : ''))
         + (p.arriba === 'playera' ? grupo('Estampado', chips('estampado', ESTAMPADOS, p)) : '')

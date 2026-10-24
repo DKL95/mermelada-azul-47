@@ -6,6 +6,7 @@
      especial    solo existe en la versión especial (con el código)
      precio      se compra en la boutique (pesos; en Chispitas: enChispitas)
      traje       viene incluida en ese disfraz (TRAJES)
+     estilo      'largo' | 'corto' | 'recogido' (solo peinados, para agruparlos)
    Lo que no tiene precio ni traje es gratis desde el inicio.
    Los colores son listas de #RRGGBB.
    Las ids de ropa, peinados y accesorios son las mismas que usan
@@ -34,10 +35,22 @@ export const COMPLEXIONES = [
 ];
 
 export const PEINADOS = [
-  { id: 'corto', nombre: 'Corto' }, { id: 'largo', nombre: 'Largo' }, { id: 'bob', nombre: 'Bob' },
-  { id: 'chongo', nombre: 'Chongo' }, { id: 'coleta', nombre: 'Coleta' }, { id: 'colitas', nombre: 'Colitas' },
-  { id: 'trenzas', nombre: 'Trenzas' }, { id: 'rizado', nombre: 'Rizado' }, { id: 'afro', nombre: 'Afro' },
-  { id: 'copete', nombre: 'Copete' }, { id: 'calvo', nombre: 'Rapado' },
+  // Largos
+  { id: 'largo', nombre: 'Largo', estilo: 'largo' }, { id: 'muy_largo', nombre: 'Muy largo', estilo: 'largo' },
+  { id: 'ondulado', nombre: 'Ondulado', estilo: 'largo' }, { id: 'rizado_largo', nombre: 'Rizado largo', estilo: 'largo' },
+  { id: 'flequillo', nombre: 'Con fleco', estilo: 'largo' }, { id: 'melena', nombre: 'Melena', estilo: 'largo' },
+  { id: 'rastas', nombre: 'Rastas', estilo: 'largo' }, { id: 'bob', nombre: 'Bob', estilo: 'largo' },
+  // Cortos
+  { id: 'corto', nombre: 'Corto', estilo: 'corto' }, { id: 'pixie', nombre: 'Pixie', estilo: 'corto' },
+  { id: 'raya_lado', nombre: 'Peinado de lado', estilo: 'corto' }, { id: 'despeinado', nombre: 'Despeinado', estilo: 'corto' },
+  { id: 'rizos_cortos', nombre: 'Rizos cortos', estilo: 'corto' }, { id: 'rizado', nombre: 'Rizado', estilo: 'corto' },
+  { id: 'afro', nombre: 'Afro', estilo: 'corto' }, { id: 'copete', nombre: 'Copete', estilo: 'corto' },
+  { id: 'mohicano', nombre: 'Mohicano', estilo: 'corto' }, { id: 'militar', nombre: 'Casquete', estilo: 'corto' },
+  { id: 'calvo', nombre: 'Rapado', estilo: 'corto' },
+  // Recogidos
+  { id: 'chongo', nombre: 'Chongo', estilo: 'recogido' }, { id: 'chongos', nombre: 'Dos chongos', estilo: 'recogido' },
+  { id: 'media_cola', nombre: 'Media cola', estilo: 'recogido' }, { id: 'coleta', nombre: 'Coleta', estilo: 'recogido' },
+  { id: 'colitas', nombre: 'Colitas', estilo: 'recogido' }, { id: 'trenzas', nombre: 'Trenzas', estilo: 'recogido' },
 ];
 
 export const COLORES_PELO = ['#1B1B2B', '#2B1B12', '#4A2E1C', '#7A4A26', '#C68B4B', '#E8C27A', '#B8462E', '#D9D9E0', '#FF7AC6', '#8B5CF6', '#3DA5FF', '#2BD0B0'];
@@ -56,12 +69,18 @@ export const ARRIBA = [
   { id: 'vestido', nombre: 'Vestido' },
   // Trajes de los disfraces
   { id: 'arana', nombre: '🕷️ Traje arácnido', traje: 'arana' }, { id: 'mago', nombre: '🧙 Túnica de mago', traje: 'mago' },
-  { id: 'murcielago', nombre: '🦇 Traje nocturno', traje: 'murcielago' }, { id: 'capitan', nombre: '🛡️ Traje de capitán', traje: 'capitan' },
+  { id: 'murcielago', nombre: '🦇 Traje del señor de la noche', traje: 'murcielago' }, { id: 'capitan', nombre: '🛡️ Traje de capitán', traje: 'capitan' },
   { id: 'heroe', nombre: '⭐ Traje de héroe', traje: 'heroe' }, { id: 'amazona', nombre: '⚔️ Armadura amazona', traje: 'amazona' },
   { id: 'astronauta', nombre: '🚀 Traje espacial', traje: 'astronauta' }, { id: 'pirata', nombre: '☠️ Ropa de pirata', traje: 'pirata' },
   { id: 'samurai', nombre: '🎌 Kimono samurái', traje: 'samurai' }, { id: 'dino', nombre: '🦖 Pijama de dino', traje: 'dino' },
   { id: 'karategi', nombre: '🥋 Karategui', traje: 'peleador' }, { id: 'gi_naranja', nombre: '🐉 Gi naranja', traje: 'guerrero' },
   { id: 'tunica_verde', nombre: '🗡️ Túnica verde', traje: 'bosque' },
+  // Halloween
+  { id: 'vampiro', nombre: '🧛 Traje de vampiro', traje: 'vampiro' }, { id: 'momia', nombre: '🧻 Vendas de momia', traje: 'momia' },
+  { id: 'esqueleto', nombre: '💀 Traje de esqueleto', traje: 'esqueleto' }, { id: 'calabaza', nombre: '🎃 Traje de calabaza', traje: 'calabaza' },
+  { id: 'bruja', nombre: '🧹 Túnica de brujería', traje: 'bruja' }, { id: 'monstruo', nombre: '🧟 Saco de monstruo', traje: 'monstruo' },
+  { id: 'lobo', nombre: '🐺 Camisa rasgada', traje: 'lobo' }, { id: 'diablo', nombre: '😈 Traje de diablo', traje: 'diablo' },
+  { id: 'tunica_negra', nombre: '⚰️ Túnica negra', traje: 'parca' },
 ];
 
 export const ESTAMPADOS = [
@@ -99,6 +118,9 @@ export const ACCESORIOS = {
     { id: 'mascara_arana', nombre: 'Máscara arácnida', traje: 'arana' }, { id: 'capucha_murcielago', nombre: 'Capucha nocturna', traje: 'murcielago' },
     { id: 'casco_astronauta', nombre: 'Casco espacial', traje: 'astronauta' }, { id: 'sombrero_pirata', nombre: 'Sombrero pirata', traje: 'pirata' },
     { id: 'gorro_dino', nombre: 'Gorro de dino', traje: 'dino' },
+    { id: 'gorro_calabaza', nombre: '🎃 Gorro de calabaza', precio: 500 }, { id: 'corona_flores', nombre: '🌺 Corona de flores', precio: 800 },
+    { id: 'vendas_momia', nombre: 'Vendas de momia', traje: 'momia' }, { id: 'tornillos_monstruo', nombre: 'Pelo de monstruo', traje: 'monstruo' },
+    { id: 'orejas_lobo', nombre: '🐺 Orejas de lobo', traje: 'lobo' }, { id: 'capucha_parca', nombre: 'Capucha negra', traje: 'parca' },
   ] },
   ojos: { nombre: '👓 Ojos', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'lentes', nombre: 'Lentes' }, { id: 'lentesSol', nombre: 'Lentes de sol' },
@@ -112,6 +134,8 @@ export const ACCESORIOS = {
     { id: 'bigotes_gato', nombre: '🐱 Bigotes de gato', precio: 300 }, { id: 'curita', nombre: 'Curita', precio: 150 },
     { id: 'bigotote', nombre: '🥸 Bigotote', precio: 300 },
     { id: 'cicatriz_rayo', nombre: '⚡ Cicatriz de rayo', traje: 'mago' },
+    { id: 'colmillos', nombre: '🧛 Colmillos', precio: 300 }, { id: 'cara_calavera', nombre: '💀 Calavera pintada', precio: 400 },
+    { id: 'cara_catrina', nombre: '🌸 Maquillaje de catrina', traje: 'catrina' }, { id: 'cicatriz_monstruo', nombre: 'Cicatriz cosida', traje: 'monstruo' },
   ] },
   orejas: { nombre: '👂 Orejas', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'aretes', nombre: 'Aretes' }, { id: 'arracadas', nombre: 'Arracadas' },
@@ -135,22 +159,30 @@ export const ACCESORIOS = {
     { id: 'globo', nombre: '🎈 Globo', precio: 250 }, { id: 'rosa', nombre: '🌹 Rosa', precio: 300 },
     { id: 'varita', nombre: '🪄 Varita', precio: 600 }, { id: 'espada', nombre: '🗡️ Espada', precio: 600 },
     { id: 'escudo', nombre: 'Escudo estrella', traje: 'capitan' },
+    { id: 'escoba', nombre: '🧹 Escoba', precio: 500 }, { id: 'calabaza_dulces', nombre: '🎃 Cubeta de dulces', precio: 400 },
+    { id: 'tridente', nombre: '🔱 Tridente', traje: 'diablo' }, { id: 'guadana', nombre: 'Guadaña', traje: 'parca' },
   ] },
   espalda: { nombre: '🪽 Espalda', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'mochila', nombre: '🎒 Mochila', precio: 400 }, { id: 'capa', nombre: 'Capa', precio: 900 },
     { id: 'alas_hada', nombre: '🧚 Alas de hada', precio: 1000 }, { id: 'alas_angel', nombre: '😇 Alas de ángel', precio: 1000 },
+    { id: 'alas_mariposa', nombre: '🦋 Alas de mariposa', precio: 1100 }, { id: 'alas_murcielago', nombre: '🦇 Alas de murciélago', precio: 1200 },
+    { id: 'alas_cuervo', nombre: '🪶 Alas de cuervo', precio: 1200 }, { id: 'alas_dragon', nombre: '🐉 Alas de dragón', precio: 1400 },
+    { id: 'capa_vampiro', nombre: '🧛 Capa de vampiro', precio: 900 },
   ] },
 };
 
 /* Disfraces: se compran completos. Al comprarlo se desbloquean todas
    sus piezas (las que dicen traje: ese id) y se pone de una vez.
-   piezas = campos del personaje que cambia. */
+   piezas = campos del personaje que cambia.
+   piezasHombre = lo que cambia distinto si el personaje es hombre (opcional).
+   nombre puede ser [femenino, masculino].
+   grupo 'halloween' = va en su propia sección de la boutique. */
 export const TRAJES = [
   { id: 'arana', nombre: 'Héroe arácnido', emoji: '🕷️', precio: 1500,
     piezas: { arriba: 'arana', 'acc.cabeza': 'mascara_arana', abajo: 'mallas', colorAbajo: '#1F5FFF', calzado: 'botas_heroe', colorCalzado: '#D62839' } },
   { id: 'mago', nombre: 'Aprendiz de mago', emoji: '🧙', precio: 1500,
     piezas: { arriba: 'mago', 'acc.ojos': 'lentes_redondos', 'acc.cara': 'cicatriz_rayo', 'acc.cuello': 'bufanda_rayas', 'colorAcc.cuello': '#8E1B2B', 'acc.mano': 'varita', 'acc.cabeza': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'zapatos', colorCalzado: '#1B1B2B' } },
-  { id: 'murcielago', nombre: 'Vigilante nocturno', emoji: '🦇', precio: 1500,
+  { id: 'murcielago', nombre: 'El señor de la noche', emoji: '🦇', precio: 1500,
     piezas: { arriba: 'murcielago', 'acc.cabeza': 'capucha_murcielago', 'acc.espalda': 'capa', 'colorAcc.espalda': '#1B1B2B', abajo: 'mallas', colorAbajo: '#5A5F6E', calzado: 'botas_heroe', colorCalzado: '#1B1B2B' } },
   { id: 'capitan', nombre: 'Capitán estrella', emoji: '🛡️', precio: 1500,
     piezas: { arriba: 'capitan', 'acc.mano': 'escudo', 'acc.cabeza': 'ninguno', abajo: 'mallas', colorAbajo: '#1F5FFF', calzado: 'botas_heroe', colorCalzado: '#D62839' } },
@@ -184,7 +216,41 @@ export const TRAJES = [
     piezas: { arriba: 'tunica_verde', 'acc.cabeza': 'gorro_elfo', 'acc.mano': 'espada', abajo: 'mallas', colorAbajo: '#F2F4F8', calzado: 'botas', colorCalzado: '#6B3E2E' } },
   { id: 'erizo', nombre: 'Erizo veloz', emoji: '💨', precio: 1500,
     piezas: { arriba: 'sudadera', colorArriba: '#1F5FFF', colorArriba2: '#FFFFFF', 'acc.cabeza': 'capucha_erizo', 'acc.muneca': 'guantes_blancos', abajo: 'pantalon', colorAbajo: '#1F5FFF', calzado: 'tenis', colorCalzado: '#E8414F' } },
+
+  // Halloween
+  { id: 'vampiro', nombre: ['Condesa vampira', 'Conde vampiro'], emoji: '🧛', precio: 1500, grupo: 'halloween',
+    piezas: { arriba: 'vampiro', 'acc.espalda': 'capa_vampiro', 'acc.cara': 'colmillos', 'acc.cabeza': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'zapatos', colorCalzado: '#1B1B2B' } },
+  { id: 'momia', nombre: 'Momia', emoji: '🧻', precio: 1200, grupo: 'halloween',
+    piezas: { arriba: 'momia', 'acc.cabeza': 'vendas_momia', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'mallas', colorAbajo: '#EDE6D3', calzado: 'botas', colorCalzado: '#CFC5AA' } },
+  { id: 'esqueleto', nombre: 'Esqueleto', emoji: '💀', precio: 1200, grupo: 'halloween',
+    piezas: { arriba: 'esqueleto', 'acc.cara': 'cara_calavera', 'acc.cabeza': 'ninguno', abajo: 'mallas', colorAbajo: '#1B1B2B', calzado: 'tenis', colorCalzado: '#1B1B2B' } },
+  { id: 'catrina', nombre: ['Catrina', 'Catrín'], emoji: '🌺', precio: 1500, grupo: 'halloween',
+    piezas: { arriba: 'vestido', colorArriba: '#1B1B2B', colorArriba2: '#FF4FA3', 'acc.cabeza': 'corona_flores', 'acc.cara': 'cara_catrina', 'acc.orejas': 'arracadas', 'colorAcc.orejas': '#FFD84D', 'acc.cuello': 'collar', 'colorAcc.cuello': '#E8414F', calzado: 'zapatos', colorCalzado: '#1B1B2B' },
+    piezasHombre: { arriba: 'saco', colorArriba: '#1B1B2B', colorArriba2: '#FF4FA3', 'acc.orejas': 'ninguno', 'acc.cuello': 'moñito', 'colorAcc.cuello': '#E8414F', abajo: 'pantalon', colorAbajo: '#1B1B2B' } },
+  { id: 'calabaza', nombre: 'Calabaza', emoji: '🎃', precio: 1000, grupo: 'halloween',
+    piezas: { arriba: 'calabaza', 'acc.cabeza': 'gorro_calabaza', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'tenis', colorCalzado: '#3E9142' } },
+  { id: 'bruja', nombre: ['Bruja', 'Brujo'], emoji: '🧹', precio: 1200, grupo: 'halloween',
+    piezas: { arriba: 'bruja', 'acc.cabeza': 'sombrero_bruja', 'colorAcc.cabeza': '#6B3FA0', 'acc.mano': 'escoba', abajo: 'falda', colorAbajo: '#2B1B3F', calzado: 'botas', colorCalzado: '#1B1B2B' },
+    piezasHombre: { abajo: 'pantalon' } },
+  { id: 'monstruo', nombre: 'Monstruo de laboratorio', emoji: '🧟', precio: 1500, grupo: 'halloween',
+    piezas: { arriba: 'monstruo', 'acc.cabeza': 'tornillos_monstruo', 'acc.cara': 'cicatriz_monstruo', abajo: 'pantalon', colorAbajo: '#2A2E38', calzado: 'botas', colorCalzado: '#1B1B2B' } },
+  { id: 'lobo', nombre: ['Mujer lobo', 'Hombre lobo'], emoji: '🐺', precio: 1500, grupo: 'halloween',
+    piezas: { arriba: 'lobo', 'acc.cabeza': 'orejas_lobo', 'acc.cara': 'colmillos', abajo: 'jeans', colorAbajo: '#2E4F9E', calzado: 'descalzo' } },
+  { id: 'diablo', nombre: ['Diablita', 'Diablito'], emoji: '😈', precio: 1500, grupo: 'halloween',
+    piezas: { arriba: 'diablo', 'acc.cabeza': 'cuernitos', 'acc.espalda': 'alas_murcielago', 'colorAcc.espalda': '#1B1B2B', 'acc.mano': 'tridente', abajo: 'mallas', colorAbajo: '#C81E2E', calzado: 'botas', colorCalzado: '#1B1B2B' } },
+  { id: 'parca', nombre: 'La Parca', emoji: '⚰️', precio: 1500, grupo: 'halloween',
+    piezas: { arriba: 'tunica_negra', 'acc.cabeza': 'capucha_parca', 'acc.mano': 'guadana', 'acc.cara': 'cara_calavera', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'botas', colorCalzado: '#1B1B2B' } },
 ];
+
+/** Las piezas de un disfraz para este personaje (algunos cambian si es hombre). */
+export function piezasDe(traje, p) {
+  return p?.sexo === 'hombre' && traje.piezasHombre ? { ...traje.piezas, ...traje.piezasHombre } : traje.piezas;
+}
+
+/** Todas las piezas que puede llegar a usar un disfraz (para desbloquearlas al comprarlo). */
+export function todasLasPiezas(traje) {
+  return { ...traje.piezasHombre, ...traje.piezas };
+}
 
 // Colores para ropa y accesorios
 export const COLORES = ['#FFFFFF', '#1B1B2B', '#8A8FA3', '#FF4FA3', '#E8414F', '#FF7A1A', '#FFD84D', '#22C55E', '#14B8A6', '#3DA5FF', '#1F5FFF', '#8B5CF6', '#6B3E2E'];

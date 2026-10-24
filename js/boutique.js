@@ -12,12 +12,13 @@ import { avisarLogros } from './tienda.js';
 import { mostrarModal, aviso, dinero } from './ui.js';
 import { sonidos } from './audio.js';
 import { chispitas, gastarChispitas, enChispitas, textoChispitas, tieneArticulo, agregarArticulos } from './cartera.js';
-import { personaje, guardarPersonaje, dibujarPersonaje, tieneOpcion, conTraje } from './personaje.js';
-import { ACCESORIOS, ABAJO, CALZADO, TRAJES, claveArticulo, personajeInicial } from './data/personaje.js';
+import { personaje, guardarPersonaje, dibujarPersonaje, tieneOpcion, conTraje, nombreTraje } from './personaje.js';
+import { ACCESORIOS, ABAJO, CALZADO, TRAJES, claveArticulo, personajeInicial, piezasDe, todasLasPiezas } from './data/personaje.js';
 
 // [id, título, de dónde salen los artículos]
 const SECCIONES = [
   ['trajes', '🦸 Disfraces'],
+  ['halloween', '🎃 Halloween'],
   ...Object.entries(ACCESORIOS).map(([cat, { nombre }]) => [`acc.${cat}`, nombre]),
   ['abajo', '👖 Abajo'],
   ['calzado', '👟 Calzado'],
@@ -28,8 +29,9 @@ const VISTA = { 'acc.cabeza': 'cabeza', 'acc.ojos': 'cara', 'acc.cara': 'cara', 
 
 /** Lo que se vende en una sección: { campo, id, nombre, precio, traje? } */
 function articulos(seccion) {
-  if (seccion === 'trajes') {
-    return TRAJES.map((t) => ({ campo: 'traje', id: t.id, nombre: `${t.emoji} ${t.nombre}`, precio: t.precio, traje: t }));
+  if (seccion === 'trajes' || seccion === 'halloween') {
+    return TRAJES.filter((t) => (t.grupo === 'halloween') === (seccion === 'halloween'))
+      .map((t) => ({ campo: 'traje', id: t.id, nombre: nombreTraje(t), precio: t.precio, traje: t }));
   }
   const lista = seccion === 'abajo' ? ABAJO : seccion === 'calzado' ? CALZADO : ACCESORIOS[seccion.slice(4)].opciones;
   return lista.filter((o) => o.precio).map((o) => ({ campo: seccion, id: o.id, nombre: o.nombre, precio: o.precio, opcion: o }));
@@ -51,7 +53,7 @@ function probar(p, art) {
 
 /** ¿Ya lo trae puesto? */
 function puesto(p, art) {
-  if (art.traje) return Object.entries(art.traje.piezas).every(([c, v]) => c.split('.').reduce((o, k) => o[k], p) === v);
+  if (art.traje) return Object.entries(piezasDe(art.traje, p)).every(([c, v]) => c.split('.').reduce((o, k) => o[k], p) === v);
   return art.campo.split('.').reduce((o, k) => o[k], p) === art.id;
 }
 
@@ -59,7 +61,7 @@ function puesto(p, art) {
 function clavesDe(art) {
   if (!art.traje) return [claveArticulo(art.campo, art.id)];
   // Un disfraz trae sus piezas (también las que se venden sueltas, como la capa o la varita)
-  return [claveArticulo('traje', art.id), ...Object.entries(art.traje.piezas)
+  return [claveArticulo('traje', art.id), ...Object.entries(todasLasPiezas(art.traje))
     .filter(([campo]) => ['arriba', 'abajo', 'calzado'].includes(campo) || campo.startsWith('acc.'))
     .map(([campo, id]) => claveArticulo(campo, id))];
 }

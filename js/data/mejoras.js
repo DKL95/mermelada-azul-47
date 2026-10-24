@@ -18,6 +18,8 @@ export const MEJORAS = [
     descripcion: 'Una rastra más ancha: la masa queda redonda con menos vueltas.', efectos: ['Rastra más ancha', 'Rastra extra ancha'] },
   { id: 'plancha', seccion: 'cocina', emoji: '🔥', nombre: 'Plancha profesional', precios: [450, 1100],
     descripcion: 'Calienta parejito, así la zona perfecta de cocción es más ancha.', efectos: ['Zona perfecta +30%', 'Zona perfecta +60%'] },
+  { id: 'plancha_doble', seccion: 'cocina', emoji: '🍳', nombre: 'Segunda plancha', precios: [1200],
+    descripcion: 'Una plancha extra para calentar dos crepas al mismo tiempo. Cambia entre ellas con los botones 1 y 2; la otra se sigue cocinando.', efectos: ['Dos crepas a la vez'] },
   { id: 'temporizador', seccion: 'cocina', emoji: '⏲️', nombre: 'Temporizador asistido', precios: [400],
     descripcion: 'Suena una alarmita justo cuando la crepa entra a la zona perfecta.', efectos: ['Alarma de volteo'] },
   { id: 'charola', seccion: 'cocina', emoji: '📦', nombre: 'Charola grande', precios: [350],

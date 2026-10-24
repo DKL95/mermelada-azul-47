@@ -72,7 +72,8 @@ function pintarBarra(e) {
   }
   const rep = Math.round(e.reputacion * 2) / 2; // de media en media estrella
   if (ultimo.rep !== rep) {
-    $('#valor-reputacion').innerHTML = estrellasSVG(rep);
+    // En pantallas angostas se ve una estrella y el número (CSS)
+    $('#valor-reputacion').innerHTML = `${estrellasSVG(rep)}<b class="rep-corta">${rep.toFixed(1)}</b>`;
     $('#ind-reputacion').title = `Reputación: ${rep} de 5`;
     ultimo.rep = rep;
   }

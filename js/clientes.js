@@ -330,7 +330,7 @@ function aparienciaPara(tipo) {
   // Corbata y moñito solo con camisa o saco
   if ((a.extra === 'corbata' || a.extra === 'moñito') && !['camisa', 'saco'].includes(a.vestimenta)) a.extra = 'ninguno';
   // Barba o bigote para algunos adultos
-  if (!nino && !['colitas', 'trenzas'].includes(a.peinado)) {
+  if (!nino && !['colitas', 'trenzas', 'chongos'].includes(a.peinado)) {
     const r = Math.random();
     if (r < 0.1) a.barba = true; else if (r < 0.18) a.bigote = true;
   }
@@ -620,6 +620,21 @@ export function peinadoAtras(a) {
       <ellipse cx="106" cy="54" rx="11" ry="17" fill="${color}" transform="rotate(25 106 54)"/>`;
     case 'trenzas': return [22, 98].map((x) => [88, 101, 114, 127].map((y) => `<ellipse cx="${x}" cy="${y}" rx="7" ry="8" fill="${color}"/>`).join('')
       + `<circle cx="${x}" cy="137" r="4" fill="${a.colorAcc}"/>`).join('');
+    case 'rizado_largo': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v60 q-20 8 -40 4 q-20 4 -40 -4 z" fill="${color}"/>`
+      + [[16, 72], [104, 72], [14, 94], [106, 94], [16, 116], [104, 116], [22, 136], [98, 136], [36, 142], [84, 142]]
+        .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="11" fill="${color}"/>`).join('');
+    case 'ondulado': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 q8 12 2 26 q-6 14 2 28 q6 14 -4 24 q-10 4 -18 -2 v-40 h-44 v40
+      q-8 6 -18 2 q-10 -10 -4 -24 q8 -14 2 -28 q-6 -14 2 -26 z" fill="${color}"/>`;
+    case 'muy_largo': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v96 q-4 6 -10 6 h-6 v-84 h-48 v84 h-6 q-6 0 -10 -6 z" fill="${color}"/>`;
+    case 'media_cola': return `<circle cx="60" cy="20" r="11" fill="${color}"/>
+      <path d="M20 70 q0 -48 40 -48 q40 0 40 48 v52 q-12 6 -20 0 v-40 h-40 v40 q-8 6 -20 0 z" fill="${color}"/>`;
+    case 'flequillo': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v52 q-12 6 -20 0 v-40 h-40 v40 q-8 6 -20 0 z" fill="${color}"/>`;
+    case 'chongos': return [30, 90].map((x) => `<circle cx="${x}" cy="30" r="13" fill="${color}"/>
+      <path d="M${x - 6} 26 q6 -6 12 0 q-2 8 -8 6" stroke="rgba(0,0,0,0.15)" stroke-width="2" fill="none"/>`).join('');
+    case 'rastas': return `<path d="M20 66 q0 -44 40 -44 q40 0 40 44 z" fill="${color}"/>`
+      + [[18, 128], [26, 136], [34, 140], [86, 140], [94, 136], [102, 128]]
+        .map(([x, y]) => `<path d="M${x} 58 V${y}" stroke="${color}" stroke-width="7.5" stroke-linecap="round"/>`).join('');
+    case 'melena': return `<path d="M20 70 q0 -48 40 -48 q40 0 40 48 v34 q-8 6 -18 2 v-16 h-44 v16 q-10 4 -18 -2 z" fill="${color}"/>`;
     default: return '';
   }
 }
@@ -638,6 +653,29 @@ export function peinadoFrente(a) {
       <path d="M30 40 q16 -32 56 -14 q-6 8 -20 8 q-20 -4 -36 6 z" fill="${color}"/>`;
     case 'colitas': return `${raya}<circle cx="24" cy="50" r="4.5" fill="${a.colorAcc}"/><circle cx="96" cy="50" r="4.5" fill="${a.colorAcc}"/>`;
     case 'trenzas': return raya;
+    case 'rizado_largo': return [[28, 50], [38, 38], [51, 31], [65, 30], [78, 34], [89, 43], [95, 56]]
+      .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="10" fill="${color}"/>`).join('')
+      + [[21, 66], [99, 66], [19, 84], [101, 84]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="8.5" fill="${color}"/>`).join('');
+    case 'ondulado': return `<path d="M22 70 q0 -46 38 -46 q38 0 38 46 q-4 -14 -14 -22 q-6 10 -18 8 q-10 -2 -16 -10 q-14 8 -28 24 z" fill="${color}"/>`;
+    case 'muy_largo': return `<path d="M22 70 q0 -46 38 -46 q38 0 38 46 q-6 -18 -18 -24 q-14 10 -40 8 q-12 4 -18 16 z" fill="${color}"/>
+      <path d="M22 64 q-4 40 2 96 q6 4 12 0 q-6 -50 -4 -88 z M98 64 q4 40 -2 96 q-6 4 -12 0 q6 -50 4 -88 z" fill="${color}"/>`;
+    case 'media_cola': return raya;
+    case 'flequillo': return `<path d="M22 70 q0 -46 38 -46 q38 0 38 46 q0 -8 -4 -14 h-68 q-4 6 -4 14 z" fill="${color}"/>`;
+    case 'chongos': return raya;
+    case 'rastas': return `${raya}${[22, 98].map((x) => `<path d="M${x} 56 V100" stroke="${color}" stroke-width="7" stroke-linecap="round"/>`).join('')}`;
+    case 'pixie': return `<path d="M22 68 Q20 22 60 22 Q98 22 98 60 Q92 46 84 42 Q72 60 40 57 Q29 57 22 68 Z" fill="${color}"/>
+      <path d="M23 62 q-3 12 4 19 q0 -8 3 -12 z M97 62 q3 12 -4 19 q0 -8 -3 -12 z" fill="${color}"/>`;
+    case 'militar': return `<path d="M22 64 q0 -42 38 -42 q38 0 38 42 q-14 -26 -38 -26 q-24 0 -38 26 z" fill="${color}" opacity="0.6"/>`;
+    case 'despeinado': return `<path d="M22 64 q-2 -22 10 -32 l-4 -10 l12 6 l2 -12 l10 10 l8 -12 l6 12 l10 -10 l2 12 l12 -6 l-4 10
+      q12 10 10 32 q-10 -16 -22 -16 q-6 6 -16 2 q-10 4 -16 -2 q-12 2 -14 16 z" fill="${color}"/>`;
+    case 'mohicano': return `<path d="M22 64 q0 -42 38 -42 q38 0 38 42 q-14 -26 -38 -26 q-24 0 -38 26 z" fill="${color}" opacity="0.35"/>
+      <path d="M50 42 L47 8 Q60 -6 73 8 L70 42 Q60 36 50 42 Z" fill="${color}"/>`;
+    case 'raya_lado': return `<path d="M22 64 q0 -42 38 -42 q38 0 38 42 q-4 -12 -10 -16 q-26 -6 -50 0 q-12 4 -16 16 z" fill="${color}"/>
+      <path d="M44 24 q-4 10 -2 22" stroke="rgba(0,0,0,0.18)" stroke-width="2" fill="none"/>
+      <path d="M48 32 q20 -6 40 10" stroke="rgba(255,255,255,0.18)" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    case 'melena': return `<path d="M22 72 q0 -48 38 -48 q38 0 38 48 q-6 -22 -24 -30 q-8 -2 -14 6 q-6 -8 -14 -6 q-18 8 -24 30 z" fill="${color}"/>`;
+    case 'rizos_cortos': return `${raya}${[[28, 50], [36, 40], [46, 33], [58, 30], [70, 31], [81, 36], [89, 45], [94, 55]]
+      .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="8" fill="${color}"/>`).join('')}`;
     default: return ''; // calvo
   }
 }

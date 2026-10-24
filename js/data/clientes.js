@@ -73,7 +73,8 @@ export const ROPAS = ['#FF4FA3', '#3DA5FF', '#14B8A6', '#FFB020', '#8B5CF6', '#F
 // Sacos (más serios) y mezclilla de los overoles
 export const SACOS = ['#1B2A55', '#3B2F4A', '#2F4F4F', '#6B3E2E', '#4A4A58'];
 export const MEZCLILLAS = ['#3D6FD8', '#5A8BE0', '#2E4F9E'];
-export const PEINADOS = ['corto', 'largo', 'chongo', 'rizado', 'coleta', 'calvo', 'afro', 'trenzas', 'copete', 'bob', 'colitas'];
+export const PEINADOS = ['corto', 'largo', 'chongo', 'rizado', 'coleta', 'calvo', 'afro', 'trenzas', 'copete', 'bob', 'colitas',
+  'rizado_largo', 'ondulado', 'flequillo', 'chongos', 'rastas', 'pixie', 'despeinado', 'raya_lado', 'melena', 'rizos_cortos', 'militar'];
 export const ACCESORIOS = ['ninguno', 'ninguno', 'gorra', 'lentes', 'moño', 'bufanda', 'gorro', 'sombrero', 'diadema', 'flor'];
 export const VESTIMENTAS = ['playera', 'rayas', 'sudadera', 'camisa', 'saco', 'vestido', 'overol', 'chamarra', 'sueter'];
 export const ESTAMPADOS = ['ninguno', 'corazon', 'estrella', 'puntos', 'crepa'];
@@ -93,7 +94,7 @@ export const ESTILOS = {
     vestimentas: ['overol', 'playera', 'rayas', 'sudadera'],
     accesorios: ['ninguno', 'gorra', 'gorro', 'diadema', 'moño'],
     extras: ['globo', 'paleta', 'mochila', 'ninguno'],
-    peinados: ['corto', 'rizado', 'colitas', 'coleta', 'copete', 'afro', 'trenzas'],
+    peinados: ['corto', 'rizado', 'colitas', 'coleta', 'copete', 'afro', 'trenzas', 'chongos', 'despeinado', 'flequillo'],
   },
   apurado: {
     vestimentas: ['saco', 'chamarra', 'camisa', 'sudadera'],

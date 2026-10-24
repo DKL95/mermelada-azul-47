@@ -11,8 +11,12 @@
      { t:'p', e, id, x, y, s }        una pieza (topping) — s = semilla
      { t:'s', e, id, d, largo }       un trazo de salsa (path SVG)
    (e = estación donde se puso, para poder deshacer solo lo de ahí)
+
+   Con la mejora "Segunda plancha" hay dos fogones: cada uno con su
+   crepa, su plancha y su cocción. Se cambia de uno a otro con los
+   botones 1 y 2; el que no se ve se sigue cocinando.
    ============================================================ */
-import { estado, actualizar } from './state.js';
+import { estado, actualizar, suscribir } from './state.js';
 import { aviso, mostrarModal, confirmar } from './ui.js';
 import { sonidos } from './audio.js';
 import { Plancha } from './plancha.js';
@@ -70,6 +74,10 @@ let seleccion = null;        // ingrediente elegido en la bandeja
 let coccion = null;          // { lado, inicio, v1, v2, params }
 let rafId = 0;
 let pedidoActivo = null;     // número de comanda que se está preparando
+// Segunda plancha: los datos de cada fogón. crepa, plancha, coccion, etapa y
+// pedidoActivo (arriba) siempre son los del fogón que se ve.
+const fogones = [];
+let fogon = 0;
 let trazo = null;            // salsa que se está dibujando { id, tramos: [[x,y]...] }
 // Pestañita elegida en cada bandeja (y la primera de cada sabor)
 const DULCE = { relleno: 'untable', toppings: 'crujiente', decorar: 'salsa' };
@@ -107,6 +115,13 @@ export function montar(contenedor) {
         <button class="btn-menu-cocina" id="btn-menu" aria-label="Menú de la casa">📖 Menú</button>
         <button class="btn-ayuda-cocina" id="btn-ayuda" aria-label="Ayuda">?</button>
         <button class="charola-cocina" id="btn-charola">📦 Charola: 0</button>
+        
+          <button class="fogon-btn" data-fogon="0" hidden aria-label="Plancha 1">
+            <b>🍳 1</b><small class="fogon-estado"></small><i class="fogon-barra"><i></i></i>
+          </button>
+          <button class="fogon-btn" data-fogon="1" hidden aria-label="Plancha 2">
+            <b>🍳 2</b><small class="fogon-estado"></small><i class="fogon-barra"><i></i></i>
+          </button>
       </div>
 
       <div class="estaciones" id="estaciones">
@@ -132,12 +147,17 @@ export function montar(contenedor) {
   const etiqueta = $('#etiqueta-pedido');
   etiqueta.addEventListener('pointerdown', (ev) => ev.stopPropagation());
   etiqueta.addEventListener('click', (ev) => { ev.stopPropagation(); verComanda(pedidoActivo); });
+  raiz.querySelectorAll('.fogon-btn').forEach((b) => b.addEventListener('click', () => {
+    if (Number(b.dataset.fogon) !== fogon) { sonidos.click(); cambiarFogon(Number(b.dataset.fogon)); }
+  }));
 
   on('cambio', () => { pintarRiel(); pintarCharola(); });
   on('tic', pacienciaRiel);
   nuevaCrepa();
   pintarCharola();
   pintarRiel();
+  suscribir(prepararFogones);
+  prepararFogones();
 }
 
 export function alMostrar() { plancha.pintar(); }
@@ -147,9 +167,9 @@ export function alOcultar() {}
 //  Flujo de estaciones
 // ============================================================
 
-function nuevaCrepa() {
-  crepa = {
-    id: Date.now().toString(36),
+function crepaNueva() {
+  return {
+    id: Date.now().toString(36) + Math.floor(Math.random() * 1e3),
     semilla: Math.floor(Math.random() * 1e6),
     masa: 'masa_clasica',
     forma: 0,
@@ -158,6 +178,10 @@ function nuevaCrepa() {
     doblado: null,
     adornos: [],
   };
+}
+
+function nuevaCrepa() {
+  crepa = crepaNueva();
   seleccion = null;
   trazo = null;
   plancha.masa = crepa.masa;
@@ -180,7 +204,9 @@ function irA(nueva) {
     el.classList.toggle('actual', i === idx);
     el.classList.toggle('hecha', i < idx);
   });
-  raiz.querySelector('.estacion.actual')?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  // Centrar la estación actual moviendo solo su fila (scrollIntoView movía también la pantalla)
+  const fila = $('#estaciones'), actual = fila.querySelector('.estacion.actual');
+  if (actual) fila.scrollTo({ left: actual.offsetLeft - fila.offsetLeft - (fila.clientWidth - actual.offsetWidth) / 2, behavior: 'smooth' });
 
   // Si la comanda que se prepara es de otro sabor, la bandeja abre en el suyo
   const pedido = comandas().find((c) => c.numero === pedidoActivo)?.pedido;
@@ -192,6 +218,7 @@ function irA(nueva) {
     masa: panelMasa, coccion: panelCoccion, relleno: panelBandeja, doblado: panelDoblado,
     toppings: panelBandeja, decorar: panelBandeja, entrega: panelEntrega,
   })[etapa]();
+  pintarFogones();
 }
 
 /** Pone botones en el panel. botones: [{texto, clase, id, alTocar}] */
@@ -288,8 +315,7 @@ function empezarCoccion() {
   coccion = { lado: 1, inicio: performance.now(), v1: 0, v2: 0, params, alarma: false };
   sonidos.chisporroteo();
   irA('coccion');
-  cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(cicloCoccion);
+  if (!rafId) rafId = requestAnimationFrame(cicloCoccion);
 }
 
 function panelCoccion() {
@@ -304,6 +330,8 @@ function panelCoccion() {
       <div class="aguja" id="aguja"></div>
     </div>
     <div class="leyenda-coccion"><span>Cruda</span><span class="centro" style="left:${pct(1)}%">✨ Perfecta</span><span>Quemada</span></div>`;
+  if (coccion.alarma) $panel.querySelector('.barra-coccion').classList.add('alerta');
+  $('#aguja').style.left = ((coccion.lado === 1 ? coccion.v1 : coccion.v2) / V_MAX) * 100 + '%';
   $panel.appendChild(botones([
     { texto: coccion.lado === 1 ? '¡Voltear! 🍳' : 'Sacar de la plancha ✋', clase: 'btn-primario btn-grande', alTocar: accionCoccion },
   ]));
@@ -312,32 +340,39 @@ function panelCoccion() {
     : 'El segundo lado se cocina más rápido. ¡Sácala a tiempo!';
 }
 
-function vActual(ahora = performance.now()) {
-  const { lado, inicio, params } = coccion;
+function vActual(c = coccion, ahora = performance.now()) {
+  const { lado, inicio, params } = c;
   const t = (ahora - inicio) / 1000;
   return Math.min(V_MAX, t / (lado === 1 ? params.t1 : params.t2));
 }
 
+/** Avanza la cocción de los fogones que estén en la plancha (el que no se ve también). */
 function cicloCoccion(ahora) {
-  if (etapa !== 'coccion') return;
-  const v = vActual(ahora);
-  if (coccion.lado === 1) coccion.v1 = v; else coccion.v2 = v;
-
-  const aguja = $('#aguja');
-  if (aguja) aguja.style.left = (v / V_MAX) * 100 + '%';
-  // Temporizador asistido: alarmita al entrar a la zona perfecta
-  if (nivel(estado(), 'temporizador') && !coccion.alarma && v >= 1 - coccion.params.ventana) {
-    coccion.alarma = true;
-    sonidos.alarma();
-    $('.barra-coccion')?.classList.add('alerta');
+  let cocinando = false;
+  for (let i = 0; i < Math.max(1, fogones.length); i++) {
+    const f = datosFogon(i);
+    if (f.etapa !== 'coccion') continue;
+    cocinando = true;
+    const c = f.coccion;
+    const v = vActual(c, ahora);
+    if (c.lado === 1) c.v1 = v; else c.v2 = v;
+    // Temporizador asistido: alarmita al entrar a la zona perfecta
+    if (nivel(estado(), 'temporizador') && !c.alarma && v >= 1 - c.params.ventana) {
+      c.alarma = true;
+      sonidos.alarma();
+      if (i === fogon) $('.barra-coccion')?.classList.add('alerta');
+    }
+    if (i !== fogon) continue;
+    const aguja = $('#aguja');
+    if (aguja) aguja.style.left = (v / V_MAX) * 100 + '%';
+    $esc.classList.toggle('quemandose', v > 1 + c.params.ventana + 0.15);
+    // Solo redibujamos la crepa si la cocina está a la vista
+    if (raiz.classList.contains('activa')) {
+      plancha.ver({ modo: c.lado === 1 ? 'lado1' : 'lado2', v1: c.v1, v2: c.v2 });
+    }
   }
-  $esc.classList.toggle('quemandose', v > 1 + coccion.params.ventana + 0.15);
-
-  // Solo redibujamos la crepa si la cocina está a la vista
-  if (raiz.classList.contains('activa')) {
-    plancha.ver({ modo: coccion.lado === 1 ? 'lado1' : 'lado2', v1: coccion.v1, v2: coccion.v2 });
-  }
-  rafId = requestAnimationFrame(cicloCoccion);
+  pintarFogones();
+  rafId = cocinando ? requestAnimationFrame(cicloCoccion) : 0;
 }
 
 /** Calificación de un lado (0..1) */
@@ -361,12 +396,14 @@ function accionCoccion() {
     coccion.v1 = vActual();
     aviso(comentarioLado(coccion.v1, ventana));
     // Animación de volteo: a la mitad se refleja la crepa
+    // (pl y c: por si cambias de plancha a media animación)
     $esc.classList.add('volteando');
     sonidos.voltear();
     sonidos.chisporroteo();
+    const pl = plancha, c = coccion;
     setTimeout(() => {
-      plancha.voltear();
-      plancha.ver({ modo: 'lado2', v1: coccion.v1, v2: 0 });
+      pl.voltear();
+      pl.ver({ modo: 'lado2', v1: c.v1, v2: 0 });
     }, 200);
     setTimeout(() => $esc.classList.remove('volteando'), 420);
     coccion.lado = 2;
@@ -374,7 +411,6 @@ function accionCoccion() {
     panelCoccion();
   } else {
     coccion.v2 = vActual();
-    cancelAnimationFrame(rafId);
     aviso(comentarioLado(coccion.v2, ventana));
     const p1 = puntajeLado(coccion.v1, ventana);
     const p2 = puntajeLado(coccion.v2, ventana);
@@ -709,6 +745,80 @@ function mandarACharola() {
     aviso(lista.pedido ? `¡Crepa #${lista.pedido} lista! Entrégala en Venta 🛎️` : '¡Crepa en la charola! 📦');
     nuevaCrepa();
   }, 450);
+}
+
+// ============================================================
+//  Segunda plancha: dos fogones
+// ============================================================
+
+const NOMBRE_ETAPA = Object.fromEntries(ESTACIONES.map((e) => [e.id, e.nombre]));
+let hayDoble = false;
+
+/** Los datos de un fogón (el que se ve vive en las variables sueltas). */
+function datosFogon(i) {
+  return i === fogon || !fogones[i] ? { crepa, plancha, coccion, etapa, pedidoActivo } : fogones[i];
+}
+
+/** Al comprar la mejora aparece la segunda plancha (y se quita si reinicias la partida). */
+function prepararFogones() {
+  const doble = nivel(estado(), 'plancha_doble') > 0;
+  if (doble === hayDoble) return;
+  hayDoble = doble;
+  if (doble && fogones.length < 2) {
+    const otra = new Plancha($esc);
+    otra.canvas.hidden = true;
+    fogones[0] = datosFogon(0);
+    fogones[1] = { crepa: crepaNueva(), plancha: otra, coccion: null, etapa: 'masa', pedidoActivo: null };
+  }
+  if (!doble && fogon === 1) cambiarFogon(0, true);
+  raiz.querySelectorAll('.fogon-btn').forEach((b) => { b.hidden = !doble; });
+  $esc.closest('.mostrador-cocina').classList.toggle('con-fogones', doble);
+  pintarFogones();
+}
+
+/** Pasa a la otra plancha: guarda lo del fogón actual y carga lo del otro. */
+function cambiarFogon(i, forzar = false) {
+  if (i === fogon || !fogones[i]) return;
+  if (!forzar && (arrastrando || trazo || $esc.classList.contains('enviando'))) return;
+  fogones[fogon] = datosFogon(fogon);
+  plancha.canvas.hidden = true;
+  fogon = i;
+  ({ crepa, plancha, coccion, etapa, pedidoActivo } = fogones[i]);
+  plancha.canvas.hidden = false;
+  seleccion = null;
+  // El escenario se acomoda a lo que lleva esta crepa
+  $esc.classList.remove('quemandose', 'volteando', 'doblando');
+  $esc.classList.toggle('en-plato', !['masa', 'coccion'].includes(etapa));
+  $('#doblada').innerHTML = crepa.doblado ? crepaDoblada(crepa) : '';
+  if (crepa.doblado) $esc.classList.add('doblando');
+  $('#capa-trazo').innerHTML = '';
+  $('#rastra').hidden = true;
+  if (etapa === 'coccion') plancha.ver({ modo: coccion.lado === 1 ? 'lado1' : 'lado2', v1: coccion.v1, v2: coccion.v2 });
+  else plancha.pintar();
+  irA(etapa);
+  pintarRiel();
+  pintarFogones();
+}
+
+/** Botones 1 y 2: en qué va cada plancha (y si ya hay que voltear o se quema). */
+function pintarFogones() {
+  if (!hayDoble) return;
+  raiz.querySelectorAll('.fogon-btn').forEach((b) => {
+    const i = Number(b.dataset.fogon);
+    const f = datosFogon(i);
+    let texto = NOMBRE_ETAPA[f.etapa], senal = '', avance = 0;
+    if (f.etapa === 'coccion' && f.coccion) {
+      const c = f.coccion, v = c.lado === 1 ? c.v1 : c.v2;
+      avance = v / V_MAX;
+      senal = v > 1 + c.params.ventana ? 'quemando' : v >= 1 - c.params.ventana ? 'lista' : 'cocinando';
+      texto = senal === 'lista' ? (c.lado === 1 ? '¡Voltear!' : '¡Sacar!') : senal === 'quemando' ? '¡Se quema!' : `Lado ${c.lado}`;
+    }
+    b.classList.toggle('activo', i === fogon);
+    if (b.dataset.estado !== senal) b.dataset.estado = senal;
+    const $t = b.querySelector('.fogon-estado');
+    if ($t.textContent !== texto) $t.textContent = texto;
+    b.querySelector('.fogon-barra i').style.width = avance * 100 + '%';
+  });
 }
 
 // ============================================================

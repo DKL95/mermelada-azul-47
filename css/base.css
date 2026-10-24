@@ -124,14 +124,15 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
   font-size: 15px;
   white-space: nowrap;
 }
-#ind-dinero { flex: 1 1 auto; min-width: 0; }
-#ind-dinero .ind-valor { overflow: hidden; text-overflow: ellipsis; }
+/* El dinero nunca se encoge: si no cabe todo, se compactan los demás (abajo) */
+#ind-dinero { flex: 1 0 auto; }
 .ind-etiqueta { font-weight: 500; color: var(--texto-suave); font-size: 13px; }
 .ind-icono { font-size: 16px; }
 .indicador.salta { animation: salto 0.35s ease; }
 
-.estrellas { display: flex; gap: 1px; }
+.estrellas { display: flex; align-items: center; gap: 1px; }
 .estrellas svg { width: 13px; height: 13px; display: block; }
+.rep-corta { display: none; }
 #valor-reloj small { margin-left: 2px; font-size: 10px; font-weight: 500; }
 
 .btn-icono {
@@ -149,10 +150,31 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
 }
 .btn-icono:active { transform: translateY(2px); box-shadow: none; }
 
-/* En pantallas muy angostas se esconde la etiqueta "Día" */
+/* En celulares no caben las 5 estrellas junto al dinero y las Chispitas:
+   la reputación se ve como ★ 4.5, el reloj sin ícono y sin "Día" */
+@media (max-width: 440px) {
+  .ind-etiqueta, #ind-reloj .ind-icono { display: none; }
+  #ind-reputacion .estrellas svg:not(:first-child) { display: none; }
+  #ind-reputacion .estrellas svg { width: 15px; height: 15px; }
+  .rep-corta { display: inline; margin-left: 3px; font-size: 15px; }
+  .indicador { padding: 0 9px; }
+}
 @media (max-width: 370px) {
-  .ind-etiqueta { display: none; }
-  .indicador { padding: 0 8px; font-size: 14px; }
+  .indicador { padding: 0 7px; font-size: 14px; }
+  #barra-superior { gap: 4px; padding-left: 6px; padding-right: 6px; }
+}
+
+/* ===== Tabletas: el juego usa toda la pantalla y todo crece un poco ===== */
+@media (min-width: 600px) and (min-height: 600px) {
+  #app { max-width: 1180px; }
+  :root { --alto-barra-sup: 64px; --alto-tabs: 80px; }
+  #barra-superior { gap: 10px; padding-left: 16px; padding-right: 16px; }
+  .indicador { height: 46px; padding: 0 16px; font-size: 18px; }
+  .ind-etiqueta { font-size: 15px; }
+  .estrellas svg { width: 18px; height: 18px; }
+  .btn-icono { width: 46px; height: 46px; font-size: 21px; }
+  #barra-tabs { justify-content: center; gap: 14px; }
+  .tab { max-width: 380px; height: 62px; font-size: 20px; }
 }
 
 /* ===== Pantallas ===== */
