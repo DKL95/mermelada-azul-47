@@ -302,8 +302,8 @@ export async function abrirRanking() {
     <p class="ranking-pie">Juegas como <b>${escapar(jugador().nombre)}</b> ·
       <button class="btn-enlace" id="rk-nombre">cambiar nombre</button></p>`;
   const cuerpo = cont.querySelector('#rk-cuerpo');
-  // Los días subidos antes de guardar el personaje no traen carita: se toma la
-  // de la otra tabla, y la tuya, de este teléfono
+  // Tu carita siempre sale de este teléfono (la de la base puede ir atrasada);
+  // a quien no trae carita se le busca en la otra tabla
   const personajeDe = (id) => (id === jugador().id && personajeParaTabla())
     || Object.values(cache).flat().find((f) => f.jugador_id === id && f.personaje)?.personaje || null;
 
@@ -323,7 +323,7 @@ export async function abrirRanking() {
     }
     if (vista !== pedida) return; // cambió de pestaña mientras cargaba
     const filas = [...cache[v.tabla]].sort((a, b) => b[v.orden] - a[v.orden]).slice(0, 50)
-      .map((f) => (f.personaje ? f : { ...f, personaje: personajeDe(f.jugador_id) }));
+      .map((f) => (f.personaje && f.jugador_id !== jugador().id ? f : { ...f, personaje: personajeDe(f.jugador_id) || f.personaje }));
     cuerpo.innerHTML = filasHTML(filas, jugador().id, v, caritaDesdeTabla);
     // Si a alguien le falta la carita, se busca en la otra tabla (y se vuelve a pintar)
     const otra = Object.values(VISTAS).find((o) => o.tabla !== v.tabla);
@@ -352,6 +352,8 @@ export async function abrirRanking() {
 
 on('finDia', registrarDia);
 window.addEventListener('online', enviarPendientes);
-// Al salir del juego (o cambiar de app) se sube el personaje si lo cambió
+// Al cambiar el personaje (un rato después, por si sigue probándose cosas) y al salir del juego
+let esperaCara = 0;
+window.addEventListener('personaje:cambio', () => { clearTimeout(esperaCara); esperaCara = setTimeout(enviarCara, 3000); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) enviarCara(); });
 enviarPendientes();

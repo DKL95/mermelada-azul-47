@@ -18,8 +18,7 @@ import { ACCESORIOS, ABAJO, CALZADO, TRAJES, claveArticulo, personajeInicial, pi
 // [id, título, de dónde salen los artículos]
 const SECCIONES = [
   ['trajes', '🦸 Disfraces'],
-  ['halloween', '🎃 Halloween'],
-  ['terror', '🔪 Terror'],
+  ['halloween', '🎃 Halloween y terror'],
   ...Object.entries(ACCESORIOS).map(([cat, { nombre }]) => [`acc.${cat}`, nombre]),
   ['abajo', '👖 Abajo'],
   ['calzado', '👟 Calzado'],
@@ -30,7 +29,7 @@ const VISTA = { 'acc.cabeza': 'cabeza', 'acc.ojos': 'cara', 'acc.cara': 'cara', 
 
 /** Lo que se vende en una sección: { campo, id, nombre, precio, traje? } */
 function articulos(seccion) {
-  if (seccion === 'trajes' || seccion === 'halloween' || seccion === 'terror') {
+  if (seccion === 'trajes' || seccion === 'halloween') {
     return TRAJES.filter((t) => (t.grupo || 'trajes') === seccion)
       .map((t) => ({ campo: 'traje', id: t.id, nombre: nombreTraje(t), precio: t.precio, traje: t }));
   }
