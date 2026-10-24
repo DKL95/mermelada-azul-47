@@ -81,6 +81,11 @@ export const ARRIBA = [
   { id: 'bruja', nombre: '🧹 Túnica de brujería', traje: 'bruja' }, { id: 'monstruo', nombre: '🧟 Saco de monstruo', traje: 'monstruo' },
   { id: 'lobo', nombre: '🐺 Camisa rasgada', traje: 'lobo' }, { id: 'diablo', nombre: '😈 Traje de diablo', traje: 'diablo' },
   { id: 'tunica_negra', nombre: '⚰️ Túnica negra', traje: 'parca' },
+  // Terror
+  { id: 'chamarra_campo', nombre: '🏒 Chamarra de campamento', traje: 'lago' }, { id: 'overol_mecanico', nombre: '🔪 Overol de mecánico', traje: 'sombra' },
+  { id: 'traje_rayas', nombre: '🪲 Traje de rayas', traje: 'bioexorcista' }, { id: 'sueter_pesadilla', nombre: '🧤 Suéter de pesadilla', traje: 'pesadillas' },
+  { id: 'tunica_grito', nombre: '📞 Túnica del grito', traje: 'grito' }, { id: 'overol_muneco', nombre: '🪆 Overol de muñeco', traje: 'muneco' },
+  { id: 'traje_payaso', nombre: '🎈 Traje de payaso', traje: 'payaso' },
 ];
 
 export const ESTAMPADOS = [
@@ -121,6 +126,9 @@ export const ACCESORIOS = {
     { id: 'gorro_calabaza', nombre: '🎃 Gorro de calabaza', precio: 500 }, { id: 'corona_flores', nombre: '🌺 Corona de flores', precio: 800 },
     { id: 'vendas_momia', nombre: 'Vendas de momia', traje: 'momia' }, { id: 'tornillos_monstruo', nombre: 'Pelo de monstruo', traje: 'monstruo' },
     { id: 'orejas_lobo', nombre: '🐺 Orejas de lobo', traje: 'lobo' }, { id: 'capucha_parca', nombre: 'Capucha negra', traje: 'parca' },
+    { id: 'mascara_blanca', nombre: 'Máscara blanca', traje: 'sombra' }, { id: 'pelo_fantasma', nombre: 'Pelo de fantasma', traje: 'bioexorcista' },
+    { id: 'sombrero_pesadilla', nombre: 'Sombrero café', traje: 'pesadillas' }, { id: 'capucha_grito', nombre: 'Máscara del grito', traje: 'grito' },
+    { id: 'pelo_muneco', nombre: 'Pelo de muñeco', traje: 'muneco' }, { id: 'pelo_payaso', nombre: 'Pelo de payaso', traje: 'payaso' },
   ] },
   ojos: { nombre: '👓 Ojos', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'lentes', nombre: 'Lentes' }, { id: 'lentesSol', nombre: 'Lentes de sol' },
@@ -136,6 +144,9 @@ export const ACCESORIOS = {
     { id: 'cicatriz_rayo', nombre: '⚡ Cicatriz de rayo', traje: 'mago' },
     { id: 'colmillos', nombre: '🧛 Colmillos', precio: 300 }, { id: 'cara_calavera', nombre: '💀 Calavera pintada', precio: 400 },
     { id: 'cara_catrina', nombre: '🌸 Maquillaje de catrina', traje: 'catrina' }, { id: 'cicatriz_monstruo', nombre: 'Cicatriz cosida', traje: 'monstruo' },
+    { id: 'mascara_hockey', nombre: '🏒 Máscara de hockey', traje: 'lago' }, { id: 'cara_fantasma', nombre: 'Ojeras de fantasma', traje: 'bioexorcista' },
+    { id: 'cara_quemada', nombre: 'Cara quemada', traje: 'pesadillas' }, { id: 'cicatrices_muneco', nombre: 'Cicatrices de muñeco', traje: 'muneco' },
+    { id: 'cara_payaso', nombre: '🎈 Maquillaje de payaso', traje: 'payaso' },
   ] },
   orejas: { nombre: '👂 Orejas', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'aretes', nombre: 'Aretes' }, { id: 'arracadas', nombre: 'Arracadas' },
@@ -161,6 +172,8 @@ export const ACCESORIOS = {
     { id: 'escudo', nombre: 'Escudo estrella', traje: 'capitan' },
     { id: 'escoba', nombre: '🧹 Escoba', precio: 500 }, { id: 'calabaza_dulces', nombre: '🎃 Cubeta de dulces', precio: 400 },
     { id: 'tridente', nombre: '🔱 Tridente', traje: 'diablo' }, { id: 'guadana', nombre: 'Guadaña', traje: 'parca' },
+    { id: 'machete', nombre: 'Machete', traje: 'lago' }, { id: 'cuchillo', nombre: '🔪 Cuchillo', traje: 'sombra' },
+    { id: 'guante_garras', nombre: 'Guante de garras', traje: 'pesadillas' },
   ] },
   espalda: { nombre: '🪽 Espalda', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'mochila', nombre: '🎒 Mochila', precio: 400 }, { id: 'capa', nombre: 'Capa', precio: 900 },
@@ -176,7 +189,7 @@ export const ACCESORIOS = {
    piezas = campos del personaje que cambia.
    piezasHombre = lo que cambia distinto si el personaje es hombre (opcional).
    nombre puede ser [femenino, masculino].
-   grupo 'halloween' = va en su propia sección de la boutique. */
+   grupo 'halloween' o 'terror' = va en su propia sección de la boutique. */
 export const TRAJES = [
   { id: 'arana', nombre: 'Héroe arácnido', emoji: '🕷️', precio: 1500,
     piezas: { arriba: 'arana', 'acc.cabeza': 'mascara_arana', abajo: 'mallas', colorAbajo: '#1F5FFF', calzado: 'botas_heroe', colorCalzado: '#D62839' } },
@@ -240,6 +253,22 @@ export const TRAJES = [
     piezas: { arriba: 'diablo', 'acc.cabeza': 'cuernitos', 'acc.espalda': 'alas_murcielago', 'colorAcc.espalda': '#1B1B2B', 'acc.mano': 'tridente', abajo: 'mallas', colorAbajo: '#C81E2E', calzado: 'botas', colorCalzado: '#1B1B2B' } },
   { id: 'parca', nombre: 'La Parca', emoji: '⚰️', precio: 1500, grupo: 'halloween',
     piezas: { arriba: 'tunica_negra', 'acc.cabeza': 'capucha_parca', 'acc.mano': 'guadana', 'acc.cara': 'cara_calavera', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'botas', colorCalzado: '#1B1B2B' } },
+
+  // Parodias de películas de terror (sin nombres)
+  { id: 'lago', nombre: 'El enmascarado del lago', emoji: '🏒', precio: 1600, grupo: 'terror',
+    piezas: { arriba: 'chamarra_campo', 'acc.cara': 'mascara_hockey', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.mano': 'machete', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#3A3F4B', calzado: 'botas', colorCalzado: '#3B2219' } },
+  { id: 'sombra', nombre: 'El de la máscara blanca', emoji: '🔪', precio: 1600, grupo: 'terror',
+    piezas: { arriba: 'overol_mecanico', 'acc.cabeza': 'mascara_blanca', 'acc.cara': 'ninguno', 'acc.ojos': 'ninguno', 'acc.mano': 'cuchillo', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#2A3550', calzado: 'botas', colorCalzado: '#1B1B2B' } },
+  { id: 'bioexorcista', nombre: ['La bioexorcista', 'El bioexorcista'], emoji: '🪲', precio: 1800, grupo: 'terror',
+    piezas: { arriba: 'traje_rayas', 'acc.cabeza': 'pelo_fantasma', 'acc.cara': 'cara_fantasma', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.mano': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'zapatos', colorCalzado: '#1B1B2B' } },
+  { id: 'pesadillas', nombre: ['La de las pesadillas', 'El de las pesadillas'], emoji: '🧤', precio: 1800, grupo: 'terror',
+    piezas: { arriba: 'sueter_pesadilla', 'acc.cabeza': 'sombrero_pesadilla', 'acc.cara': 'cara_quemada', 'acc.mano': 'guante_garras', 'acc.muneca': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#5A4E3E', calzado: 'botas', colorCalzado: '#3B2219' } },
+  { id: 'grito', nombre: 'Cara de grito', emoji: '📞', precio: 1500, grupo: 'terror',
+    piezas: { arriba: 'tunica_grito', 'acc.cabeza': 'capucha_grito', 'acc.cara': 'ninguno', 'acc.ojos': 'ninguno', 'acc.mano': 'cuchillo', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'botas', colorCalzado: '#1B1B2B' } },
+  { id: 'muneco', nombre: ['Muñeca diabólica', 'Muñeco diabólico'], emoji: '🪆', precio: 1500, grupo: 'terror',
+    piezas: { arriba: 'overol_muneco', 'acc.cabeza': 'pelo_muneco', 'acc.cara': 'cicatrices_muneco', 'acc.mano': 'cuchillo', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#3D6FD8', calzado: 'tenis', colorCalzado: '#E8414F' } },
+  { id: 'payaso', nombre: 'Payaso de la alcantarilla', emoji: '🎈', precio: 1800, grupo: 'terror',
+    piezas: { arriba: 'traje_payaso', 'acc.cabeza': 'pelo_payaso', 'acc.cara': 'cara_payaso', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.mano': 'globo', 'colorAcc.mano': '#E8414F', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#E9E6EE', calzado: 'zapatos', colorCalzado: '#FF7A1A' } },
 ];
 
 /** Las piezas de un disfraz para este personaje (algunos cambian si es hombre). */

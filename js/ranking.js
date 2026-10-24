@@ -273,6 +273,10 @@ export async function abrirRanking() {
     <p class="ranking-pie">Juegas como <b>${escapar(jugador().nombre)}</b> ·
       <button class="btn-enlace" id="rk-nombre">cambiar nombre</button></p>`;
   const cuerpo = cont.querySelector('#rk-cuerpo');
+  // Los días subidos antes de guardar el personaje no traen carita: se toma la
+  // de la otra tabla, y la tuya, de este teléfono
+  const personajeDe = (id) => (id === jugador().id && personajeParaTabla())
+    || Object.values(cache).flat().find((f) => f.jugador_id === id && f.personaje)?.personaje || null;
 
   const pintar = async () => {
     cont.querySelectorAll('#rk-vista button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.valor === vista));
@@ -289,8 +293,15 @@ export async function abrirRanking() {
       }
     }
     if (vista !== pedida) return; // cambió de pestaña mientras cargaba
-    const filas = [...cache[v.tabla]].sort((a, b) => b[v.orden] - a[v.orden]).slice(0, 50);
+    const filas = [...cache[v.tabla]].sort((a, b) => b[v.orden] - a[v.orden]).slice(0, 50)
+      .map((f) => (f.personaje ? f : { ...f, personaje: personajeDe(f.jugador_id) }));
     cuerpo.innerHTML = filasHTML(filas, jugador().id, v, caritaDesdeTabla);
+    // Si a alguien le falta la carita, se busca en la otra tabla (y se vuelve a pintar)
+    const otra = Object.values(VISTAS).find((o) => o.tabla !== v.tabla);
+    if (filas.some((f) => !f.personaje) && !cache[otra.tabla]) {
+      try { cache[otra.tabla] = await leerTabla(otra); } catch { return; }
+      if (vista === pedida) pintar();
+    }
   };
   cont.querySelectorAll('#rk-vista button').forEach((b) => b.addEventListener('click', () => {
     sonidos.click();

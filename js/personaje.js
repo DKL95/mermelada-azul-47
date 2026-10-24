@@ -275,6 +275,74 @@ const TORSOS = {
       <path d="M64 181 q2 10 -2 18 M68 181 q4 8 2 16" stroke="#8A6A4A" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
     encima: '',
   }),
+
+  // --- Terror ---
+  chamarra_campo: () => ({
+    manga: '#5C6B4A',
+    abajo: `<path d="${CUERPO}" fill="#5C6B4A"/>
+      <path d="M48 121 L72 121 L70 206 L50 206 Z" fill="#2A2E38"/>
+      <path d="M48 121 L50 206 M72 121 L70 206" stroke="#46523A" stroke-width="3"/>
+      <path d="M40 120 L50 138 L48 121 Z M80 120 L70 138 L72 121 Z" fill="#46523A"/>
+      <rect x="28" y="168" width="16" height="12" rx="2" fill="#4E5C3E"/><rect x="76" y="168" width="16" height="12" rx="2" fill="#4E5C3E"/>
+      <path d="M30 146 l6 4 l-4 4 l6 3 M84 188 l5 -3 l2 5" stroke="#3B4430" stroke-width="1.5" fill="none"/>`,
+    encima: '',
+  }),
+  overol_mecanico: (p, clip) => ({
+    manga: '#2A3550',
+    abajo: `<path d="${CUERPO}" fill="#2A3550"/>
+      <path d="M44 121 L60 140 L76 121 Z" fill="#3B4868"/>
+      <path d="M44 121 L52 134 L60 128 M76 121 L68 134 L60 128" stroke="#1E2740" stroke-width="2.5" fill="none"/>
+      <path d="M60 140 V206" stroke="#1E2740" stroke-width="2"/>
+      <rect x="68" y="150" width="14" height="12" rx="2" fill="none" stroke="#1E2740" stroke-width="2"/>
+      <g clip-path="url(#${clip})"><rect x="0" y="186" width="120" height="5" fill="#1E2740"/></g>`,
+    encima: '',
+  }),
+  traje_rayas: (p, clip) => ({
+    manga: '#1B1B2B',
+    abajo: `<path d="${CUERPO}" fill="#F2F2EA"/>
+      <g clip-path="url(#${clip})">${[18, 30, 42, 54, 66, 78, 90].map((x) => `<rect x="${x}" y="110" width="6" height="100" fill="#1B1B2B"/>`).join('')}</g>
+      <path d="M48 121 L60 150 L72 121 Z" fill="#FFFFFF"/>
+      <path d="M46 121 L58 154 L40 142 Z M74 121 L62 154 L80 142 Z" fill="#1B1B2B"/>
+      <path d="M57 125 h6 l-1 4 l3 20 l-5 6 l-5 -6 l3 -20 z" fill="#1B1B2B"/>`,
+    encima: '',
+  }),
+  sueter_pesadilla: (p, clip) => ({
+    manga: '#B3242E',
+    abajo: `<path d="${CUERPO}" fill="#B3242E"/>
+      <g clip-path="url(#${clip})">${[128, 142, 156, 170, 184, 198].map((y) => `<rect x="0" y="${y}" width="120" height="7" fill="#2E6B3A"/>`).join('')}</g>
+      <path d="M46 121 q14 10 28 0" stroke="#8E1B22" stroke-width="4" fill="none"/>
+      <path d="M34 160 q4 6 0 10 q6 -2 6 -8 z M78 186 q5 3 2 8 q5 -1 4 -7 z" fill="#5A1A1A"/>`,
+    encima: '',
+  }),
+  tunica_grito: () => ({
+    manga: '#14141C',
+    abajo: `<path d="${CUERPO}" fill="#14141C"/>
+      <path d="M42 120 L48 132 L54 122 L60 134 L66 122 L72 132 L78 120" stroke="#2B2B35" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+      <path d="M40 150 Q44 180 38 206 M80 150 Q76 180 82 206 M60 140 V206" stroke="#2B2B35" stroke-width="2" fill="none"/>`,
+    encima: '',
+  }),
+  overol_muneco: (p, clip) => ({
+    manga: '#E8414F',
+    abajo: `<path d="${CUERPO}" fill="#E8414F"/>
+      <g clip-path="url(#${clip})">
+        ${[120, 130, 140, 150, 160, 170, 180, 190, 200].map((y, i) => `<rect x="0" y="${y}" width="120" height="10" fill="${['#E8414F', '#3DA5FF', '#FFD84D', '#22C55E', '#FF7A1A'][i % 5]}"/>`).join('')}
+        <rect x="38" y="150" width="44" height="60" fill="#3D6FD8"/>
+      </g>
+      <path d="M43 124 V152 M77 124 V152" stroke="#3D6FD8" stroke-width="7"/>
+      <circle cx="43" cy="152" r="3" fill="#FFFFFF"/><circle cx="77" cy="152" r="3" fill="#FFFFFF"/>
+      <rect x="50" y="160" width="20" height="14" rx="2" fill="#2E5BC0"/><circle cx="60" cy="167" r="3.5" fill="#FFD84D"/>
+      <path d="M46 121 q14 10 28 0" stroke="#FFFFFF" stroke-width="4" fill="none"/>`,
+    encima: '',
+  }),
+  traje_payaso: (p, clip) => ({
+    manga: '#E9E6EE',
+    abajo: `<path d="${CUERPO}" fill="#E9E6EE"/>
+      <g clip-path="url(#${clip})" stroke="#D2CCDA" stroke-width="2" fill="none">
+        ${[30, 50, 70, 90].map((x) => `<path d="M${x} 120 Q${x + 6} 160 ${x} 210"/>`).join('')}
+      </g>
+      ${[146, 166, 186].map((y) => `<circle cx="60" cy="${y}" r="5" fill="#FF7A1A"/>`).join('')}`,
+    encima: `${[30, 38, 46, 54, 62, 70, 78, 86, 94].map((x, i) => `<ellipse cx="${x - 2}" cy="${118 + (i % 2) * 3}" rx="8" ry="6" fill="#F7F4FA" stroke="#C9C2D6" stroke-width="1.2"/>`).join('')}`,
+  }),
 };
 
 // ---------- Accesorios nuevos (los que no sabe dibujar clientes.js) ----------
@@ -358,6 +426,28 @@ function accesorioPersonaje(id, c) {
     }).join('');
     case 'capucha_parca': return `<path d="M12 104 Q8 16 60 16 Q112 16 108 104 Q102 62 60 54 Q18 62 12 104 Z" fill="#14141C"/>
       <path d="M20 96 Q16 32 60 24" stroke="rgba(255,255,255,0.08)" stroke-width="4" fill="none"/>`;
+    case 'mascara_blanca': return `<path d="M22 70 Q20 28 60 28 Q100 28 98 70 Q98 104 60 110 Q22 104 22 70 Z" fill="#E9E4D8"/>
+      <path d="M18 74 Q14 22 60 20 Q106 22 102 74 Q98 46 84 40 Q74 50 60 42 Q46 50 36 40 Q22 46 18 74 Z" fill="#3B2A1E"/>
+      <ellipse cx="46" cy="70" rx="7" ry="5" fill="#2A2A33"/><ellipse cx="74" cy="70" rx="7" ry="5" fill="#2A2A33"/>
+      <path d="M38 61 q8 -3 16 0 M66 61 q8 -3 16 0" stroke="#B8B0A0" stroke-width="2" fill="none"/>
+      <path d="M60 72 L57 84 Q60 86 63 84" stroke="#C4BCAA" stroke-width="1.6" fill="none"/>
+      <path d="M51 95 q9 2 18 0" stroke="#A89F8E" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    case 'pelo_fantasma': return `<path d="M14 80 L4 58 L18 60 L8 38 L28 44 L24 18 L42 34 L50 8 L60 30 L72 6 L78 32 L96 16 L94 42 L114 38 L102 60 L116 62 L106 80 Q100 48 60 46 Q20 48 14 80 Z" fill="#DCE6C8" stroke="#A9B88E" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M28 52 L36 62 L40 48 L48 60 L54 46 L60 60 L66 46 L72 60 L80 48 L84 62 L92 52" fill="#DCE6C8" stroke="#A9B88E" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="30" cy="40" r="5" fill="#9DBB6E" opacity="0.6"/><circle cx="88" cy="30" r="4" fill="#9DBB6E" opacity="0.6"/>`;
+    case 'sombrero_pesadilla': return `<ellipse cx="60" cy="42" rx="48" ry="8" fill="#5A4030"/>
+      <path d="M30 42 Q28 12 46 12 Q60 18 74 12 Q92 12 90 42 Z" fill="#6B4A36"/>
+      <path d="M30 35 Q60 41 90 35 L90 42 Q60 48 30 42 Z" fill="#2B1B12"/>
+      <path d="M48 16 Q60 24 72 16" stroke="#4A3324" stroke-width="2" fill="none"/>`;
+    case 'capucha_grito': return `<path d="M12 104 Q8 16 60 16 Q112 16 108 104 Q102 62 60 54 Q18 62 12 104 Z" fill="#14141C"/>
+      <path d="M60 32 Q86 32 88 64 Q90 96 74 114 Q66 122 60 122 Q54 122 46 114 Q30 96 32 64 Q34 32 60 32 Z" fill="#F7F7F2" stroke="#D9DEE8" stroke-width="1.2"/>
+      <path d="M40 66 Q44 54 54 62 Q56 78 46 82 Q38 78 40 66 Z M80 66 Q76 54 66 62 Q64 78 74 82 Q82 78 80 66 Z" fill="#1B1B2B"/>
+      <path d="M58 84 q2 2 4 0" stroke="#1B1B2B" stroke-width="1.5" fill="none"/>
+      <ellipse cx="60" cy="102" rx="6" ry="12" fill="#1B1B2B"/>`;
+    case 'pelo_muneco': return `<path d="M18 72 Q14 26 60 24 Q106 26 102 72 Q96 50 86 46 L88 56 Q78 46 70 44 L72 54 Q62 44 52 46 L52 56 Q44 46 34 48 L36 58 Q26 52 18 72 Z" fill="#C8461E"/>
+      <path d="M30 32 l-7 -9 l11 2 M60 24 l2 -11 l4 10 M86 32 l9 -6 l-2 11" stroke="#C8461E" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    case 'pelo_payaso': return `<path d="M22 64 Q20 28 60 28 Q100 28 98 64 Q80 52 60 52 Q40 52 22 64 Z" fill="#F4F1EC"/>
+      ${[-1, 1].map((s) => [[44, 46, 11], [48, 60, 10], [38, 36, 9], [46, 74, 8]].map(([dx, y, r]) => `<circle cx="${60 + s * dx}" cy="${y}" r="${r}" fill="#FF7A1A"/>`).join('')).join('')}`;
     // --- Ojos ---
     case 'lentes_redondos': return `<g fill="rgba(255,255,255,0.18)" stroke="#2B2B35" stroke-width="1.8"><circle cx="46" cy="70" r="9"/><circle cx="74" cy="70" r="9"/></g>
       <path d="M55 69 q5 -3 10 0 M37 68 L24 66 M83 68 L96 66" stroke="#2B2B35" stroke-width="1.8" fill="none"/>`;
@@ -398,6 +488,22 @@ function caraExtra(id, c) {
         <path d="M47 91 h26 M50 88 v6 M55 88.5 v6 M60 89 v6 M65 88.5 v6 M70 88 v6" stroke="#1B1B2B" stroke-width="1.3" stroke-linecap="round"/>
         <path d="M34 92 q-6 5 -1 11 M86 92 q6 5 1 11" stroke="#8B5CF6" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
     }
+    case 'mascara_hockey': return `<path d="M28 62 L18 60 M92 62 L102 60" stroke="#1B1B2B" stroke-width="3"/>
+      <path d="M60 30 Q90 30 92 66 Q92 98 60 110 Q28 98 28 66 Q30 30 60 30 Z" fill="#F2EEE2" stroke="#C9C2AE" stroke-width="1.5"/>
+      <ellipse cx="46" cy="68" rx="8" ry="6" fill="#1B1B2B"/><ellipse cx="74" cy="68" rx="8" ry="6" fill="#1B1B2B"/>
+      <circle cx="47.5" cy="67" r="1.6" fill="#FFFFFF"/><circle cx="75.5" cy="67" r="1.6" fill="#FFFFFF"/>
+      <path d="M38 52 l6 6 l6 -6 M70 52 l6 6 l6 -6" stroke="#D62839" stroke-width="2.6" fill="none" stroke-linejoin="round"/>
+      <path d="M60 40 l-4 8 h8 z" fill="#D62839"/>
+      <g fill="#3B3B45">${[[50, 84], [56, 87], [64, 87], [70, 84], [53, 93], [60, 95], [67, 93], [56, 101], [64, 101], [38, 80], [82, 80], [41, 90], [79, 90]]
+        .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.7"/>`).join('')}</g>`;
+    case 'cara_fantasma': return `<g fill="none" stroke="#5B3F6E" stroke-width="3.5" opacity="0.55"><ellipse cx="46" cy="70" rx="11" ry="10"/><ellipse cx="74" cy="70" rx="11" ry="10"/></g>
+      <g fill="#7FA35A" opacity="0.7">${[[32, 52, 4], [37, 58, 2.5], [86, 88, 3.5], [91, 82, 2], [80, 44, 2.5]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g>`;
+    case 'cara_quemada': return `<g fill="#B5523E" opacity="0.45"><path d="M28 74 q4 -10 12 -6 q6 6 2 14 q-8 6 -14 -8 z"/><path d="M76 84 q8 -8 14 0 q2 10 -8 10 q-8 -2 -6 -10 z"/><path d="M58 40 q10 -4 14 4 q-2 8 -10 6 q-6 -2 -4 -10 z"/></g>
+      <path d="M32 78 q4 2 8 0 M80 88 q4 2 8 -1 M62 44 q4 2 7 0" stroke="#8E3A2B" stroke-width="1.2" opacity="0.6" fill="none"/>`;
+    case 'cicatrices_muneco': return '<path d="M30 50 L48 76 M36.5 53.2 L30.7 57.2 M40.1 58.4 L34.3 62.4 M43.7 63.6 L37.9 67.6 M47.3 68.8 L41.5 72.8 M74 84 L90 98 M80.3 84.9 L75.7 90.1 M84.3 88.4 L79.7 93.6 M88.3 91.9 L83.7 97.1" stroke="#8E3A2B" stroke-width="1.5" stroke-linecap="round"/>';
+    case 'cara_payaso': return `<path d="M46 46 V58 M74 46 V58 M46 79 V86 M74 79 V86" stroke="#D62839" stroke-width="3" stroke-linecap="round"/>
+      <path d="M46 92 q-6 -6 -4 -16 M74 92 q6 -6 4 -16" stroke="#D62839" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="60" cy="80" r="5.5" fill="#E8414F"/><circle cx="58" cy="78" r="1.6" fill="#FFFFFF" opacity="0.7"/>`;
     case 'cicatriz_monstruo': return '<path d="M72 86 L92 80 M76 81 l2 7 M81 79.5 l2 7 M86 78 l2 7" stroke="#3B2219" stroke-width="1.6" stroke-linecap="round"/>';
     default: return '';
   }
@@ -470,6 +576,14 @@ function enLaMano(id, c) {
     case 'tridente': return `<path d="M106 206 V104" stroke="#1B1B2B" stroke-width="3.5" stroke-linecap="round"/>
       <path d="M96 102 V116 Q106 124 116 116 V102" stroke="#1B1B2B" stroke-width="3" fill="none"/>
       <path d="M92 104 L96 94 L100 104 Z M102 100 L106 88 L110 100 Z M112 104 L116 94 L120 104 Z" fill="#1B1B2B"/>`;
+    case 'machete': return `<path d="M98 183 L104 120 Q112 116 112 126 L106 185 Z" fill="#C9D2E3" stroke="#8A8FA3" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M104 128 L101 176" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+      <path d="M100 198 L102 184" stroke="#3B2219" stroke-width="6" stroke-linecap="round"/>`;
+    case 'cuchillo': return `<path d="M98 185 L104 148 Q108 150 107 158 L104 186 Z" fill="#E3E8F0" stroke="#8A8FA3" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M100 199 L102 186" stroke="#1B1B2B" stroke-width="6" stroke-linecap="round"/>`;
+    case 'guante_garras': return `${[-6, -2, 2, 6].map((d) => `<path d="M${99 + d} 196 Q${99 + d * 1.4} 210 ${99 + d * 1.8} 224" stroke="#C9D2E3" stroke-width="2.4" fill="none" stroke-linecap="round"/>`).join('')}
+      <circle cx="99" cy="193" r="7.5" fill="#6B4A2E"/><rect x="92" y="182" width="14" height="7" rx="2" fill="#6B4A2E"/>
+      <path d="M94 190 h10 M94 195 h10" stroke="#C9D2E3" stroke-width="1.4"/>`;
     case 'guadana': return `<path d="M104 262 L112 98" stroke="#5A3A24" stroke-width="4" stroke-linecap="round"/>
       <path d="M112 100 Q84 84 58 104 Q84 98 110 112 Z" fill="#C9D2E3" stroke="#8A8FA3" stroke-width="1.2" stroke-linejoin="round"/>`;
     default: return '';
@@ -797,7 +911,9 @@ const SIN_COLOR = ['ninguno', 'perlas', 'aretes_corazon', 'gorro_chef', 'lentes'
   'brazaletes', 'espatula', 'rosa', 'varita', 'escudo', 'alas_hada', 'alas_angel', 'banda_roja', 'pelo_picos', 'gorro_elfo',
   'capucha_erizo', 'bigotote', 'guantes_blancos', 'guantes_pelea', 'espada', 'gorro_calabaza', 'corona_flores', 'vendas_momia',
   'tornillos_monstruo', 'orejas_lobo', 'capucha_parca', 'colmillos', 'cara_calavera', 'cara_catrina', 'cicatriz_monstruo',
-  'escoba', 'calabaza_dulces', 'tridente', 'guadana', 'alas_cuervo', 'capa_vampiro'];
+  'escoba', 'calabaza_dulces', 'tridente', 'guadana', 'mascara_blanca', 'pelo_fantasma', 'sombrero_pesadilla', 'capucha_grito',
+  'pelo_muneco', 'pelo_payaso', 'mascara_hockey', 'cara_fantasma', 'cara_quemada', 'cicatrices_muneco', 'cara_payaso', 'machete',
+  'cuchillo', 'guante_garras', 'alas_cuervo', 'capa_vampiro'];
 // Los trajes de disfraz traen sus colores
 const TRAJE_ARRIBA = ARRIBA.filter((o) => o.traje).map((o) => o.id);
 
