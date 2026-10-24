@@ -20,6 +20,8 @@ import { abrirBoutique } from './boutique.js';
 import { aplicarDecoracion } from './local.js';
 import { reloj } from './sinfin.js';
 import { iniciarTutorial } from './tutorial.js';
+import { esAndroid } from './plataforma.js';
+import { t, IDIOMAS, idioma, cambiarIdioma, traducirPagina } from './idioma.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
 const PESTANAS = { cocina, venta };
@@ -29,14 +31,15 @@ const $ = (sel) => document.querySelector(sel);
 
 // ================= Barra superior =================
 
-/** Convierte segundos del turno en hora del juego, ej. "1:30 p.m." */
+/** Convierte segundos del turno en hora del juego, ej. "1:30 p.m." (o "13:30") */
 export function horaDelJuego(segundos) {
   const horasTurno = CONFIG.horaCierre - CONFIG.horaApertura;
   const fraccion = Math.min(1, segundos / CONFIG.duracionTurnoSegundos);
   const minutosTotales = CONFIG.horaApertura * 60 + fraccion * horasTurno * 60;
   let h = Math.floor(minutosTotales / 60);
   const m = Math.floor(minutosTotales % 60 / 15) * 15; // avanza de 15 en 15 min
-  const sufijo = h >= 12 ? 'p.m.' : 'a.m.';
+  const sufijo = h >= 12 ? t('p.m.') : t('a.m.');
+  if (!sufijo) return `${h}:${String(m).padStart(2, '0')}`; // idiomas con reloj de 24 horas
   h = h % 12 || 12;
   return `${h}:${String(m).padStart(2, '0')} ${sufijo}`;
 }
@@ -74,13 +77,13 @@ function pintarBarra(e) {
   if (ultimo.rep !== rep) {
     // En pantallas angostas se ve una estrella y el número (CSS)
     $('#valor-reputacion').innerHTML = `${estrellasSVG(rep)}<b class="rep-corta">${rep.toFixed(1)}</b>`;
-    $('#ind-reputacion').title = `Reputación: ${rep} de 5`;
+    $('#ind-reputacion').title = t('Reputación: {n} de 5', { n: rep });
     ultimo.rep = rep;
   }
   const hora = horaDelJuego(e.segundosTurno);
   if (ultimo.hora !== hora) {
     const [hm, sufijo] = hora.split(' ');
-    $('#valor-reloj').innerHTML = `${hm}<small>${sufijo}</small>`;
+    $('#valor-reloj').innerHTML = `${hm}<small>${sufijo || ''}</small>`;
     ultimo.hora = hora;
   }
 }
@@ -133,55 +136,61 @@ function abrirAjustes() {
   const cont = document.createElement('div');
   cont.innerHTML = `
     <div class="ajuste">
-      <span>👤 Mi personaje<small class="ajuste-nota">Cambia tu ropa, peinado y accesorios</small></span>
+      <span>👤 ${t('Mi personaje')}<small class="ajuste-nota">${t('Cambia tu ropa, peinado y accesorios')}</small></span>
       <span class="botones-ajuste">
         <button class="btn btn-secundario" id="aj-boutique">🛍️</button>
-        <button class="btn btn-secundario" id="aj-personaje">Editar</button>
+        <button class="btn btn-secundario" id="aj-personaje">${t('Editar')}</button>
       </span>
     </div>
     <div class="ajuste">
-      <span>🔊 Sonido</span>
-      <button class="switch" id="aj-sonido" role="switch" aria-checked="${e.ajustes.sonido}" aria-label="Sonido"></button>
+      <span>🌐 ${t('Idioma')}</span>
+      <select class="selector-idioma" id="aj-idioma" aria-label="${t('Idioma')}">
+        ${IDIOMAS.map((i) => `<option value="${i.id}" ${i.id === idioma ? 'selected' : ''}>${i.nombre}</option>`).join('')}
+      </select>
     </div>
     <div class="ajuste">
-      <span>🧾 Cobrar insumos<small class="ajuste-nota">Cada crepa descuenta lo que costaron sus ingredientes (más realista)</small></span>
-      <button class="switch" id="aj-insumos" role="switch" aria-checked="${e.ajustes.costoInsumos}" aria-label="Cobrar insumos"></button>
+      <span>🔊 ${t('Sonido')}</span>
+      <button class="switch" id="aj-sonido" role="switch" aria-checked="${e.ajustes.sonido}" aria-label="${t('Sonido')}"></button>
+    </div>
+    <div class="ajuste">
+      <span>🧾 ${t('Cobrar insumos')}<small class="ajuste-nota">${t('Cada crepa descuenta lo que costaron sus ingredientes (más realista)')}</small></span>
+      <button class="switch" id="aj-insumos" role="switch" aria-checked="${e.ajustes.costoInsumos}" aria-label="${t('Cobrar insumos')}"></button>
     </div>
     <div class="ajuste ajuste-columna">
-      <span>🎚️ Dificultad</span>
+      <span>🎚️ ${t('Dificultad')}</span>
       <div class="segmentado" id="aj-dificultad">
-        <button data-valor="relajado">Relajado</button>
-        <button data-valor="normal">Normal</button>
-        <button data-valor="desafio">Desafío</button>
+        <button data-valor="relajado">${t('Relajado')}</button>
+        <button data-valor="normal">${t('Normal')}</button>
+        <button data-valor="desafio">${t('Desafío')}</button>
       </div>
     </div>
     ${CONFIG.tablaEnLinea ? `
     <div class="ajuste">
-      <span>🏆 Tabla en línea<small class="ajuste-nota">Compite con otros jugadores por la mejor ganancia</small></span>
-      <button class="btn btn-secundario" id="aj-ranking">Ver</button>
+      <span>🏆 ${t('Tabla en línea')}<small class="ajuste-nota">${t('Compite con otros jugadores por la mejor ganancia')}</small></span>
+      <button class="btn btn-secundario" id="aj-ranking">${t('Ver')}</button>
     </div>` : ''}
     <div class="ajuste">
-      <span>❓ Ayuda</span>
-      <button class="btn btn-secundario" id="aj-ayuda">¿Cómo se juega?</button>
+      <span>❓ ${t('Ayuda')}</span>
+      <button class="btn btn-secundario" id="aj-ayuda">${t('¿Cómo se juega?')}</button>
     </div>
     <div class="ajuste">
-      <span>🎓 Tutorial</span>
-      <button class="btn btn-secundario" id="aj-tutorial">Verlo otra vez</button>
+      <span>🎓 ${t('Tutorial')}</span>
+      <button class="btn btn-secundario" id="aj-tutorial">${t('Verlo otra vez')}</button>
     </div>
     ${esRomantica() ? `
     <div class="ajuste">
-      <span>💌 Mensaje sorpresa</span>
+      <span>💌 ${t('Mensaje sorpresa')}</span>
       ${sorpresaDesbloqueada(e)
-        ? '<button class="btn btn-secundario" id="aj-carta">Abrir 💌</button>'
-        : `<span class="ajuste-nota">🔒 Se abre el día ${CONFIG.diaSorpresa}</span>`}
+        ? `<button class="btn btn-secundario" id="aj-carta">${t('Abrir')} 💌</button>`
+        : `<span class="ajuste-nota">🔒 ${t('Se abre el día {n}', { n: CONFIG.diaSorpresa })}</span>`}
     </div>` : ''}
     <div class="ajuste">
-      <span>💝 Créditos</span>
-      <button class="btn btn-secundario" id="aj-creditos">Ver</button>
+      <span>💝 ${t('Créditos')}</span>
+      <button class="btn btn-secundario" id="aj-creditos">${t('Ver')}</button>
     </div>
     <div class="ajuste">
-      <span>🗑️ Partida</span>
-      <button class="btn btn-peligro" id="aj-reiniciar">Reiniciar</button>
+      <span>🗑️ ${t('Partida')}</span>
+      <button class="btn btn-peligro" id="aj-reiniciar">${t('Reiniciar')}</button>
     </div>
     ${modoDesarrollo() ? `
       <div class="seccion-dev">
@@ -207,6 +216,13 @@ function abrirAjustes() {
         <small>Evento de hoy (para probarlo).</small>
       </div>` : ''}
   `;
+
+  // Idioma (recarga el juego; la partida se guarda antes)
+  cont.querySelector('#aj-idioma').addEventListener('change', (ev) => {
+    sonidos.click();
+    if (enModoTemporal()) { aviso(t('Termina primero la partida sin fin ♾️')); ev.target.value = idioma; return; }
+    cambiarIdioma(ev.target.value);
+  });
 
   // Sonido
   const sw = cont.querySelector('#aj-sonido');
@@ -246,11 +262,11 @@ function abrirAjustes() {
 
   // Reiniciar partida (con confirmación)
   cont.querySelector('#aj-reiniciar').addEventListener('click', async () => {
-    if (enModoTemporal()) { aviso('Termina primero la partida sin fin ♾️'); return; }
+    if (enModoTemporal()) { aviso(t('Termina primero la partida sin fin ♾️')); return; }
     const ok = await confirmar(
-      '¿Reiniciar partida?',
-      'Se borrará todo: dinero, días, mejoras y reseñas. No se puede deshacer.',
-      'Sí, borrar todo'
+      t('¿Reiniciar partida?'),
+      t('Se borrará todo: dinero, días, mejoras y reseñas. No se puede deshacer.'),
+      t('Sí, borrar todo')
     );
     if (ok) {
       reiniciarPartida();
@@ -302,27 +318,27 @@ function abrirAjustes() {
     aviso(`Viene un cliente ${b.title} en cuanto haya lugar`);
   }));
 
-  mostrarModal({ titulo: 'Ajustes', contenido: cont, botones: [{ texto: 'Listo', clase: 'btn-primario' }] });
+  mostrarModal({ titulo: t('Ajustes'), contenido: cont, botones: [{ texto: t('Listo'), clase: 'btn-primario' }] });
 }
 
 function abrirAyuda() {
   mostrarModal({
-    titulo: '¿Cómo se juega?',
+    titulo: t('¿Cómo se juega?'),
     contenido: `
-      <p>🛎️ <strong>Venta:</strong> llegan clientes y te piden una crepa. ¡No los hagas esperar mucho!</p>
-      <p>🧀 <strong>Dulces y saladas:</strong> desde el día 2 también piden crepas saladas. Sus ingredientes están en las pestañitas «Salados» de cada estación.</p>
-      <p>🍳 <strong>Cocina:</strong> prepara la crepa paso a paso: masa, cocción, relleno, doblado, toppings y decoración.</p>
-      <p>〰️ <strong>Salsas:</strong> en Decorar, elige una salsa y arrastra el dedo sobre la crepa para dibujar. Ni muy poquita ni exagerada (¡a los niños sí les gusta exagerada!).</p>
-      <p>📖 <strong>Menú:</strong> en la Cocina puedes ver las crepas de la casa y qué es cada ingrediente.</p>
-      <p>🧾 Toca una comanda para prepararla; tócala otra vez para ver el pedido completo.</p>
-      <p>🛒 <strong>Tienda:</strong> con lo que ganes compra mejoras y, en «Decoración», cambia el toldo, el letrero, el cielo y más. Ábrela desde la ventanilla cuando esté cerrado.</p>
-      <p>🏆 <strong>Logros:</strong> cada uno da un premio en efectivo y Chispitas. ¡Y hay días con eventos especiales!</p>
-      <p>♾️ <strong>Modo sin fin:</strong> desde la ventanilla, cuando está cerrado. Atiende sin parar hasta perder tus 3 corazones. No cambia tu partida normal.</p>
-      <p>🛍️ <strong>Boutique:</strong> ropa, accesorios y disfraces para tu personaje. Pruébatelos antes de comprar, con pesos o con Chispitas.</p>
-      <p>✨ <strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.</p>
-      <p>⭐ Entre mejor quede, más propina y más estrellas de reputación.</p>
-      <p style="color:var(--texto-suave);font-size:14px">¿Quieres repetir el tutorial? Está en ⚙️ Ajustes.</p>`,
-    botones: [{ texto: '¡Entendido!', clase: 'btn-primario' }],
+      <p>🛎️ ${t('<strong>Venta:</strong> llegan clientes y te piden una crepa. ¡No los hagas esperar mucho!')}</p>
+      <p>🧀 ${t('<strong>Dulces y saladas:</strong> desde el día 2 también piden crepas saladas. Sus ingredientes están en las pestañitas «Salados» de cada estación.')}</p>
+      <p>🍳 ${t('<strong>Cocina:</strong> prepara la crepa paso a paso: masa, cocción, relleno, doblado, toppings y decoración.')}</p>
+      <p>〰️ ${t('<strong>Salsas:</strong> en Decorar, elige una salsa y arrastra el dedo sobre la crepa para dibujar. Ni muy poquita ni exagerada (¡a los niños sí les gusta exagerada!).')}</p>
+      <p>📖 ${t('<strong>Menú:</strong> en la Cocina puedes ver las crepas de la casa y qué es cada ingrediente.')}</p>
+      <p>🧾 ${t('Toca una comanda para prepararla; tócala otra vez para ver el pedido completo.')}</p>
+      <p>🛒 ${t('<strong>Tienda:</strong> con lo que ganes compra mejoras y, en «Decoración», cambia el toldo, el letrero, el cielo y más. Ábrela desde la ventanilla cuando esté cerrado.')}</p>
+      <p>🏆 ${t('<strong>Logros:</strong> cada uno da un premio en efectivo y Chispitas. ¡Y hay días con eventos especiales!')}</p>
+      <p>♾️ ${t('<strong>Modo sin fin:</strong> desde la ventanilla, cuando está cerrado. Atiende sin parar hasta perder tus 3 corazones. No cambia tu partida normal.')}</p>
+      <p>🛍️ ${t('<strong>Boutique:</strong> ropa, accesorios y disfraces para tu personaje. Pruébatelos antes de comprar, con pesos o con Chispitas.')}</p>
+      <p>✨ ${t('<strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.')}</p>
+      <p>⭐ ${t('Entre mejor quede, más propina y más estrellas de reputación.')}</p>
+      <p style="color:var(--texto-suave);font-size:14px">${t('¿Quieres repetir el tutorial? Está en ⚙️ Ajustes.')}</p>`,
+    botones: [{ texto: t('¡Entendido!'), clase: 'btn-primario' }],
   });
 }
 
@@ -330,6 +346,7 @@ function abrirAyuda() {
 
 function iniciar() {
   document.title = nombreCreperia();
+  traducirPagina();
 
   // Montar las pantallas una sola vez
   cocina.montar($('#pantalla-cocina'));
@@ -371,7 +388,7 @@ function iniciar() {
   navigator.storage?.persist?.().catch(() => {});
 
   // Dentro de la app de Android: pagos con Google Play
-  if (window.Capacitor?.isNativePlatform?.()) {
+  if (esAndroid) {
     import('./pagos-android.js').then((m) => m.iniciarPagos()).catch((err) => console.warn('Pagos no disponibles', err));
   }
 

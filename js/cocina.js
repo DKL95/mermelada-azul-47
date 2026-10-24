@@ -29,6 +29,7 @@ import {
 import { on, comandas } from './turno.js';
 import { describirPedido, tipoDe, nombreEnFrase } from './clientes.js';
 import { conGenero } from './genero.js';
+import { t, traducirDatos } from './idioma.js';
 
 // Las 7 estaciones
 export const ESTACIONES = [
@@ -40,12 +41,13 @@ export const ESTACIONES = [
   { id: 'decorar', nombre: 'Decorar' },
   { id: 'entrega', nombre: 'Entrega' },
 ];
+traducirDatos(ESTACIONES, 'nombre');
 
 // Las estaciones con bandeja de ingredientes y sus pestañitas
 const BANDEJAS = {
-  relleno: [['untable', '🫙 Untables'], ['fruta', '🍓 Frutas'], ['salado', '🧀 Salados']],
-  toppings: [['crujiente', '🥜 Crujientes'], ['frio', '🍨 Fríos'], ['top_salado', '🥓 Salados']],
-  decorar: [['salsa', '〰️ Salsas'], ['decoracion', '✨ Espolvorear'], ['deco_salada', '🌶️ Saladas']],
+  relleno: [['untable', `🫙 ${t('Untables')}`], ['fruta', `🍓 ${t('Frutas')}`], ['salado', `🧀 ${t('Salados')}`]],
+  toppings: [['crujiente', `🥜 ${t('Crujientes')}`], ['frio', `🍨 ${t('Fríos')}`], ['top_salado', `🥓 ${t('Salados')}`]],
+  decorar: [['salsa', `〰️ ${t('Salsas')}`], ['decoracion', `✨ ${t('Espolvorear')}`], ['deco_salada', `🌶️ ${t('Saladas')}`]],
 };
 
 /** Lo que hay en cada pestañita: lo dulce va por categoría y lo salado
@@ -112,14 +114,14 @@ export function montar(contenedor) {
           <p class="instruccion" id="instruccion"></p>
           <div id="controles"></div>
         </div>
-        <button class="btn-menu-cocina" id="btn-menu" aria-label="Menú de la casa">📖 Menú</button>
-        <button class="btn-ayuda-cocina" id="btn-ayuda" aria-label="Ayuda">?</button>
-        <button class="charola-cocina" id="btn-charola">📦 Charola: 0</button>
+        <button class="btn-menu-cocina" id="btn-menu" aria-label="${t('Menú de la casa')}">📖 ${t('Menú')}</button>
+        <button class="btn-ayuda-cocina" id="btn-ayuda" aria-label="${t('Ayuda')}">?</button>
+        <button class="charola-cocina" id="btn-charola">📦 ${t('Charola: {n}', { n: 0 })}</button>
         
-          <button class="fogon-btn" data-fogon="0" hidden aria-label="Plancha 1">
+          <button class="fogon-btn" data-fogon="0" hidden aria-label="${t('Plancha {n}', { n: 1 })}">
             <b>🍳 1</b><small class="fogon-estado"></small><i class="fogon-barra"><i></i></i>
           </button>
-          <button class="fogon-btn" data-fogon="1" hidden aria-label="Plancha 2">
+          <button class="fogon-btn" data-fogon="1" hidden aria-label="${t('Plancha {n}', { n: 2 })}">
             <b>🍳 2</b><small class="fogon-estado"></small><i class="fogon-barra"><i></i></i>
           </button>
       </div>
@@ -254,19 +256,19 @@ function a200(ev) {
 let arrastrando = false, ultimoPunto = null, pendienteMedir = false;
 
 function panelMasa() {
-  $instr.textContent = 'Toca el centro de la plancha para verter la masa 🥄';
+  $instr.textContent = `${t('Toca el centro de la plancha para verter la masa')} 🥄`;
   const masas = disponibles(estado(), 'masa');
   $panel.innerHTML = `
     ${masas.length > 1 ? `<div class="chips-masa">${masas.map((m) => `
       <button class="chip-masa${m.id === crepa.masa ? ' elegido' : ''}" data-id="${m.id}">${iconoIngrediente(m.id)}${m.nombre.replace(/^Masa (de )?/, '')}</button>`).join('')}
     </div>` : ''}
     <div class="medidores">
-      <div class="medidor"><span>Masa</span><div class="barrita"><i id="m-masa" style="width:100%"></i></div></div>
-      <div class="medidor"><span>Redondez</span><b id="m-forma">—</b></div>
+      <div class="medidor"><span>${t('Masa')}</span><div class="barrita"><i id="m-masa" style="width:100%"></i></div></div>
+      <div class="medidor"><span>${t('Redondez')}</span><b id="m-forma">—</b></div>
     </div>`;
   $panel.appendChild(botones([
-    { texto: '↺ Otra vez', alTocar: () => { plancha.reiniciar(); panelMasa(); } },
-    { texto: '¡A cocinar! 🔥', clase: 'btn-primario', id: 'btn-cocinar', alTocar: empezarCoccion },
+    { texto: `↺ ${t('Otra vez')}`, alTocar: () => { plancha.reiniciar(); panelMasa(); } },
+    { texto: `${t('¡A cocinar!')} 🔥`, clase: 'btn-primario', id: 'btn-cocinar', alTocar: empezarCoccion },
   ]));
   $panel.querySelectorAll('.chip-masa').forEach((b) => b.addEventListener('click', () => cambiarMasa(b.dataset.id)));
   actualizarMedidoresMasa();
@@ -329,21 +331,21 @@ function panelCoccion() {
       <div class="zona quemada" style="flex:1"></div>
       <div class="aguja" id="aguja"></div>
     </div>
-    <div class="leyenda-coccion"><span>Cruda</span><span class="centro" style="left:${pct(1)}%">✨ Perfecta</span><span>Quemada</span></div>`;
+    <div class="leyenda-coccion"><span>${t('Cruda')}</span><span class="centro" style="left:${pct(1)}%">✨ ${t('Perfecta')}</span><span>${t('Quemada')}</span></div>`;
   if (coccion.alarma) $panel.querySelector('.barra-coccion').classList.add('alerta');
   $('#aguja').style.left = ((coccion.lado === 1 ? coccion.v1 : coccion.v2) / V_MAX) * 100 + '%';
   $panel.appendChild(botones([
-    { texto: coccion.lado === 1 ? '¡Voltear! 🍳' : 'Sacar de la plancha ✋', clase: 'btn-primario btn-grande', alTocar: accionCoccion },
+    { texto: coccion.lado === 1 ? `${t('¡Voltear!')} 🍳` : `${t('Sacar de la plancha')} ✋`, clase: 'btn-primario btn-grande', alTocar: accionCoccion },
   ]));
   $instr.textContent = coccion.lado === 1
-    ? 'Cuando las orillas se vean doraditas y salgan burbujitas... ¡voltéala!'
-    : 'El segundo lado se cocina más rápido. ¡Sácala a tiempo!';
+    ? t('Cuando las orillas se vean doraditas y salgan burbujitas... ¡voltéala!')
+    : t('El segundo lado se cocina más rápido. ¡Sácala a tiempo!');
 }
 
 function vActual(c = coccion, ahora = performance.now()) {
   const { lado, inicio, params } = c;
-  const t = (ahora - inicio) / 1000;
-  return Math.min(V_MAX, t / (lado === 1 ? params.t1 : params.t2));
+  const seg = (ahora - inicio) / 1000;
+  return Math.min(V_MAX, seg / (lado === 1 ? params.t1 : params.t2));
 }
 
 /** Avanza la cocción de los fogones que estén en la plancha (el que no se ve también). */
@@ -375,6 +377,9 @@ function cicloCoccion(ahora) {
   rafId = cocinando ? requestAnimationFrame(cicloCoccion) : 0;
 }
 
+// Cómo quedó la crepa (la etiqueta se guarda en español: la usan las reseñas)
+const ETIQUETA_COCCION = { cruda: t('cruda'), perfecta: t('perfecta'), 'muy dorada': t('muy dorada'), quemada: t('quemada') };
+
 /** Calificación de un lado (0..1) */
 function puntajeLado(v, ventana) {
   const lo = 1 - ventana, hi = 1 + ventana;
@@ -384,10 +389,10 @@ function puntajeLado(v, ventana) {
 }
 
 function comentarioLado(v, ventana) {
-  if (v < 1 - ventana) return v < 0.6 ? '¡Uy, todavía estaba cruda!' : 'Le faltó tantito';
-  if (v <= 1 + ventana) return '¡Lado perfecto! ✨';
-  if (v <= 1 + ventana + 0.2) return 'Quedó un poquito tostada';
-  return '¡Se quemó! 🔥';
+  if (v < 1 - ventana) return v < 0.6 ? t('¡Uy, todavía estaba cruda!') : t('Le faltó tantito');
+  if (v <= 1 + ventana) return `${t('¡Lado perfecto!')} ✨`;
+  if (v <= 1 + ventana + 0.2) return t('Quedó un poquito tostada');
+  return `${t('¡Se quemó!')} 🔥`;
 }
 
 function accionCoccion() {
@@ -433,14 +438,14 @@ function accionCoccion() {
 // ------------------------------------------------------------
 
 const SIGUIENTE = {
-  relleno: { texto: 'Doblar →', ir: 'doblado' },
-  toppings: { texto: 'Decorar →', ir: 'decorar' },
-  decorar: { texto: 'Terminar →', ir: 'entrega' },
+  relleno: { texto: `${t('Doblar')} →`, ir: 'doblado' },
+  toppings: { texto: `${t('Decorar')} →`, ir: 'decorar' },
+  decorar: { texto: `${t('Terminar')} →`, ir: 'entrega' },
 };
 const INSTRUCCION_BASE = {
-  relleno: 'Elige un relleno y toca la crepa para ponerlo',
-  toppings: 'Elige un topping y toca la crepa para ponerlo encima',
-  decorar: 'Elige una salsa y dibuja con el dedo, o espolvorea algo',
+  relleno: t('Elige un relleno y toca la crepa para ponerlo'),
+  toppings: t('Elige un topping y toca la crepa para ponerlo encima'),
+  decorar: t('Elige una salsa y dibuja con el dedo, o espolvorea algo'),
 };
 
 function panelBandeja() {
@@ -483,8 +488,8 @@ function panelBandeja() {
   }
   $panel.appendChild(bandeja);
 
-  const lista = [{ texto: '↶ Deshacer', alTocar: deshacer }];
-  if (est === 'decorar') lista.push({ texto: '← Toppings', alTocar: () => irA('toppings') });
+  const lista = [{ texto: `↶ ${t('Deshacer')}`, alTocar: deshacer }];
+  if (est === 'decorar') lista.push({ texto: `← ${t('Toppings')}`, alTocar: () => irA('toppings') });
   lista.push({ texto: SIGUIENTE[est].texto, clase: 'btn-primario', alTocar: () => irA(SIGUIENTE[est].ir) });
   $panel.appendChild(botones(lista));
   pintarBandeja();
@@ -506,17 +511,17 @@ function pintarBandeja() {
   const ing = ingrediente(seleccion);
   const nombre = nombreEnFrase(ing.id);
   $instr.textContent =
-    ing.categoria === 'salsa' ? `Arrastra el dedo sobre la crepa para dibujar con ${nombre} 〰️`
-    : ing.forma === 'polvo' ? `Toca la crepa para espolvorear ${nombre} ❄️`
-    : etapa === 'relleno' ? `Toca la crepa para poner ${nombre}`
-    : `Toca la crepa para poner ${nombre} encima`;
+    ing.categoria === 'salsa' ? `${t('Arrastra el dedo sobre la crepa para dibujar con {ing}', { ing: nombre })} 〰️`
+    : ing.forma === 'polvo' ? `${t('Toca la crepa para espolvorear {ing}', { ing: nombre })} ❄️`
+    : etapa === 'relleno' ? t('Toca la crepa para poner {ing}', { ing: nombre })
+    : t('Toca la crepa para poner {ing} encima', { ing: nombre });
 }
 
 function ponerRelleno(p) {
-  if (!seleccion) { aviso('Primero elige un ingrediente 👇'); return; }
-  if (!plancha.hayMasa(p)) { aviso('¡Ponlo encima de la crepa!'); return; }
+  if (!seleccion) { aviso(`${t('Primero elige un ingrediente')} 👇`); return; }
+  if (!plancha.hayMasa(p)) { aviso(t('¡Ponlo encima de la crepa!')); return; }
   const n = crepa.rellenos[seleccion] || 0;
-  if (n >= MAX_PORCIONES) { aviso(`Ya tiene suficiente ${nombreEnFrase(seleccion)}`); return; }
+  if (n >= MAX_PORCIONES) { aviso(t('Ya tiene suficiente {ing}', { ing: nombreEnFrase(seleccion) })); return; }
   crepa.rellenos[seleccion] = n + 1;
   plancha.agregarRelleno(seleccion, p);
   sonidos.pop();
@@ -525,11 +530,11 @@ function ponerRelleno(p) {
 
 /** Toppings, azúcar glass, canela, menta: una porción donde tocó. */
 function ponerPieza(ev) {
-  if (!seleccion) { aviso('Primero elige un ingrediente 👇'); return; }
+  if (!seleccion) { aviso(`${t('Primero elige un ingrediente')} 👇`); return; }
   const { x, y } = a200(ev);
-  if (!sobreLaCrepa(crepa.doblado, x, y)) { aviso('¡Ponlo encima de la crepa!'); return; }
+  if (!sobreLaCrepa(crepa.doblado, x, y)) { aviso(t('¡Ponlo encima de la crepa!')); return; }
   const n = conteoAdornos(crepa).toppings[seleccion] || 0;
-  if (n >= MAX_PORCIONES) { aviso(`Ya tiene suficiente ${nombreEnFrase(seleccion)}`); return; }
+  if (n >= MAX_PORCIONES) { aviso(t('Ya tiene suficiente {ing}', { ing: nombreEnFrase(seleccion) })); return; }
   crepa.adornos.push({ t: 'p', e: etapa, id: seleccion, x: Math.round(x), y: Math.round(y), s: Math.floor(Math.random() * 1e6) });
   pintarDoblada();
   if (ingrediente(seleccion).forma === 'polvo') { sonidos.espolvorear(); polvito(ev, ingrediente(seleccion).color); }
@@ -555,7 +560,7 @@ function polvito(ev, color) {
 // ----- Salsas dibujadas con el dedo -----
 
 function empezarTrazo(ev) {
-  if (crepa.adornos.filter((a) => a.t === 's').length >= MAX_TRAZOS) { aviso('¡Ya tiene muchísima salsa! 😅'); return; }
+  if (crepa.adornos.filter((a) => a.t === 's').length >= MAX_TRAZOS) { aviso(`${t('¡Ya tiene muchísima salsa!')} 😅`); return; }
   $esc.setPointerCapture(ev.pointerId);
   trazo = { id: seleccion, tramos: [] };
   sonidos.salsa();
@@ -583,13 +588,13 @@ function seguirTrazo(ev) {
 /** Convierte los tramos en un path SVG y mide su largo. */
 function trazoAPath(tramos) {
   let d = '', largo = 0;
-  for (const t of tramos) {
-    if (!t.length) continue;
-    d += `M${Math.round(t[0][0])} ${Math.round(t[0][1])}`;
-    if (t.length === 1) d += 'l0.1 0'; // una gotita
-    for (let i = 1; i < t.length; i++) {
-      d += `L${Math.round(t[i][0])} ${Math.round(t[i][1])}`;
-      largo += Math.hypot(t[i][0] - t[i - 1][0], t[i][1] - t[i - 1][1]);
+  for (const tr of tramos) {
+    if (!tr.length) continue;
+    d += `M${Math.round(tr[0][0])} ${Math.round(tr[0][1])}`;
+    if (tr.length === 1) d += 'l0.1 0'; // una gotita
+    for (let i = 1; i < tr.length; i++) {
+      d += `L${Math.round(tr[i][0])} ${Math.round(tr[i][1])}`;
+      largo += Math.hypot(tr[i][0] - tr[i - 1][0], tr[i][1] - tr[i - 1][1]);
     }
     largo += 4; // cada gotita cuenta un poquito
   }
@@ -614,7 +619,7 @@ function terminarTrazo() {
     pintarDoblada();
     pintarBandeja();
   } else {
-    aviso('¡Dibuja encima de la crepa!');
+    aviso(t('¡Dibuja encima de la crepa!'));
   }
   trazo = null;
   $('#capa-trazo').innerHTML = '';
@@ -641,7 +646,7 @@ function deshacer() {
 // ------------------------------------------------------------
 
 function panelDoblado() {
-  $instr.textContent = '¿Cómo la doblamos?';
+  $instr.textContent = t('¿Cómo la doblamos?');
   $panel.innerHTML = `<div class="opciones-doblado">
     ${DOBLADOS.map((d) => {
       const ok = dobladoDisponible(d.id, estado());
@@ -651,14 +656,14 @@ function panelDoblado() {
   $panel.querySelectorAll('.btn-doblado').forEach((b) => b.addEventListener('click', () => {
     if (b.dataset.ok !== 'true') {
       const m = MEJORAS.find((x) => x.id === DOBLADOS.find((d) => d.id === b.dataset.id).mejora);
-      aviso(`🔒 Cómpralo en la tienda: ${m.nombre}`);
+      aviso(`🔒 ${t('Cómpralo en la tienda: {mejora}', { mejora: m.nombre })}`);
       return;
     }
     doblar(b.dataset.id);
   }));
   $panel.appendChild(botones([
-    { texto: '← Rellenar más', alTocar: () => { crepa.doblado = null; crepa.adornos = []; $esc.classList.remove('doblando'); irA('relleno'); } },
-    { texto: 'Toppings →', clase: 'btn-primario', id: 'btn-doblado-listo', alTocar: () => irA('toppings') },
+    { texto: `← ${t('Rellenar más')}`, alTocar: () => { crepa.doblado = null; crepa.adornos = []; $esc.classList.remove('doblando'); irA('relleno'); } },
+    { texto: `${t('Toppings')} →`, clase: 'btn-primario', id: 'btn-doblado-listo', alTocar: () => irA('toppings') },
   ]));
   $('#btn-doblado-listo').disabled = !crepa.doblado;
   marcarDoblado();
@@ -686,31 +691,31 @@ function marcarDoblado() {
 
 /** "Nutella ×2, fresa" */
 function listaNombres(obj) {
-  return Object.entries(obj).map(([id, n]) => `${ingrediente(id)?.nombre}${n > 1 ? ' ×' + n : ''}`).join(', ');
+  return Object.entries(obj).map(([id, n]) => `${ingrediente(id)?.nombre}${n > 1 ? ' ×' + n : ''}`).join(t(', '));
 }
 
 function panelEntrega() {
-  $instr.textContent = '¡Lista! Mándala a la charola para entregarla en Venta.';
+  $instr.textContent = t('¡Lista! Mándala a la charola para entregarla en Venta.');
   const { toppings, salsas } = conteoAdornos(crepa);
   const doblado = DOBLADOS.find((d) => d.id === crepa.doblado)?.nombre;
-  const encima = [listaNombres(toppings), Object.keys(salsas).map((id) => ingrediente(id).nombre).join(', ')].filter(Boolean).join(', ');
+  const encima = [listaNombres(toppings), Object.keys(salsas).map((id) => ingrediente(id).nombre).join(t(', '))].filter(Boolean).join(t(', '));
   $panel.innerHTML = `
     <div class="resumen-crepa">
       <span>🥣 ${ingrediente(crepa.masa).nombre.replace('Masa ', '')}</span>
-      <span>🥞 Forma <b>${Math.round(crepa.forma * 100)}%</b></span>
-      <span>🔥 ${crepa.coccion.etiqueta}</span>
+      <span>🥞 ${t('Forma')} <b>${Math.round(crepa.forma * 100)}%</b></span>
+      <span>🔥 ${ETIQUETA_COCCION[crepa.coccion.etiqueta] || crepa.coccion.etiqueta}</span>
       <span>📐 ${doblado}</span>
-      <span class="ancho">🍓 ${listaNombres(crepa.rellenos) || 'Sin relleno'}</span>
+      <span class="ancho">🍓 ${listaNombres(crepa.rellenos) || t('Sin relleno')}</span>
       ${encima ? `<span class="ancho">🍨 ${encima}</span>` : ''}
     </div>`;
   $panel.appendChild(botones([
-    { texto: '🗑️ Tirar', clase: 'btn-peligro', alTocar: tirarCrepa },
-    { texto: 'A la charola 📦', clase: 'btn-primario', alTocar: mandarACharola },
+    { texto: `🗑️ ${t('Tirar')}`, clase: 'btn-peligro', alTocar: tirarCrepa },
+    { texto: `${t('A la charola')} 📦`, clase: 'btn-primario', alTocar: mandarACharola },
   ]));
 }
 
 async function tirarCrepa() {
-  if (await confirmar('¿Tirar esta crepa?', 'Empezarás una nueva desde la masa.', 'Sí, tirarla')) nuevaCrepa();
+  if (await confirmar(t('¿Tirar esta crepa?'), t('Empezarás una nueva desde la masa.'), t('Sí, tirarla'))) nuevaCrepa();
 }
 
 /** Si está activado el costo de insumos, cada crepa descuenta lo que costó hacerla. */
@@ -722,12 +727,12 @@ function cobrarInsumos() {
   for (const [id, n] of Object.entries({ ...crepa.rellenos, ...toppings })) costo += ingrediente(id).costo * n;
   for (const id of Object.keys(salsas)) costo += ingrediente(id).costo;
   actualizar((s) => { s.dinero -= costo; s.hoy.insumos += costo; });
-  aviso(`🧾 Insumos: -$${costo}`);
+  aviso(`🧾 ${t('Insumos: -${n}', { n: costo })}`);
 }
 
 function mandarACharola() {
   if (estado().charola.length >= capacidadCharola(estado())) {
-    aviso('La charola está llena. ¡Entrega crepas en Venta!');
+    aviso(t('La charola está llena. ¡Entrega crepas en Venta!'));
     return;
   }
   cobrarInsumos();
@@ -742,7 +747,7 @@ function mandarACharola() {
     $esc.classList.remove('enviando');
     pintarCharola();
     pintarRiel();
-    aviso(lista.pedido ? `¡Crepa #${lista.pedido} lista! Entrégala en Venta 🛎️` : '¡Crepa en la charola! 📦');
+    aviso(lista.pedido ? `${t('¡Crepa #{n} lista! Entrégala en Venta', { n: lista.pedido })} 🛎️` : `${t('¡Crepa en la charola!')} 📦`);
     nuevaCrepa();
   }, 450);
 }
@@ -811,7 +816,7 @@ function pintarFogones() {
       const c = f.coccion, v = c.lado === 1 ? c.v1 : c.v2;
       avance = v / V_MAX;
       senal = v > 1 + c.params.ventana ? 'quemando' : v >= 1 - c.params.ventana ? 'lista' : 'cocinando';
-      texto = senal === 'lista' ? (c.lado === 1 ? '¡Voltear!' : '¡Sacar!') : senal === 'quemando' ? '¡Se quema!' : `Lado ${c.lado}`;
+      texto = senal === 'lista' ? (c.lado === 1 ? t('¡Voltear!') : t('¡Sacar!')) : senal === 'quemando' ? t('¡Se quema!') : t('Lado {n}', { n: c.lado });
     }
     b.classList.toggle('activo', i === fogon);
     if (b.dataset.estado !== senal) b.dataset.estado = senal;
@@ -830,7 +835,7 @@ function pintarRiel() {
   const lista = comandas();
   if (pedidoActivo && !lista.some((c) => c.numero === pedidoActivo)) pedidoActivo = null;
   if (!lista.length) {
-    riel.innerHTML = '<span class="riel-vacio">🧾 Sin pedidos: toma pedidos en Venta</span>';
+    riel.innerHTML = `<span class="riel-vacio">🧾 ${t('Sin pedidos: toma pedidos en Venta')}</span>`;
   } else {
     const enCharola = new Set(estado().charola.map((c) => c.pedido));
     riel.innerHTML = lista.map((c) => `
@@ -846,7 +851,7 @@ function pintarRiel() {
       // Primer toque: la empiezas a preparar. Segundo toque: ves el detalle.
       if (pedidoActivo === n) { verComanda(n); return; }
       pedidoActivo = n;
-      aviso(`Preparando la comanda #${n} 📌 (tócala otra vez para ver el detalle)`);
+      aviso(t('Preparando la comanda #{n} 📌 (tócala otra vez para ver el detalle)', { n }));
       pintarRiel();
     }));
     pacienciaRiel();
@@ -863,14 +868,14 @@ async function verComanda(n) {
   const tipo = tipoDe(c);
   const quien = c.nombre ? `${tipo.emoji} ${c.nombre}` : tipo.id === 'normal' ? '' : `${tipo.emoji} ${tipo.nombre}`;
   const v = await mostrarModal({
-    titulo: `🧾 Comanda #${n}`,
+    titulo: `🧾 ${t('Comanda #{n}', { n })}`,
     contenido: `
       ${quien ? `<p class="det-quien">${quien}${tipo.nota ? ` · <small>${conGenero(tipo.nota)}</small>` : ''}</p>` : ''}
-      <p class="det-texto">“Una crepa ${describirPedido(c.pedido)}”</p>
+      <p class="det-texto">“${t('Una crepa {pedido}', { pedido: describirPedido(c.pedido) })}”</p>
       ${ticketDetalle(c.pedido)}`,
     botones: [
-      ...(pedidoActivo === n ? [{ texto: 'Ya no preparar', valor: 'soltar' }] : []),
-      { texto: 'Entendido', clase: 'btn-primario' },
+      ...(pedidoActivo === n ? [{ texto: t('Ya no preparar'), valor: 'soltar' }] : []),
+      { texto: t('Entendido'), clase: 'btn-primario' },
     ],
   });
   if (v === 'soltar') { pedidoActivo = null; pintarRiel(); }
@@ -904,24 +909,27 @@ function verMenu() {
   };
   const dulces = COMBOS.filter((c) => !c.salado).map(tarjeta).join('');
   const saladas = COMBOS.filter((c) => c.salado).map(tarjeta).join('');
-  const nombresCat = { masa: '🥣 Masas', untable: '🫙 Untables', fruta: '🍓 Frutas', salado: '🧀 Salados', crujiente: '🥜 Crujientes', frio: '🍨 Fríos', salsa: '〰️ Salsas', decoracion: '✨ Decoración' };
-  if (disponibles(e, 'bebida').length) nombresCat.bebida = '☕ Bebidas';
+  const nombresCat = {
+    masa: `🥣 ${t('Masas')}`, untable: `🫙 ${t('Untables')}`, fruta: `🍓 ${t('Frutas')}`, salado: `🧀 ${t('Salados')}`,
+    crujiente: `🥜 ${t('Crujientes')}`, frio: `🍨 ${t('Fríos')}`, salsa: `〰️ ${t('Salsas')}`, decoracion: `✨ ${t('Decoración')}`,
+  };
+  if (disponibles(e, 'bebida').length) nombresCat.bebida = `☕ ${t('Bebidas')}`;
   const ingredientes = Object.entries(nombresCat).map(([cat, titulo]) => `
     <h3 class="menu-titulo">${titulo}</h3>
     ${INGREDIENTES.filter((i) => i.categoria === cat).map((i) => {
       const ok = estaDisponible(i.id, e);
       return `<div class="menu-ing${ok ? '' : ' bloqueado'}">${iconoIngrediente(i.id)}
-        <span><b>${i.nombre}</b><small>${ok ? i.descripcion : `🔒 Llega el día ${i.dia}`}</small></span></div>`;
+        <span><b>${i.nombre}</b><small>${ok ? i.descripcion : `🔒 ${t('Llega el día {n}', { n: i.dia })}`}</small></span></div>`;
     }).join('')}`).join('');
   mostrarModal({
-    titulo: '📖 Menú de la casa',
+    titulo: `📖 ${t('Menú de la casa')}`,
     contenido: `<div class="menu-casa">
-      <h3 class="menu-titulo">🥞 Crepas dulces de la casa</h3>${dulces}
-      <h3 class="menu-titulo">🧀 Crepas saladas de la casa</h3>${saladas}
-      <p class="menu-nota">Los clientes también piden cambios: “sin plátano”, “doble Nutella”, “extra crema”… ¡revisa bien el ticket!</p>
+      <h3 class="menu-titulo">🥞 ${t('Crepas dulces de la casa')}</h3>${dulces}
+      <h3 class="menu-titulo">🧀 ${t('Crepas saladas de la casa')}</h3>${saladas}
+      <p class="menu-nota">${t('Los clientes también piden cambios: “sin plátano”, “doble Nutella”, “extra crema”… ¡revisa bien el ticket!')}</p>
       ${ingredientes}
     </div>`,
-    botones: [{ texto: 'Cerrar', clase: 'btn-primario' }],
+    botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }],
   });
 }
 
@@ -931,7 +939,7 @@ function verMenu() {
 
 function pintarCharola() {
   const n = estado().charola.length;
-  $('#btn-charola').textContent = `📦 Charola: ${n}/${capacidadCharola(estado())}`;
+  $('#btn-charola').textContent = `📦 ${t('Charola: {n}', { n: `${n}/${capacidadCharola(estado())}` })}`;
 }
 
 function verCharola() {
@@ -939,15 +947,15 @@ function verCharola() {
   const lista = estado().charola;
   const cont = document.createElement('div');
   if (!lista.length) {
-    cont.innerHTML = '<p style="text-align:center">Todavía no hay crepas terminadas.</p>';
+    cont.innerHTML = `<p style="text-align:center">${t('Todavía no hay crepas terminadas.')}</p>`;
   } else {
     cont.className = 'lista-charola';
     lista.forEach((c, i) => {
       const item = document.createElement('div');
       item.className = 'item-charola';
       const nombres = [...Object.keys(c.rellenos), ...Object.keys(conteoAdornos(c).toppings), ...Object.keys(conteoAdornos(c).salsas)];
-      const texto = nombres.map((id) => ingrediente(id)?.nombre).join(', ') || 'Sin relleno';
-      item.innerHTML = `${crepaDoblada(c)}<span>${c.pedido ? `<b>#${c.pedido}</b> · ` : ''}${texto}</span><button class="btn btn-peligro">Tirar</button>`;
+      const texto = nombres.map((id) => ingrediente(id)?.nombre).join(t(', ')) || t('Sin relleno');
+      item.innerHTML = `${crepaDoblada(c)}<span>${c.pedido ? `<b>#${c.pedido}</b> · ` : ''}${texto}</span><button class="btn btn-peligro">${t('Tirar')}</button>`;
       item.querySelector('button').addEventListener('click', () => {
         actualizar((e) => { e.charola.splice(i, 1); });
         pintarCharola();
@@ -956,7 +964,7 @@ function verCharola() {
       cont.appendChild(item);
     });
   }
-  mostrarModal({ titulo: '📦 Charola', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
+  mostrarModal({ titulo: `📦 ${t('Charola')}`, contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
 }
 
 // ============================================================
@@ -971,7 +979,7 @@ function alTocar(ev) {
       plancha.verter(p);
       plancha.ver({ modo: 'cruda' });
       sonidos.chisporroteo();
-      $instr.textContent = 'Ahora arrastra en círculos para extenderla 🌀 (que quede redondita)';
+      $instr.textContent = t('Ahora arrastra en círculos para extenderla 🌀 (que quede redondita)');
       actualizarMedidoresMasa();
     }
     arrastrando = true;
@@ -1016,7 +1024,7 @@ function alSoltar() {
   $('#rastra').hidden = true;
   plancha.medir();
   actualizarMedidoresMasa();
-  if (plancha.masaRestante <= 0.02) $instr.textContent = 'Se acabó la masa del cucharón. ¡A cocinar!';
+  if (plancha.masaRestante <= 0.02) $instr.textContent = t('Se acabó la masa del cucharón. ¡A cocinar!');
 }
 
 // ============================================================

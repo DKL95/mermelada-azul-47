@@ -14,6 +14,7 @@ import { COMBOS } from './ingredientes.js';
 import { VIPS } from './clientes.js';
 import { premiarLogro, tieneAlgunArticulo } from '../cartera.js';
 import { g } from '../genero.js';
+import { t, traducirDatos } from '../idioma.js';
 
 export const LOGROS = [
   { id: 'primera', emoji: '🥞', nombre: '¡Primera crepa!', descripcion: 'Vende tu primera crepa.', premio: 20,
@@ -36,11 +37,11 @@ export const LOGROS = [
     cumple: (e) => e.stats.gourmets5 >= 1 },
   { id: 'ninos', emoji: '🍭', get nombre() { return g('Consentidora de niños', 'Consentidor de niños'); }, descripcion: 'Deja encantados a 5 niños.', premio: 80,
     cumple: (e) => e.stats.ninosEncantados >= 5 },
-  { id: 'vips', emoji: '🤓', nombre: 'Clientela fiel', descripcion: `Atiende a los ${VIPS.length} clientes VIP.`, premio: 200,
+  { id: 'vips', emoji: '🤓', nombre: 'Clientela fiel', descripcion: t('Atiende a los {n} clientes VIP.', { n: VIPS.length }), premio: 200,
     cumple: (e) => VIPS.every((v) => e.stats.vips.includes(v.id)) },
   { id: 'famoso', emoji: '🌟', get nombre() { return g('¡Famosa en internet!', '¡Famoso en internet!'); }, descripcion: 'Conquista a la crítica famosa.', premio: 250,
     cumple: (e) => e.stats.famoso },
-  { id: 'combos', emoji: '📖', nombre: 'Todo el menú', descripcion: `Vende con 4★ o más las ${COMBOS.length} crepas de la casa.`, premio: 300,
+  { id: 'combos', emoji: '📖', nombre: 'Todo el menú', descripcion: t('Vende con 4★ o más las {n} crepas de la casa.', { n: COMBOS.length }), premio: 300,
     cumple: (e) => COMBOS.every((c) => e.stats.combos.includes(c.id)) },
   { id: 'salsa', emoji: '〰️', nombre: 'Artista de la salsa', descripcion: 'Decora 20 crepas con la salsa perfecta.', premio: 120,
     cumple: (e) => e.stats.salsaPerfecta >= 20 },
@@ -90,6 +91,8 @@ export const LOGROS = [
   { id: 'todos', emoji: '💖', nombre: 'Ay que', descripcion: 'Desbloquea todos los demás logros.', premio: 1000,
     cumple: (e) => LOGROS.every((l) => l.id === 'todos' || e.logros.includes(l.id)) },
 ];
+
+traducirDatos(LOGROS, 'nombre', 'descripcion');
 
 /** Chispitas que da un logro: una por cada $50 de premio (mínimo una). */
 export function chispitasDe(logro) {

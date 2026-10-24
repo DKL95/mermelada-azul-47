@@ -20,6 +20,7 @@ import { CONFIG } from './config.js';
 import { estado, actualizar } from './state.js';
 import { mostrarModal } from './ui.js';
 import { sonidos } from './audio.js';
+import { t } from './idioma.js';
 
 const CLAVE_LLAVE = 'creperia.llave';   // llave de los textos (al poner el código)
 // Los teléfonos que pusieron el PIN de entrada anterior (era el mismo
@@ -39,7 +40,7 @@ function parrafos(texto) {
 //  los mismos parámetros que herramientas/cifrar-textos.mjs)
 // ============================================================
 
-const deB64 = (t) => Uint8Array.from(atob(t), (c) => c.charCodeAt(0));
+const deB64 = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 const aB64 = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
 const leer = (clave) => { try { return localStorage.getItem(clave); } catch { return null; } };
 
@@ -136,8 +137,8 @@ export function nombreCreperia() {
 /** Texto bajo el título: dedicatoria en su versión, lema en la pública. */
 function dedicatoria() {
   return esRomantica()
-    ? `Hecho con cariño para <b>${CONFIG.nombreElla}</b> 💕`
-    : '¡Tu propia crepería en el bolsillo! 🥞';
+    ? `${t('Hecho con cariño para {nombre}', { nombre: `<b>${CONFIG.nombreElla}</b>` })} 💕`
+    : `${t('¡Tu propia crepería en el bolsillo!')} 🥞`;
 }
 
 /**
@@ -149,12 +150,12 @@ export function pantallaInicio() {
     const capa = document.createElement('div');
     capa.id = 'inicio';
     capa.innerHTML = `
-      ${CONFIG.versionEspecial ? '<button class="inicio-codigo" aria-label="Código especial"></button>' : ''}
+      ${CONFIG.versionEspecial ? `<button class="inicio-codigo" aria-label="${t('Código especial')}"></button>` : ''}
       <div class="inicio-caja">
         <div class="inicio-logo-caja"></div>
         <h1></h1>
         <p class="inicio-dedicatoria"></p>
-        <button class="btn btn-primario btn-grande" id="btn-entrar">¡A cocinar! 🥞</button>
+        <button class="btn btn-primario btn-grande" id="btn-entrar">${t('¡A cocinar!')} 🥞</button>
       </div>`;
     document.getElementById('app').appendChild(capa);
     window.dispatchEvent(new Event('modal:abierto')); // el reloj espera
@@ -193,14 +194,14 @@ export function pantallaInicio() {
 }
 
 /** Pide el código especial. Devuelve true si desbloqueó. */
-async function ventanaCodigo(pregunta = '¿Tienes un código especial?') {
+async function ventanaCodigo(pregunta = t('¿Tienes un código especial?')) {
   const cont = document.createElement('form');
   cont.className = 'inicio-pin';
   cont.autocomplete = 'off';
   cont.innerHTML = `
     <label for="codigo">${pregunta}</label>
     <input id="codigo" type="password" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <small class="pin-error" hidden>Mmm… ese no es 🙈</small>`;
+    <small class="pin-error" hidden>${t('Mmm… ese no es')} 🙈</small>`;
   const campo = cont.querySelector('input');
 
   const revisar = async () => {
@@ -221,11 +222,11 @@ async function ventanaCodigo(pregunta = '¿Tienes un código especial?') {
     return false; // la ventana se queda abierta
   };
   const promesa = mostrarModal({
-    titulo: '🔒 Código',
+    titulo: `🔒 ${t('Código')}`,
     contenido: cont,
     botones: [
-      { texto: 'Cancelar', valor: null },
-      { texto: 'Entrar', clase: 'btn-primario', valor: 'ok', alTocar: revisar },
+      { texto: t('Cancelar'), valor: null },
+      { texto: t('Entrar'), clase: 'btn-primario', valor: 'ok', alTocar: revisar },
     ],
   });
   cont.addEventListener('submit', (ev) => {
@@ -239,11 +240,11 @@ async function ventanaCodigo(pregunta = '¿Tienes un código especial?') {
 /** Ya está desbloqueada: ofrece volver a la versión para todos. */
 async function ventanaQuitarCodigo() {
   const r = await mostrarModal({
-    titulo: '💕 Versión especial',
-    contenido: `<p style="text-align:center">Esta es la versión especial para <b>${CONFIG.nombreElla}</b>.</p>`,
+    titulo: `💕 ${t('Versión especial')}`,
+    contenido: `<p style="text-align:center">${t('Esta es la versión especial para {nombre}.', { nombre: `<b>${CONFIG.nombreElla}</b>` })}</p>`,
     botones: [
-      { texto: 'Volver a la normal', valor: 'quitar' },
-      { texto: '¡Me quedo! 💕', clase: 'btn-primario' },
+      { texto: t('Volver a la normal'), valor: 'quitar' },
+      { texto: `${t('¡Me quedo!')} 💕`, clase: 'btn-primario' },
     ],
   });
   if (r !== 'quitar') return false;
@@ -261,21 +262,21 @@ export async function bienvenida() {
   if (!esRomantica()) {
     if (estado().bienvenidaPublicaVista || estado().bienvenidaVista) return;
     await mostrarModal({
-      titulo: `¡Te damos la bienvenida a ${nombreCreperia()}!`,
-      contenido: `<div class="carta-texto">${parrafos(CONFIG.mensajeBienvenidaPublico)}</div>`,
-      botones: [{ texto: '¡Vamos! 🥞', clase: 'btn-primario' }],
+      titulo: t('¡Te damos la bienvenida a {nombre}!', { nombre: nombreCreperia() }),
+      contenido: `<div class="carta-texto">${parrafos(t(CONFIG.mensajeBienvenidaPublico))}</div>`,
+      botones: [{ texto: `${t('¡Vamos!')} 🥞`, clase: 'btn-primario' }],
       cerrarAlTocarFuera: false,
     });
     actualizar((e) => { e.bienvenidaPublicaVista = true; });
     return;
   }
   if (estado().bienvenidaVista) return;
-  const t = await textosEspeciales();
-  if (!t) return;
+  const especiales = await textosEspeciales();
+  if (!especiales) return;
   await mostrarModal({
-    titulo: `¡Hola, ${CONFIG.nombreElla}! 💕`,
-    contenido: `<div class="carta-texto">${parrafos(t.mensajeBienvenida)}</div>`,
-    botones: [{ texto: '¡Vamos! 🥞', clase: 'btn-primario' }],
+    titulo: `${t('¡Hola, {nombre}!', { nombre: CONFIG.nombreElla })} 💕`,
+    contenido: `<div class="carta-texto">${parrafos(especiales.mensajeBienvenida)}</div>`,
+    botones: [{ texto: `${t('¡Vamos!')} 🥞`, clase: 'btn-primario' }],
     cerrarAlTocarFuera: false,
   });
   actualizar((e) => { e.bienvenidaVista = true; });
@@ -302,7 +303,7 @@ const RENGLON = 28; // alto de cada renglón de la hoja de libreta (px)
  * Devuelve una lista de hojas, cada una con su HTML.
  */
 function repartirEnHojas(hoja, texto, firma) {
-  const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const escapar = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const parrafo = (frases, sigue) => `<p${sigue ? ' class="sigue"' : ''}>${escapar(frases.join(' '))}</p>`;
   const cabe = (partes) => {
     hoja.innerHTML = partes.join('');
@@ -335,27 +336,27 @@ function repartirEnHojas(hoja, texto, firma) {
 /** Sobre que se abre con la cartita: hojas de libreta que se pasan. */
 export async function abrirCarta(primeraVez = false) {
   // La carta va cifrada: si en este teléfono no se ha puesto el código, se pide
-  const t = await textosEspeciales();
-  if (!t && !(await ventanaCodigo('Para abrir tu carta, escribe tu código especial 💌'))) return;
+  const especiales = await textosEspeciales();
+  if (!especiales && !(await ventanaCodigo(`${t('Para abrir tu carta, escribe tu código especial')} 💌`))) return;
   sonidos.logro();
   // Tantos renglones como quepan cómodos en la pantalla
   const renglones = Math.max(8, Math.min(16, Math.floor(window.innerHeight * 0.48 / RENGLON)));
   const cont = document.createElement('div');
   cont.className = 'carta';
   cont.innerHTML = `
-    ${primeraVez ? `<p class="carta-aviso">¡Llegaste al día ${CONFIG.diaSorpresa}! Alguien te dejó algo… 💌</p>` : ''}
+    ${primeraVez ? `<p class="carta-aviso">${t('¡Llegaste al día {n}! Alguien te dejó algo…', { n: CONFIG.diaSorpresa })} 💌</p>` : ''}
     <div class="sobre">
       <div class="sobre-solapa"></div>
       <div class="sobre-papel">
         <div class="hoja-libreta" style="height:${renglones * RENGLON + RENGLON}px"></div>
         <div class="hojas-nav" hidden>
-          <button class="btn-hoja" data-paso="-1" aria-label="Hoja anterior">‹</button>
+          <button class="btn-hoja" data-paso="-1" aria-label="${t('Hoja anterior')}">‹</button>
           <span class="hojas-num"></span>
-          <button class="btn-hoja" data-paso="1" aria-label="Hoja siguiente">›</button>
+          <button class="btn-hoja" data-paso="1" aria-label="${t('Hoja siguiente')}">›</button>
         </div>
       </div>
     </div>`;
-  const promesa = mostrarModal({ titulo: '💌 Para ti', contenido: cont, botones: [{ texto: 'Guardar en mi corazón 💕', clase: 'btn-primario' }] });
+  const promesa = mostrarModal({ titulo: `💌 ${t('Para ti')}`, contenido: cont, botones: [{ texto: `${t('Guardar en mi corazón')} 💕`, clase: 'btn-primario' }] });
 
   // Se mide con la letra manuscrita ya cargada (sin internet, con la de respaldo)
   const hoja = cont.querySelector('.hoja-libreta');
@@ -367,7 +368,7 @@ export async function abrirCarta(primeraVez = false) {
   const mostrar = (paso = 0) => {
     n = Math.max(0, Math.min(hojas.length - 1, n + paso));
     hoja.innerHTML = hojas[n];
-    nav.querySelector('.hojas-num').textContent = `Hoja ${n + 1} de ${hojas.length}`;
+    nav.querySelector('.hojas-num').textContent = t('Hoja {n} de {total}', { n: n + 1, total: hojas.length });
     nav.querySelector('[data-paso="-1"]').disabled = n === 0;
     nav.querySelector('[data-paso="1"]').disabled = n === hojas.length - 1;
     if (paso) {
@@ -404,21 +405,21 @@ export async function abrirCarta(primeraVez = false) {
 export function creditos() {
   const e = estado();
   mostrarModal({
-    titulo: '💝 Créditos',
+    titulo: `💝 ${t('Créditos')}`,
     contenido: `
       <div class="creditos">
         ${logo()}
         <h3>${nombreCreperia()}</h3>
         ${esRomantica()
-          ? `<p>Hecho con cariño para <b>${CONFIG.nombreElla}</b></p><p class="carta-firma">${CONFIG.firma}</p>`
-          : `<p>Un juego de <b>${CONFIG.creador}</b></p>`}
+          ? `<p>${t('Hecho con cariño para {nombre}', { nombre: `<b>${CONFIG.nombreElla}</b>` })}</p><p class="carta-firma">${CONFIG.firma}</p>`
+          : `<p>${t('Un juego de {nombre}', { nombre: `<b>${CONFIG.creador}</b>` })}</p>`}
         <div class="creditos-stats">
-          <span>📅 Día ${e.dia}</span>
-          <span>🥞 ${e.records.crepasVendidas} crepas</span>
-          <span>✨ ${e.records.crepasPerfectas} perfectas</span>
+          <span>📅 ${t('Día {n}', { n: e.dia })}</span>
+          <span>🥞 ${t('{n} crepas', { n: e.records.crepasVendidas })}</span>
+          <span>✨ ${t('{n} perfectas', { n: e.records.crepasPerfectas })}</span>
         </div>
-        <small>Juego original, dibujado con código. Sin anuncios y sin internet. 🌈</small>
+        <small>${t('Juego original, dibujado con código. Sin anuncios y sin internet.')} 🌈</small>
       </div>`,
-    botones: [{ texto: 'Cerrar', clase: 'btn-primario' }],
+    botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }],
   });
 }

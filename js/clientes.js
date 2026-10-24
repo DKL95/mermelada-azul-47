@@ -16,6 +16,7 @@ import { FORMAS_DE_PEDIR, FORMAS_POR_TIPO, FORMAS_NINO, SALUDOS_VIP, SALUDOS_FAM
 import { CONFIG } from './config.js';
 import { multPaciencia } from './data/mejoras.js';
 import { evento } from './data/eventos.js';
+import { t, idioma } from './idioma.js';
 
 let contador = 0;
 
@@ -48,12 +49,13 @@ function entre(min, max) {
 }
 const combo = (id) => COMBOS.find((c) => c.id === id);
 
-/** Nombre para meter en una frase ("Nutella", pero "fresa" en minúscula). */
+/** Nombre para meter en una frase ("Nutella", pero "fresa" en minúscula;
+ *  en alemán los sustantivos van siempre con mayúscula). */
 export function nombreEnFrase(id) {
   const i = ingrediente(id);
-  if (!i) return 'eso';
-  if (i.categoria === 'masa') return i.frase ? i.frase.replace(/^en /, '') : 'clásica';
-  return i.enFrase || (i.marca ? i.nombre : i.nombre.toLowerCase());
+  if (!i) return t('eso');
+  if (i.categoria === 'masa') return i.enFrase || t('clásica');
+  return i.enFrase || (i.marca || idioma === 'de' ? i.nombre : i.nombre.toLowerCase());
 }
 
 /** Copia un combo como pedido (sin tocar el original). */
@@ -91,19 +93,19 @@ function aplicarCambio(p, e) {
       delete p.rellenos[id];
       delete p.toppings[id];
       p.salsas = p.salsas.filter((s) => s !== id);
-      p.cambios.push(`sin ${nombreEnFrase(id)}`);
+      p.cambios.push(t('sin {ing}', { ing: nombreEnFrase(id) }));
       break;
     }
     case 'doble': {
       const id = Object.keys(p.rellenos).find(doblable);
       if (p.rellenos[id] > 1) return;
       p.rellenos[id] = 2;
-      p.cambios.push(`con doble ${nombreEnFrase(id)}`);
+      p.cambios.push(t('con doble {ing}', { ing: nombreEnFrase(id) }));
       break;
     }
     case 'crema':
       if (p.toppings[crema] > 1) return;
-      p.cambios.push(p.toppings[crema] ? 'con extra crema' : `con ${nombreEnFrase(crema)}`);
+      p.cambios.push(p.toppings[crema] ? t('con extra crema') : t('con {ing}', { ing: nombreEnFrase(crema) }));
       p.toppings[crema] = (p.toppings[crema] || 0) + 1;
       break;
     case 'masa': {
@@ -264,12 +266,14 @@ function armarPedido(tipo, comboFijo, e) {
  *  "de Nutella con fresa, y nuez encima, bañada de caramelo, en triángulo"
  *  o, si es combo: "Banana Split, sin plátano" */
 export function describirPedido(pedido) {
-  const bebida = pedido.bebida ? `, y un ${nombreEnFrase(pedido.bebida)} para tomar` : '';
+  const coma = t(', ');
+  const bebida = pedido.bebida ? t(', y un {bebida} para tomar', { bebida: nombreEnFrase(pedido.bebida) }) : '';
   if (pedido.combo) {
     const c = combo(pedido.combo);
-    return c.nombre + (pedido.cambios?.length ? `, ${unirY(pedido.cambios)}` : '') + bebida;
+    // El nombre de la crepa de la casa (en otros idiomas va entre comillas: a crepe “Classic”)
+    return t('{combo}', { combo: c.nombre }) + (pedido.cambios?.length ? coma + unirY(pedido.cambios) : '') + bebida;
   }
-  const conPorciones = ([id, n]) => (n > 1 ? `doble ${nombreEnFrase(id)}` : nombreEnFrase(id));
+  const conPorciones = ([id, n]) => (n > 1 ? t('doble {ing}', { ing: nombreEnFrase(id) }) : nombreEnFrase(id));
   const rellenos = Object.entries(pedido.rellenos).map(conPorciones);
   // "de Nutella con fresa" / "de jamón con queso"; si solo hay fruta: "con fresa"
   const hayBase = Object.keys(pedido.rellenos).some((id) => ['untable', 'salado'].includes(ingrediente(id).categoria));
@@ -277,23 +281,26 @@ export function describirPedido(pedido) {
   if (rellenos.length) {
     if (hayBase) {
       const [primero, ...resto] = rellenos;
-      partes.push(`de ${primero}${resto.length ? ` con ${unirY(resto)}` : ''}`);
+      partes.push(resto.length
+        ? t('de {base} con {resto}', { base: primero, resto: unirY(resto) })
+        : t('de {base}', { base: primero }));
     } else {
-      partes.push(`con ${unirY(rellenos)}`);
+      partes.push(t('con {ing}', { ing: unirY(rellenos) }));
     }
   }
   const tops = Object.entries(pedido.toppings || {}).map(conPorciones);
-  if (tops.length) partes.push(`con ${unirY(tops)} encima`);
-  if (pedido.salsas?.length) partes.push(`bañada de ${unirY(pedido.salsas.map(nombreEnFrase))}`);
+  if (tops.length) partes.push(t('con {ing} encima', { ing: unirY(tops) }));
+  if (pedido.salsas?.length) partes.push(t('bañada de {ing}', { ing: unirY(pedido.salsas.map(nombreEnFrase)) }));
   const masa = ingrediente(pedido.masa || 'masa_clasica');
   if (masa.frase) partes.push(masa.frase);
   partes.push(DOBLADOS.find((x) => x.id === pedido.doblado).frase);
-  return partes.join(', ') + bebida;
+  return partes.join(coma) + bebida;
 }
 
-function unirY(lista) {
+/** "a, b y c" (en cada idioma). */
+export function unirY(lista) {
   if (lista.length <= 1) return lista.join('');
-  return lista.slice(0, -1).join(', ') + ' y ' + lista[lista.length - 1];
+  return lista.slice(0, -1).join(t(', ')) + t(' y ') + lista[lista.length - 1];
 }
 
 /** Precio de un pedido en pesos. */

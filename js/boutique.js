@@ -14,14 +14,15 @@ import { sonidos } from './audio.js';
 import { chispitas, gastarChispitas, enChispitas, textoChispitas, tieneArticulo, agregarArticulos } from './cartera.js';
 import { personaje, guardarPersonaje, dibujarPersonaje, tieneOpcion, conTraje, nombreTraje } from './personaje.js';
 import { ACCESORIOS, ABAJO, CALZADO, TRAJES, claveArticulo, personajeInicial, piezasDe, todasLasPiezas } from './data/personaje.js';
+import { t } from './idioma.js';
 
 // [id, título, de dónde salen los artículos]
 const SECCIONES = [
-  ['trajes', '🦸 Disfraces'],
-  ['halloween', '🎃 Halloween y terror'],
+  ['trajes', `🦸 ${t('Disfraces')}`],
+  ['halloween', `🎃 ${t('Halloween y terror')}`],
   ...Object.entries(ACCESORIOS).map(([cat, { nombre }]) => [`acc.${cat}`, nombre]),
-  ['abajo', '👖 Abajo'],
-  ['calzado', '👟 Calzado'],
+  ['abajo', `👖 ${t('Abajo')}`],
+  ['calzado', `👟 ${t('Calzado')}`],
 ];
 
 // En qué encuadre se ve mejor cada cosa en su tarjetita
@@ -30,8 +31,8 @@ const VISTA = { 'acc.cabeza': 'cabeza', 'acc.ojos': 'cara', 'acc.cara': 'cara', 
 /** Lo que se vende en una sección: { campo, id, nombre, precio, traje? } */
 function articulos(seccion) {
   if (seccion === 'trajes' || seccion === 'halloween') {
-    return TRAJES.filter((t) => (t.grupo || 'trajes') === seccion)
-      .map((t) => ({ campo: 'traje', id: t.id, nombre: nombreTraje(t), precio: t.precio, traje: t }));
+    return TRAJES.filter((tr) => (tr.grupo || 'trajes') === seccion)
+      .map((tr) => ({ campo: 'traje', id: tr.id, nombre: nombreTraje(tr), precio: tr.precio, traje: tr }));
   }
   const lista = seccion === 'abajo' ? ABAJO : seccion === 'calzado' ? CALZADO : ACCESORIOS[seccion.slice(4)].opciones;
   return lista.filter((o) => o.precio).map((o) => ({ campo: seccion, id: o.id, nombre: o.nombre, precio: o.precio, opcion: o }));
@@ -68,7 +69,7 @@ function clavesDe(art) {
 
 export function abrirBoutique(seccionInicial = 'trajes') {
   // En el sin fin el dinero es temporal: la boutique espera a que termine
-  if (enModoTemporal()) { aviso('🛍️ La boutique abre al terminar la partida sin fin'); return null; }
+  if (enModoTemporal()) { aviso(`🛍️ ${t('La boutique abre al terminar la partida sin fin')}`); return null; }
   sonidos.click();
   let p = personaje() || personajeInicial();
   let seccion = seccionInicial;
@@ -79,13 +80,13 @@ export function abrirBoutique(seccionInicial = 'trajes') {
   cont.innerHTML = `
     <div class="tienda-dinero boutique-dinero"></div>
     <div class="boutique-vista"></div>
-    <div class="boutique-secciones">${SECCIONES.map(([id, t]) => `<button class="chip" data-seccion="${id}">${t}</button>`).join('')}</div>
+    <div class="boutique-secciones">${SECCIONES.map(([id, titulo]) => `<button class="chip" data-seccion="${id}">${titulo}</button>`).join('')}</div>
     <div class="boutique-articulos"></div>
     <div class="boutique-barra"></div>`;
   const $ = (sel) => cont.querySelector(sel);
 
   const pintarDinero = () => {
-    $('.boutique-dinero').innerHTML = `Tienes <b>${dinero(estado().dinero)}</b> y <b>${textoChispitas(chispitas())}</b>`;
+    $('.boutique-dinero').innerHTML = t('Tienes {dinero} y {chispitas}', { dinero: `<b>${dinero(estado().dinero)}</b>`, chispitas: `<b>${textoChispitas(chispitas())}</b>` });
   };
 
   const pintarVista = () => {
@@ -94,13 +95,13 @@ export function abrirBoutique(seccionInicial = 'trajes') {
 
   const pintarBarra = () => {
     const barra = $('.boutique-barra');
-    if (!elegido) { barra.innerHTML = '<p class="nota-creador">Toca algo para probártelo 👆</p>'; return; }
+    if (!elegido) { barra.innerHTML = `<p class="nota-creador">${t('Toca algo para probártelo')} 👆</p>`; return; }
     const precioCh = enChispitas(elegido.precio);
     let botones;
     if (esSuyo(elegido)) {
       botones = puesto(p, elegido)
-        ? '<span class="comprado">✓ Lo traes puesto</span>'
-        : '<button class="btn btn-primario" data-accion="poner">Ponérmelo</button>';
+        ? `<span class="comprado">✓ ${t('Lo traes puesto')}</span>`
+        : `<button class="btn btn-primario" data-accion="poner">${t('Ponérmelo')}</button>`;
     } else {
       botones = `<button class="btn btn-primario" data-accion="pesos" ${estado().dinero >= elegido.precio ? '' : 'disabled'}>${dinero(elegido.precio)}</button>
         <button class="btn btn-chispitas" data-accion="chispitas" ${chispitas() >= precioCh ? '' : 'disabled'}>${textoChispitas(precioCh)}</button>`;
@@ -117,7 +118,7 @@ export function abrirBoutique(seccionInicial = 'trajes') {
         <button class="articulo${elegido?.campo === art.campo && elegido?.id === art.id ? ' elegido' : ''}${suyo ? ' tuyo' : ''}" data-i="${i}">
           <span class="articulo-vista">${dibujarPersonaje(probar(p, art), { vista: art.traje ? 'completo' : VISTA[art.campo] || 'completo', emocion: 'feliz' })}</span>
           <b>${art.nombre}</b>
-          <small>${suyo ? '✓ Tuyo' : `${dinero(art.precio)} · ${textoChispitas(enChispitas(art.precio))}`}</small>
+          <small>${suyo ? `✓ ${t('Tuyo')}` : `${dinero(art.precio)} · ${textoChispitas(enChispitas(art.precio))}`}</small>
         </button>`;
     }).join('');
   };
@@ -140,7 +141,7 @@ export function abrirBoutique(seccionInicial = 'trajes') {
     agregarArticulos(clavesDe(elegido));
     ponerse();
     sonidos.compra();
-    aviso(`🛍️ ¡${elegido.nombre} es tuyo!`);
+    aviso(`🛍️ ${t('¡{nombre} es tuyo!', { nombre: elegido.nombre })}`);
     let logros = [];
     actualizar((e) => { logros = revisarLogros(e, { momento: 'compra' }); });
     if (logros.length) avisarLogros(logros);
@@ -165,11 +166,11 @@ export function abrirBoutique(seccionInicial = 'trajes') {
     }
     const acc = ev.target.closest('[data-accion]');
     if (!acc || !elegido) return;
-    if (acc.dataset.accion === 'poner') { sonidos.pop(); ponerse(); aviso('👤 ¡Listo!'); }
+    if (acc.dataset.accion === 'poner') { sonidos.pop(); ponerse(); aviso(`👤 ${t('¡Listo!')}`); }
     else comprar(acc.dataset.accion);
     pintar();
   });
   pintar();
 
-  return mostrarModal({ titulo: '🛍️ Boutique', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
+  return mostrarModal({ titulo: `🛍️ ${t('Boutique')}`, contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
 }

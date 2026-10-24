@@ -13,6 +13,8 @@
      desdeDia    a partir de qué día aparece
      repMin      reputación mínima para que aparezca
    ============================================================ */
+import { t, traducirDatos } from '../idioma.js';
+
 export const TIPOS_CLIENTE = [
   { id: 'tranquilo', nombre: 'Tranquilo', emoji: '😌', nota: 'Tiene mucha paciencia',
     paciencia: 170, exigencia: 0.3, pago: 1.0, propina: 1.0, complejidad: [1, 3], combo: 0.4, cambios: 0.1,
@@ -37,6 +39,8 @@ export const TIPOS_CLIENTE = [
     peso: 0.9, porDia: 0, desdeDia: 1, repMin: 4 },
 ];
 
+traducirDatos(TIPOS_CLIENTE, 'nombre', 'nota');
+
 // La paciencia se multiplica según la dificultad elegida
 export const MULT_PACIENCIA = { relajado: 3, normal: 1, desafio: 0.75 };
 
@@ -59,7 +63,7 @@ export const VIPS = [
    es tan estricta como un gourmet y su reseña mueve mucho la reputación. */
 export const FAMOSA = {
   nombre: 'Lulú Estrella',
-  titulo: 'crítica de comida famosa en internet',
+  titulo: t('crítica de comida famosa en internet'),
   apariencia: { piel: '#F6C9A4', pelo: '#E8C27A', ropa: '#8B5CF6', peinado: 'largo', accesorio: 'lentesSol', colorAcc: '#1B1B2B', vestimenta: 'vestido', ropa2: '#FFD84D', extra: 'bolso', aretes: true },
 };
 

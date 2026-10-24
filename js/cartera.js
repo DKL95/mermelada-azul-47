@@ -8,7 +8,8 @@
    Se ganan jugando: crepas perfectas, logros y el premio diario.
    En la app de Android también se pueden comprar (window.CandyPagos,
    lo pone pagos-android.js, que además las acredita; en la web los
-   paquetes salen como "Pronto").
+   paquetes salen como "Pronto"; en Steam no hay paquetes: el juego
+   se compra una vez y las Chispitas solo se ganan jugando).
 
    Uso:
      import { chispitas, ganarChispitas, gastarChispitas } from './cartera.js';
@@ -19,6 +20,8 @@
 import { estado } from './state.js';
 import { mostrarModal, aviso } from './ui.js';
 import { sonidos } from './audio.js';
+import { esSteam } from './plataforma.js';
+import { t } from './idioma.js';
 
 const CLAVE = 'creperia.cartera';
 
@@ -27,10 +30,10 @@ export const PREMIOS_DIARIOS = [3, 3, 5, 5, 8, 8, 15];
 
 // Paquetes para comprar (los precios los pone la tienda de Google Play)
 export const PAQUETES = [
-  { id: 'chispitas_60', nombre: 'Puñito', chispitas: 60 },
-  { id: 'chispitas_150', nombre: 'Bolsita', chispitas: 150, nota: '+15% extra' },
-  { id: 'chispitas_400', nombre: 'Frasco', chispitas: 400, nota: '+30% extra' },
-  { id: 'chispitas_1000', nombre: 'Cofre', chispitas: 1000, nota: '¡El mejor precio!' },
+  { id: 'chispitas_60', nombre: t('Puñito'), chispitas: 60 },
+  { id: 'chispitas_150', nombre: t('Bolsita'), chispitas: 150, nota: t('+15% extra') },
+  { id: 'chispitas_400', nombre: t('Frasco'), chispitas: 400, nota: t('+30% extra') },
+  { id: 'chispitas_1000', nombre: t('Cofre'), chispitas: 1000, nota: t('¡El mejor precio!') },
 ];
 
 /** Precio en Chispitas de algo que cuesta `pesos`. */
@@ -149,14 +152,14 @@ export async function regaloPorLogros(logros, porLogro) {
   guardar();
   sonidos.logro();
   await mostrarModal({
-    titulo: '¡Llegaron las Chispitas!',
+    titulo: t('¡Llegaron las Chispitas!'),
     contenido: `<div class="regalo-chispitas">
       <div class="chispita-grande">${iconoChispita()}</div>
-      <p>Las <b>Chispitas</b> son una moneda especial: con ellas puedes comprar mejoras y, muy pronto, ropa y decoración.</p>
-      <p>Por los <b>${ganados.length} logros</b> que ya tienes te tocan:</p>
+      <p>${t('Las <b>Chispitas</b> son una moneda especial: con ellas puedes comprar mejoras y, muy pronto, ropa y decoración.')}</p>
+      <p>${t('Por los <b>{n} logros</b> que ya tienes te tocan:', { n: ganados.length })}</p>
       <p class="regalo-total">${textoChispitas(total)}</p>
     </div>`,
-    botones: [{ texto: '¡Gracias! ✨', clase: 'btn-primario' }],
+    botones: [{ texto: t('¡Gracias! ✨'), clase: 'btn-primario' }],
     cerrarAlTocarFuera: false,
   });
 }
@@ -174,25 +177,25 @@ export async function premioDiario() {
 
   const cont = document.createElement('div');
   cont.innerHTML = `
-    <p class="diario-nota">Entra todos los días: ¡el premio crece!</p>
+    <p class="diario-nota">${t('Entra todos los días: ¡el premio crece!')}</p>
     <div class="diario-dias">
       ${PREMIOS_DIARIOS.map((n, i) => `
         <div class="diario-dia${i < actual ? ' recogido' : ''}${i === actual ? ' hoy' : ''}">
-          <small>Día ${i + 1}${i === PREMIOS_DIARIOS.length - 1 ? '+' : ''}</small>
+          <small>${t('Día {n}', { n: i + 1 })}${i === PREMIOS_DIARIOS.length - 1 ? '+' : ''}</small>
           ${iconoChispita()}<b>${n}</b>
         </div>`).join('')}
     </div>`;
   await mostrarModal({
-    titulo: '🎁 Premio del día',
+    titulo: `🎁 ${t('Premio del día')}`,
     contenido: cont,
-    botones: [{ texto: `Recoger ${premio} ✨`, clase: 'btn-primario' }],
+    botones: [{ texto: `${t('Recoger {n}', { n: premio })} ✨`, clase: 'btn-primario' }],
     cerrarAlTocarFuera: false,
   });
   cartera.diario = { ultimo: hoy, racha };
   cartera.chispitas += premio;
   guardar();
   sonidos.ching();
-  aviso(`✨ +${premio} Chispitas`);
+  aviso(`✨ ${t('+{n} Chispitas', { n: premio })}`);
 }
 
 // ---------- Tienda de Chispitas ----------
@@ -202,8 +205,7 @@ export function abrirTiendaChispitas() {
   const pagos = window.CandyPagos; // solo existe en la app de Android
   const cont = document.createElement('div');
   cont.className = 'tienda-chispitas';
-  cont.innerHTML = `
-    <div class="tienda-dinero">Tienes <b>${textoChispitas(cartera.chispitas)}</b></div>
+  const paquetes = esSteam ? '' : `
     <div class="paquetes">
       ${PAQUETES.map((p) => `
         <div class="paquete">
@@ -212,16 +214,19 @@ export function abrirTiendaChispitas() {
           <span class="paquete-cantidad">${p.chispitas}</span>
           <small>${p.nota || '&nbsp;'}</small>
           ${pagos
-            ? `<button class="btn btn-primario" data-paquete="${p.id}">${pagos.precio?.(p.id) || 'Comprar'}</button>`
-            : '<button class="btn" disabled>Pronto</button>'}
+            ? `<button class="btn btn-primario" data-paquete="${p.id}">${pagos.precio?.(p.id) || t('Comprar')}</button>`
+            : `<button class="btn" disabled>${t('Pronto')}</button>`}
         </div>`).join('')}
     </div>
-    ${pagos ? '' : '<p class="menu-nota">Las Chispitas se podrán comprar en la app de Android. Mientras, ¡gánalas jugando!</p>'}
-    <h3 class="menu-titulo">Gana Chispitas gratis</h3>
+    ${pagos ? '' : `<p class="menu-nota">${t('Las Chispitas se podrán comprar en la app de Android. Mientras, ¡gánalas jugando!')}</p>`}`;
+  cont.innerHTML = `
+    <div class="tienda-dinero">${t('Tienes {monto}', { monto: `<b>${textoChispitas(cartera.chispitas)}</b>` })}</div>
+    ${paquetes}
+    <h3 class="menu-titulo">${t('Gana Chispitas gratis')}</h3>
     <ul class="ganar-chispitas">
-      <li>🎁 Premio diario: entra todos los días (hasta 15 ✨)</li>
-      <li>✨ Cada crepa perfecta (95% o más): +1</li>
-      <li>🏆 Cada logro que desbloquees</li>
+      <li>🎁 ${t('Premio diario: entra todos los días (hasta 15 ✨)')}</li>
+      <li>✨ ${t('Cada crepa perfecta (95% o más): +1')}</li>
+      <li>🏆 ${t('Cada logro que desbloquees')}</li>
     </ul>`;
   cont.addEventListener('click', async (ev) => {
     const b = ev.target.closest('[data-paquete]');
@@ -233,10 +238,10 @@ export function abrirTiendaChispitas() {
       if ((await pagos.comprar(p.id))?.ok) cont.querySelector('.tienda-dinero b').innerHTML = textoChispitas(cartera.chispitas);
     } catch (err) {
       console.warn('No se pudo completar la compra.', err);
-      aviso('No se pudo completar la compra');
+      aviso(t('No se pudo completar la compra'));
     } finally {
       b.disabled = false;
     }
   });
-  return mostrarModal({ titulo: 'Chispitas', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
+  return mostrarModal({ titulo: t('Chispitas'), contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
 }

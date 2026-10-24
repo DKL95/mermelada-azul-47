@@ -27,6 +27,7 @@ import { empezarSinFin, puedeJugarSinFin, rendirse } from './sinfin.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
 import { crepaDoblada, iconosPedido, iconoIngrediente } from './dibujos.js';
 import { IMPACIENCIA, SE_VA, GRACIAS, alAzar } from './data/mensajes.js';
+import { t } from './idioma.js';
 
 let raiz = null, $zona = null;
 const elementos = new Map();   // id de cliente → elemento en pantalla
@@ -39,18 +40,18 @@ export function montar(contenedor) {
     <div class="venta">
       <div class="fachada">
         <div id="svg-fachada"></div>
-        <button class="btn-buzon" id="btn-buzon" aria-label="Buzón de reseñas">📬<span class="tab-globo" id="globo-buzon" hidden>0</span></button>
+        <button class="btn-buzon" id="btn-buzon" aria-label="${t('Buzón de reseñas')}">📬<span class="tab-globo" id="globo-buzon" hidden>0</span></button>
         <div class="botones-fachada">
-          <button class="btn-buzon" id="btn-logros" aria-label="Logros">🏆</button>
-          <button class="btn-buzon" id="btn-tienda" aria-label="Tienda">🛒</button>
-          <button class="btn-buzon" id="btn-boutique" aria-label="Boutique">🛍️</button>
+          <button class="btn-buzon" id="btn-logros" aria-label="${t('Logros')}">🏆</button>
+          <button class="btn-buzon" id="btn-tienda" aria-label="${t('Tienda')}">🛒</button>
+          <button class="btn-buzon" id="btn-boutique" aria-label="${t('Boutique')}">🛍️</button>
         </div>
       </div>
       <div class="zona-clientes" id="zona-clientes">
         <div class="calle" id="calle"></div>
         <div class="clima" id="clima"></div>
         <div class="chef-venta" id="chef-venta" hidden></div>
-        <button class="pildora btn-rendirse" id="btn-rendirse" hidden>✖ Terminar</button>
+        <button class="pildora btn-rendirse" id="btn-rendirse" hidden>✖ ${t('Terminar')}</button>
         <div class="aviso-zona" id="aviso-zona"></div>
       </div>
       <div class="mostrador-venta">
@@ -67,7 +68,7 @@ export function montar(contenedor) {
   on('seVa', () => { sonidos.enojado(); });
   on('finDia', mostrarFinDia);
   on('bebidas', pintarBarraBebidas);
-  on('horaPico', () => aviso('⏰ ¡Hora pico! Va a llegar mucha gente'));
+  on('horaPico', () => aviso(`⏰ ${t('¡Hora pico! Va a llegar mucha gente')}`));
   suscribir((e) => { pintarCharola(e); pintarBuzon(e); pintarDecorado(e); });
   // Se puso o quitó el código especial: cambia el nombre del letrero
   window.addEventListener('version:cambio', () => { pintarDecorado(); pintarAvisoZona(); });
@@ -76,7 +77,7 @@ export function montar(contenedor) {
   raiz.querySelector('#btn-buzon').addEventListener('click', abrirBuzon);
   raiz.querySelector('#btn-logros').addEventListener('click', abrirLogros);
   raiz.querySelector('#btn-tienda').addEventListener('click', () => {
-    if (juego.abierto) { aviso('🛒 La tienda abre cuando la crepería está cerrada (antes de abrir o al terminar el día)'); return; }
+    if (juego.abierto) { aviso(`🛒 ${t('La tienda abre cuando la crepería está cerrada (antes de abrir o al terminar el día)')}`); return; }
     abrirTienda();
   });
   raiz.querySelector('#btn-boutique').addEventListener('click', () => abrirBoutique());
@@ -100,23 +101,23 @@ function pintarAvisoZona() {
   const el = raiz.querySelector('#aviso-zona');
   const e = estado();
   if (!juego.abierto) {
-    const texto = e.segundosTurno > 0 ? `Seguir con el día ${e.dia}` : `🔑 Abrir ${nombreCreperia()}`;
+    const texto = e.segundosTurno > 0 ? t('Seguir con el día {n}', { n: e.dia }) : `🔑 ${t('Abrir {nombre}', { nombre: nombreCreperia() })}`;
     const ev = evento(e.evento);
     el.innerHTML = `<button class="btn btn-primario btn-abrir" id="btn-abrir">${texto}</button>
-      <span class="sub-abrir">Día ${e.dia}</span>
+      <span class="sub-abrir">${t('Día {n}', { n: e.dia })}</span>
       ${ev ? `<div class="tarjeta-evento"><b>${ev.emoji} ${ev.nombre}</b><small>${ev.descripcion}</small></div>` : ''}
-      ${puedeJugarSinFin() ? '<button class="btn btn-sinfin" id="btn-sinfin">♾️ Modo sin fin</button>' : ''}`;
+      ${puedeJugarSinFin() ? `<button class="btn btn-sinfin" id="btn-sinfin">♾️ ${t('Modo sin fin')}</button>` : ''}`;
     el.querySelector('#btn-abrir').addEventListener('click', () => {
       abrir();
-      if (ev) aviso(`${ev.emoji} Hoy: ${ev.nombre}`);
+      if (ev) aviso(`${ev.emoji} ${t('Hoy: {evento}', { evento: ev.nombre })}`);
     });
     el.querySelector('#btn-sinfin')?.addEventListener('click', () => empezarSinFin());
   } else if (e.sinfin) {
     el.innerHTML = '';
   } else if (diaTerminado()) {
-    el.innerHTML = `<span class="pildora">🌙 Ya cerramos: atiende a los que faltan</span>`;
+    el.innerHTML = `<span class="pildora">🌙 ${t('Ya cerramos: atiende a los que faltan')}</span>`;
   } else if (juego.clientes.length === 0) {
-    el.innerHTML = `<span class="pildora flotando">Esperando clientes... ☕</span>`;
+    el.innerHTML = `<span class="pildora flotando">${t('Esperando clientes...')} ☕</span>`;
   } else {
     el.innerHTML = '';
   }
@@ -189,7 +190,7 @@ function actualizarElemento(c, el) {
       break;
     case 'pidiendo':
       el.classList.remove('caminando');
-      sobre.innerHTML = `<div class="globo globo-pedir">${insignia(c)} ¡Toca para pedir!</div>${barraPaciencia()}`;
+      sobre.innerHTML = `<div class="globo globo-pedir">${insignia(c)} ${t('¡Toca para pedir!')}</div>${barraPaciencia()}`;
       break;
     case 'esperando':
       sobre.innerHTML = `<div class="ticket-cabeza">🧾 #${c.numero}</div>${barraPaciencia()}`;
@@ -269,10 +270,10 @@ function programarSalida(el, espera = 2400) {
 
 /** Emoji del tipo de cliente (o el nombre si es VIP). */
 function insignia(c) {
-  const t = tipoDe(c);
+  const tipo = tipoDe(c);
   if (c.novio) return `💕 ${c.nombre}:`;
-  if (c.nombre) return `${t.emoji} ${c.nombre}:`;
-  return t.id === 'normal' || t.id === 'tranquilo' ? '💬' : t.emoji;
+  if (c.nombre) return `${tipo.emoji} ${c.nombre}:`;
+  return tipo.id === 'normal' || tipo.id === 'tranquilo' ? '💬' : tipo.emoji;
 }
 
 function barraPaciencia() {
@@ -293,8 +294,8 @@ function actualizarPaciencias() {
     // De vez en cuando se queja si ya casi se le acaba la paciencia
     if (p < 0.25 && c.estado === 'esperando' && !c.yaSeQuejo) {
       c.yaSeQuejo = true;
-      const t = el.querySelector('.ticket-cabeza');
-      if (t) t.textContent = `#${c.numero} · ${alAzar(IMPACIENCIA)}`;
+      const ticket = el.querySelector('.ticket-cabeza');
+      if (ticket) ticket.textContent = `#${c.numero} · ${alAzar(IMPACIENCIA)}`;
     }
   }
 }
@@ -314,26 +315,26 @@ function abrirTarjeta(c) {
   sonidos.click();
   cerrarTarjeta();
   tarjetaDe = c.id;
-  const t = document.createElement('div');
-  t.className = 'tarjeta-pedido';
+  const tarjeta = document.createElement('div');
+  tarjeta.className = 'tarjeta-pedido';
   const tipo = tipoDe(c);
-  const quien = c.novio ? `💕 ${c.nombre} · tu novio` : c.famosa ? `🌟 ${c.nombre} · crítica de comida famosa (¡que quede perfecta!)` : c.nombre ? `${tipo.emoji} ${c.nombre} · cliente VIP` : tipo.nota ? `${tipo.emoji} ${tipo.nombre} · ${conGenero(tipo.nota)}` : '';
-  t.innerHTML = `
+  const quien = c.novio ? `💕 ${c.nombre} · ${t('tu novio')}` : c.famosa ? `🌟 ${c.nombre} · ${t('crítica de comida famosa (¡que quede perfecta!)')}` : c.nombre ? `${tipo.emoji} ${c.nombre} · ${t('cliente VIP')}` : tipo.nota ? `${tipo.emoji} ${tipo.nombre} · ${conGenero(tipo.nota)}` : '';
+  tarjeta.innerHTML = `
     ${quien ? `<p class="quien">${quien}</p>` : ''}
     <p class="dice">“${c.texto}”</p>
     <div class="ticket-iconos">${iconosPedido(c.pedido)}</div>
     <div class="fila-botones">
-      <button class="btn" data-a="luego">Luego</button>
-      <button class="btn btn-primario" data-a="tomar">Tomar pedido ✍️ · ${dinero(c.precio)}</button>
+      <button class="btn" data-a="luego">${t('Luego')}</button>
+      <button class="btn btn-primario" data-a="tomar">${t('Tomar pedido')} ✍️ · ${dinero(c.precio)}</button>
     </div>`;
-  t.querySelector('[data-a="luego"]').addEventListener('click', (ev) => { ev.stopPropagation(); cerrarTarjeta(); });
-  t.querySelector('[data-a="tomar"]').addEventListener('click', (ev) => {
+  tarjeta.querySelector('[data-a="luego"]').addEventListener('click', (ev) => { ev.stopPropagation(); cerrarTarjeta(); });
+  tarjeta.querySelector('[data-a="tomar"]').addEventListener('click', (ev) => {
     ev.stopPropagation();
     tomarPedido(c);
     cerrarTarjeta();
-    aviso(`Comanda #${c.numero} a la cocina 🧾`);
+    aviso(`${t('Comanda #{n} a la cocina', { n: c.numero })} 🧾`);
   });
-  $zona.appendChild(t);
+  $zona.appendChild(tarjeta);
 }
 
 function cerrarTarjeta(c) {
@@ -345,21 +346,21 @@ function cerrarTarjeta(c) {
 async function elegirCrepaPara(c) {
   const charola = estado().charola;
   if (!charola.length) {
-    aviso('No hay crepas en la charola. ¡Ve a la Cocina! 🍳');
+    aviso(`${t('No hay crepas en la charola. ¡Ve a la Cocina!')} 🍳`);
     return;
   }
   sonidos.click();
   const cont = document.createElement('div');
   cont.innerHTML = `
-    <div class="ticket-grande"><b>Comanda #${c.numero}</b>
+    <div class="ticket-grande"><b>${t('Comanda #{n}', { n: c.numero })}</b>
       <div class="ticket-iconos">${iconosPedido(c.pedido)}</div>
     </div>
-    <p style="text-align:center;margin:8px 0">¿Cuál crepa le das?</p>
+    <p style="text-align:center;margin:8px 0">${t('¿Cuál crepa le das?')}</p>
     <div class="opciones-charola">
       ${charola.map((cr, i) => `
         <button class="opcion-crepa${cr.pedido === c.numero ? ' sugerida' : ''}" data-i="${i}">
           ${crepaDoblada(cr)}
-          <span>${cr.pedido ? '#' + cr.pedido : 'Libre'}</span>
+          <span>${cr.pedido ? '#' + cr.pedido : t('Libre')}</span>
         </button>`).join('')}
     </div>`;
   let elegida = null;
@@ -367,7 +368,7 @@ async function elegirCrepaPara(c) {
     elegida = Number(b.dataset.i);
     document.querySelector('#capa-modal .modal-botones .btn')?.click();
   }));
-  await mostrarModal({ titulo: '🛎️ Entregar', contenido: cont, botones: [{ texto: 'Cancelar', valor: null }] });
+  await mostrarModal({ titulo: `🛎️ ${t('Entregar')}`, contenido: cont, botones: [{ texto: t('Cancelar'), valor: null }] });
   if (elegida !== null && c.estado === 'esperando') entregar(c, elegida);
 }
 
@@ -376,7 +377,7 @@ async function elegirCrepaPara(c) {
 // ============================================================
 
 function animarCobro({ cliente, total, puntos, resultado, bonos, faltoBebida }) {
-  if (faltoBebida) aviso('☕ ¡Faltó su bebida! Prepárala en la barra antes de entregar');
+  if (faltoBebida) aviso(`☕ ${t('¡Faltó su bebida! Prepárala en la barra antes de entregar')}`);
   const el = elementos.get(cliente.id);
   const app = document.getElementById('app');
   const destino = document.getElementById('ind-dinero').getBoundingClientRect();
@@ -388,7 +389,7 @@ function animarCobro({ cliente, total, puntos, resultado, bonos, faltoBebida }) 
   // Texto "+$85" flotando
   const txt = document.createElement('div');
   txt.className = 'texto-cobro';
-  txt.textContent = estado().sinfin ? `+${puntos.toLocaleString('es-MX')} pts` : '+' + dinero(total);
+  txt.textContent = estado().sinfin ? t('+{n} pts', { n: puntos.toLocaleString('es-MX') }) : '+' + dinero(total);
   txt.style.left = ox + 'px';
   txt.style.top = oy + 'px';
   app.appendChild(txt);
@@ -437,27 +438,27 @@ function barrasPartes(partes) {
 let temporizadorCalif = 0;
 function mostrarCalificacion(c, r, bonos = [], puntos = null) {
   $zona.querySelector('.tarjeta-calif')?.remove();
-  const t = document.createElement('div');
-  t.className = 'tarjeta-calif' + (r.pct >= 90 ? ' excelente' : r.pct < 50 ? ' mala' : '');
+  const tarjeta = document.createElement('div');
+  tarjeta.className = 'tarjeta-calif' + (r.pct >= 90 ? ' excelente' : r.pct < 50 ? ' mala' : '');
   const lineas = puntos !== null ? [
-    `<span>⭐ Puntos</span><b>+${puntos.toLocaleString('es-MX')}</b>`,
-    ...(r.estrellas <= 1 ? ['<span>💔 ¡Perdiste un corazón!</span><b></b>'] : []),
+    `<span>⭐ ${t('Puntos')}</span><b>+${puntos.toLocaleString('es-MX')}</b>`,
+    ...(r.estrellas <= 1 ? [`<span>💔 ${t('¡Perdiste un corazón!')}</span><b></b>`] : []),
   ] : [
-    `<span>Crepa</span><b>${dinero(c.precio)}</b>`,
-    `<span>Propina</span><b>${r.propina ? '+' + dinero(r.propina) : '—'}</b>`,
+    `<span>${t('Crepa')}</span><b>${dinero(c.precio)}</b>`,
+    `<span>${t('Propina')}</span><b>${r.propina ? '+' + dinero(r.propina) : '—'}</b>`,
     ...bonos.map((b) => `<span>${b.texto}</span><b>+${dinero(b.monto)}${b.chispitas ? ` · +${textoChispitas(b.chispitas)}` : ''}</b>`),
   ].map((l) => `<div class="linea">${l}</div>`).join('');
-  t.innerHTML = `
+  tarjeta.innerHTML = `
     <div class="calif-cabeza">
       <span class="pct">${r.pct}%</span>
       ${estrellitas(r.estrellas, 'grandes')}
     </div>
     <div class="partes">${barrasPartes(r.partes)}</div>
     <div class="cuenta">${lineas}</div>`;
-  t.addEventListener('click', () => t.remove());
-  $zona.appendChild(t);
+  tarjeta.addEventListener('click', () => tarjeta.remove());
+  $zona.appendChild(tarjeta);
   clearTimeout(temporizadorCalif);
-  temporizadorCalif = setTimeout(() => t.remove(), 5000);
+  temporizadorCalif = setTimeout(() => tarjeta.remove(), 5000);
 }
 
 // ============================================================
@@ -491,7 +492,7 @@ function acariciarPerrita() {
   const r = g.getBoundingClientRect(), rApp = document.getElementById('app').getBoundingClientRect();
   const h = document.createElement('div');
   h.className = 'texto-cobro guau';
-  h.textContent = '¡Guau! 💕';
+  h.textContent = `${t('¡Guau!')} 💕`;
   h.style.left = r.left + r.width / 2 - rApp.left + 'px';
   h.style.top = r.top - rApp.top + 'px';
   document.getElementById('app').appendChild(h);
@@ -520,7 +521,7 @@ function prepararBebida(ev) {
   const b = ev.target.closest('.vaso-btn');
   if (!b || b.classList.contains('preparando')) return;
   const id = b.dataset.id;
-  if ((juego.bebidas[id] || 0) >= MAX_BEBIDA) { aviso('Ya hay suficientes de esa bebida listas'); return; }
+  if ((juego.bebidas[id] || 0) >= MAX_BEBIDA) { aviso(t('Ya hay suficientes de esa bebida listas')); return; }
   sonidos.click();
   b.classList.add('preparando');
   setTimeout(() => {
@@ -550,7 +551,7 @@ function tarjetaResena(r, titulo = '') {
         ${r.nombre ? `<small class="resena-nombre">${r.nombre}</small>` : ''}
         ${estrellitas(r.estrellas)}
         <p>“${r.texto}”</p>
-        <small>${r.pct ? r.pct + '% · ' : ''}Crepa ${r.pedido}</small>
+        <small>${r.pct ? r.pct + '% · ' : ''}${t('Crepa {pedido}', { pedido: r.pedido })}</small>
       </div>
     </div>`;
 }
@@ -561,18 +562,18 @@ function abrirBuzon() {
   const cont = document.createElement('div');
   cont.className = 'buzon';
   if (!lista.length) {
-    cont.innerHTML = '<p style="text-align:center">Todavía no hay reseñas. ¡Atiende a tus primeros clientes! 🥞</p>';
+    cont.innerHTML = `<p style="text-align:center">${t('Todavía no hay reseñas. ¡Atiende a tus primeros clientes!')} 🥞</p>`;
   } else {
     const prom = lista.reduce((s, r) => s + r.estrellas, 0) / lista.length;
-    let html = `<div class="buzon-promedio">${prom.toFixed(1)} ★ <small>de ${lista.length} reseñas</small></div>`;
+    let html = `<div class="buzon-promedio">${prom.toFixed(1)} ★ <small>${t('de {n} reseñas', { n: lista.length })}</small></div>`;
     let diaActual = null;
     for (const r of lista) {
-      if (r.dia !== diaActual) { diaActual = r.dia; html += `<h3 class="buzon-dia">Día ${r.dia}</h3>`; }
+      if (r.dia !== diaActual) { diaActual = r.dia; html += `<h3 class="buzon-dia">${t('Día {n}', { n: r.dia })}</h3>`; }
       html += tarjetaResena(r);
     }
     cont.innerHTML = html;
   }
-  mostrarModal({ titulo: '📬 Buzón de reseñas', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
+  mostrarModal({ titulo: `📬 ${t('Buzón de reseñas')}`, contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
   if (lista.some((r) => !r.leida)) actualizar((e) => { e.resenas.forEach((r) => { r.leida = true; }); });
 }
 
@@ -619,31 +620,31 @@ async function mostrarFinDia() {
   const ev = evento(e.evento);
 
   await mostrarModal({
-    titulo: `🌙 ¡Fin del día ${e.dia}!`,
+    titulo: `🌙 ${t('¡Fin del día {n}!', { n: e.dia })}`,
     contenido: `
       <div class="resumen-dia">
         ${ev ? `<div class="evento-resumen">${ev.emoji} ${ev.nombre}</div>` : ''}
         ${personaje() ? `<div class="chef-resumen">${dibujarPersonaje(personaje(), { vista: 'cara', emocion: !deHoy.length || estrellasDia === 3 ? 'normal' : estrellasDia > 3 ? 'feliz' : 'triste' })}</div>` : ''}
         ${deHoy.length ? `<div class="estrellas-dia">${estrellitas(estrellasDia, 'grandes')}</div>` : ''}
-        <div><span>🥞 Crepas vendidas</span><b>${h.vendidas}</b></div>
-        <div><span>💵 Ventas</span><b>${dinero(h.ventas)}</b></div>
-        <div><span>💝 Propinas y bonos</span><b>${dinero(h.propinas)}</b></div>
-        ${e.ajustes.costoInsumos ? `<div><span>🧾 Insumos</span><b class="baja">-${dinero(h.insumos)}</b></div>` : ''}
-        <div class="total"><span>💰 Ganancia del día</span><b>${dinero(neto)}</b></div>
-        <div><span>⭐ Reputación</span><b>${e.reputacion.toFixed(1)} ${flecha}</b></div>
-        <div><span>😊 Satisfacción promedio</span><b>${prom}%</b></div>
-        <div><span>😤 Clientes que se fueron</span><b>${h.perdidos}</b></div>
-        <div><span>🔥 Crepas quemadas</span><b>${h.quemadas}</b></div>
-        ${neto > 0 && neto >= e.records.mejorDia ? '<div class="record">🏅 ¡Nuevo récord de ganancia!</div>' : ''}
+        <div><span>🥞 ${t('Crepas vendidas')}</span><b>${h.vendidas}</b></div>
+        <div><span>💵 ${t('Ventas')}</span><b>${dinero(h.ventas)}</b></div>
+        <div><span>💝 ${t('Propinas y bonos')}</span><b>${dinero(h.propinas)}</b></div>
+        ${e.ajustes.costoInsumos ? `<div><span>🧾 ${t('Insumos')}</span><b class="baja">-${dinero(h.insumos)}</b></div>` : ''}
+        <div class="total"><span>💰 ${t('Ganancia del día')}</span><b>${dinero(neto)}</b></div>
+        <div><span>⭐ ${t('Reputación')}</span><b>${e.reputacion.toFixed(1)} ${flecha}</b></div>
+        <div><span>😊 ${t('Satisfacción promedio')}</span><b>${prom}%</b></div>
+        <div><span>😤 ${t('Clientes que se fueron')}</span><b>${h.perdidos}</b></div>
+        <div><span>🔥 ${t('Crepas quemadas')}</span><b>${h.quemadas}</b></div>
+        ${neto > 0 && neto >= e.records.mejorDia ? `<div class="record">🏅 ${t('¡Nuevo récord de ganancia!')}</div>` : ''}
         ${CONFIG.tablaEnLinea ? `<div class="ranking-aviso">${tieneNombre()
-          ? '🏆 Tu ganancia va a la tabla en línea'
-          : '🏆 Para competir en línea, ponte un nombre en ⚙️ → Tabla en línea'}</div>` : ''}
-        ${logrosHoy.length ? `<div class="logros-hoy"><span>🏆 Logros de hoy</span>${logrosHoy.map((l) => `<span class="chip-logro">${l.emoji} ${l.nombre}</span>`).join('')}</div>` : ''}
+          ? `🏆 ${t('Tu ganancia va a la tabla en línea')}`
+          : `🏆 ${t('Para competir en línea, ponte un nombre en ⚙️ → Tabla en línea')}`}</div>` : ''}
+        ${logrosHoy.length ? `<div class="logros-hoy"><span>🏆 ${t('Logros de hoy')}</span>${logrosHoy.map((l) => `<span class="chip-logro">${l.emoji} ${l.nombre}</span>`).join('')}</div>` : ''}
         ${desglose}
-        ${mejor ? tarjetaResena({ ...mejor, leida: true }, '👑 Mejor reseña') : ''}
-        ${peor && peor !== mejor ? tarjetaResena({ ...peor, leida: true }, '💔 Peor reseña') : ''}
+        ${mejor ? tarjetaResena({ ...mejor, leida: true }, `👑 ${t('Mejor reseña')}`) : ''}
+        ${peor && peor !== mejor ? tarjetaResena({ ...peor, leida: true }, `💔 ${t('Peor reseña')}`) : ''}
       </div>`,
-    botones: [{ texto: 'Siguiente ☀️', clase: 'btn-primario' }],
+    botones: [{ texto: `${t('Siguiente')} ☀️`, clase: 'btn-primario' }],
     cerrarAlTocarFuera: false,
   });
   siguienteDia();
@@ -660,26 +661,26 @@ async function mostrarNuevoDia() {
   const combos = COMBOS.filter((c) => comboDisponible(c, e) && !comboDisponible(c, ayer));
   const ev = evento(e.evento);
   let html = '';
-  if (ev) html += `<div class="tarjeta-evento grande"><b>${ev.emoji} Hoy: ${ev.nombre}</b><small>${ev.descripcion}</small></div>`;
+  if (ev) html += `<div class="tarjeta-evento grande"><b>${ev.emoji} ${t('Hoy: {evento}', { evento: ev.nombre })}</b><small>${ev.descripcion}</small></div>`;
   // El día que llegan los primeros ingredientes salados
   if (ingredientes.some((i) => i.salado) && !INGREDIENTES.some((i) => i.salado && i.dia < e.dia)) {
-    html += `<div class="tarjeta-evento grande"><b>🧀 ¡Llegan las crepas saladas!</b>
-      <small>Ahora también te pueden pedir jamón, quesos y más. Están en las pestañitas «Salados» de la cocina.</small></div>`;
+    html += `<div class="tarjeta-evento grande"><b>🧀 ${t('¡Llegan las crepas saladas!')}</b>
+      <small>${t('Ahora también te pueden pedir jamón, quesos y más. Están en las pestañitas «Salados» de la cocina.')}</small></div>`;
   }
   if (ingredientes.length) {
-    html += `<h3 class="menu-titulo">✨ Ingredientes nuevos</h3><div class="novedades">
+    html += `<h3 class="menu-titulo">✨ ${t('Ingredientes nuevos')}</h3><div class="novedades">
       ${ingredientes.map((i) => `<span class="det-item">${iconoIngrediente(i.id)}${i.nombre}</span>`).join('')}</div>`;
   }
   if (combos.length) {
-    html += `<h3 class="menu-titulo">📖 Nuevas crepas de la casa</h3><div class="novedades">
+    html += `<h3 class="menu-titulo">📖 ${t('Nuevas crepas de la casa')}</h3><div class="novedades">
       ${combos.map((c) => `<span class="chip-logro">🥞 ${c.nombre}</span>`).join('')}</div>`;
   }
-  if (!html) html = '<p style="text-align:center">¡Un nuevo día para hacer crepas deliciosas! 🥞</p>';
-  html += `<p class="menu-nota">Tienes ${dinero(e.dinero)}. Puedes comprar mejoras en la 🛒 tienda antes de abrir.</p>`;
+  if (!html) html = `<p style="text-align:center">${t('¡Un nuevo día para hacer crepas deliciosas!')} 🥞</p>`;
+  html += `<p class="menu-nota">${t('Tienes {dinero}. Puedes comprar mejoras en la 🛒 tienda antes de abrir.', { dinero: dinero(e.dinero) })}</p>`;
   const v = await mostrarModal({
-    titulo: `☀️ Día ${e.dia}`,
+    titulo: `☀️ ${t('Día {n}', { n: e.dia })}`,
     contenido: html,
-    botones: [{ texto: '🛒 Tienda', valor: 'tienda' }, { texto: '¡A trabajar!', clase: 'btn-primario' }],
+    botones: [{ texto: `🛒 ${t('Tienda')}`, valor: 'tienda' }, { texto: t('¡A trabajar!'), clase: 'btn-primario' }],
     cerrarAlTocarFuera: false,
   });
   if (v === 'tienda') abrirTienda();

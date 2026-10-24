@@ -12,6 +12,7 @@
    Las ids de ropa, peinados y accesorios son las mismas que usan
    los clientes (clientes.js las sabe dibujar).
    ============================================================ */
+import { traducirDatos } from '../idioma.js';
 
 export const SEXOS = [
   { id: 'mujer', nombre: '👩 Mujer' },
@@ -270,6 +271,12 @@ export const TRAJES = [
   { id: 'payaso', nombre: 'Payaso de la alcantarilla', emoji: '🎈', precio: 1800, grupo: 'halloween',
     piezas: { arriba: 'traje_payaso', 'acc.cabeza': 'pelo_payaso', 'acc.cara': 'cara_payaso', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.mano': 'globo', 'colorAcc.mano': '#E8414F', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#E9E6EE', calzado: 'zapatos', colorCalzado: '#FF7A1A' } },
 ];
+
+// Textos en el idioma elegido (ver idioma.js)
+[SEXOS, ESTATURAS, COMPLEXIONES, PEINADOS, VELLO, ARRIBA, ESTAMPADOS, ABAJO, CALZADO, TRAJES]
+  .forEach((lista) => traducirDatos(lista, 'nombre'));
+traducirDatos(Object.values(ACCESORIOS), 'nombre');
+Object.values(ACCESORIOS).forEach((c) => traducirDatos(c.opciones, 'nombre'));
 
 /** Las piezas de un disfraz para este personaje (algunos cambian si es hombre). */
 export function piezasDe(traje, p) {

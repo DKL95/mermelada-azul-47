@@ -36,7 +36,7 @@ npx cap init "Creepy Crepas" com.dkl95.creepycrepas --web-dir www
 ## 3. Copiar el juego a `www`
 
 ```powershell
-robocopy "C:\Escritorio\Juego crepas" ".\www" /MIR /XD .git herramientas /XF *.md *.sql .gitignore .nojekyll robots.txt textos-especiales.json
+robocopy "C:\Escritorio\Juego crepas" ".\www" /MIR /XD .git herramientas steam /XF *.md *.sql .gitignore .nojekyll robots.txt textos-especiales.json
 ```
 
 > ⚠️ **Nunca** quites `textos-especiales.json` de esa lista: tiene la carta de Devany sin cifrar y quedaría dentro de la app.
@@ -119,7 +119,7 @@ Actívalos. Son productos *consumibles* (se pueden comprar varias veces).
 
 ```powershell
 cd "C:\Escritorio\creepy-crepas-android"
-robocopy "C:\Escritorio\Juego crepas" ".\www" /MIR /XD .git herramientas /XF *.md *.sql .gitignore .nojekyll robots.txt textos-especiales.json
+robocopy "C:\Escritorio\Juego crepas" ".\www" /MIR /XD .git herramientas steam /XF *.md *.sql .gitignore .nojekyll robots.txt textos-especiales.json
 npx cap sync android
 ```
 

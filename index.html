@@ -33,44 +33,44 @@
   <div id="app">
     <!-- ===== Barra superior: dinero, día, reputación, reloj ===== -->
     <header id="barra-superior">
-      <div class="indicador" id="ind-dinero" title="Dinero">
+      <div class="indicador" id="ind-dinero" title="Dinero" data-t-titulo>
         <span class="ind-icono" aria-hidden="true">💰</span>
         <span class="ind-valor" id="valor-dinero">$0</span>
       </div>
-      <button class="indicador" id="ind-chispitas" title="Chispitas" aria-label="Chispitas">
+      <button class="indicador" id="ind-chispitas" title="Chispitas" aria-label="Chispitas" data-t-titulo>
         <span class="ind-chispita" aria-hidden="true"></span>
         <span class="ind-valor" id="valor-chispitas">0</span>
       </button>
-      <div class="indicador" id="ind-dia" title="Día">
-        <span class="ind-etiqueta">Día</span>
+      <div class="indicador" id="ind-dia" title="Día" data-t-titulo>
+        <span class="ind-etiqueta" data-t>Día</span>
         <span class="ind-valor" id="valor-dia">1</span>
       </div>
-      <div class="indicador" id="ind-reputacion" title="Reputación">
+      <div class="indicador" id="ind-reputacion" title="Reputación" data-t-titulo>
         <span class="estrellas" id="valor-reputacion"></span>
       </div>
-      <div class="indicador" id="ind-reloj" title="Hora del turno">
+      <div class="indicador" id="ind-reloj" title="Hora del turno" data-t-titulo>
         <span class="ind-icono" aria-hidden="true">🕘</span>
         <span class="ind-valor" id="valor-reloj">9:00</span>
       </div>
-      <button class="btn-icono" id="btn-ajustes" aria-label="Ajustes">⚙️</button>
+      <button class="btn-icono" id="btn-ajustes" aria-label="Ajustes" data-t-titulo>⚙️</button>
     </header>
 
     <!-- ===== Pantallas (una por pestaña) ===== -->
     <main id="pantallas">
-      <section class="pantalla" id="pantalla-cocina" data-pestana="cocina" aria-label="Cocina"></section>
-      <section class="pantalla" id="pantalla-venta" data-pestana="venta" aria-label="Venta"></section>
+      <section class="pantalla" id="pantalla-cocina" data-pestana="cocina" aria-label="Cocina" data-t-titulo></section>
+      <section class="pantalla" id="pantalla-venta" data-pestana="venta" aria-label="Venta" data-t-titulo></section>
     </main>
 
     <!-- ===== Barra inferior de pestañas ===== -->
     <nav id="barra-tabs" role="tablist">
       <button class="tab" role="tab" data-pestana="cocina">
         <span class="tab-icono" aria-hidden="true">🍳</span>
-        <span class="tab-texto">Cocina</span>
+        <span class="tab-texto" data-t>Cocina</span>
         <span class="tab-globo" id="globo-cocina" hidden>0</span>
       </button>
       <button class="tab" role="tab" data-pestana="venta">
         <span class="tab-icono" aria-hidden="true">🛎️</span>
-        <span class="tab-texto">Venta</span>
+        <span class="tab-texto" data-t>Venta</span>
         <span class="tab-globo" id="globo-venta" hidden>0</span>
       </button>
     </nav>

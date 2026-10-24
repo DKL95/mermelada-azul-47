@@ -24,6 +24,7 @@ import { estado } from './state.js';
 import { on } from './turno.js';
 import { mostrarModal, aviso, dinero } from './ui.js';
 import { sonidos } from './audio.js';
+import { t } from './idioma.js';
 
 const CLAVE_JUGADOR = 'creperia.jugador';
 const CLAVE_PENDIENTES = 'creperia.pendientes';
@@ -210,19 +211,19 @@ async function enviarCara() {
 async function pedirNombre() {
   const cont = document.createElement('div');
   cont.innerHTML = `
-    <p style="text-align:center">¿Con qué nombre quieres aparecer en la tabla?</p>
+    <p style="text-align:center">${t('¿Con qué nombre quieres aparecer en la tabla?')}</p>
     <input class="campo-nombre" type="text" maxlength="${MAX_NOMBRE}" autocomplete="nickname"
-      autocapitalize="words" enterkeyhint="done" placeholder="Tu nombre" aria-label="Tu nombre">
-    <small class="ajuste-nota" style="text-align:center;margin-top:8px">Lo ve cualquiera que tenga el juego.</small>`;
+      autocapitalize="words" enterkeyhint="done" placeholder="${t('Tu nombre')}" aria-label="${t('Tu nombre')}">
+    <small class="ajuste-nota" style="text-align:center;margin-top:8px">${t('Lo ve cualquiera que tenga el juego.')}</small>`;
   const campo = cont.querySelector('input');
   campo.value = jugador().nombre;
 
   const promesa = mostrarModal({
-    titulo: '🏆 Tu nombre',
+    titulo: `🏆 ${t('Tu nombre')}`,
     contenido: cont,
     botones: [
-      { texto: 'Cancelar', valor: null },
-      { texto: 'Guardar', clase: 'btn-primario', valor: 'ok' },
+      { texto: t('Cancelar'), valor: null },
+      { texto: t('Guardar'), clase: 'btn-primario', valor: 'ok' },
     ],
   });
   campo.addEventListener('keydown', (ev) => {
@@ -241,13 +242,16 @@ async function pedirNombre() {
 let vista = 'mejor_dia'; // pestaña elegida: 'mejor_dia' | 'total' | 'sinfin'
 
 // Cada pestaña: de qué vista de la base sale, por qué se ordena y cómo se muestra
+const dias = (f) => (f.dias === 1 ? t('{n} día', { n: 1 }) : t('{n} días', { n: f.dias }));
 const VISTAS = {
   mejor_dia: { tabla: 'tabla_jugadores', columnas: 'jugador_id,nombre,mejor_dia,total,dias', valor: (f) => dinero(f.mejor_dia),
-    orden: 'mejor_dia', sub: (f) => `${f.dias} ${f.dias === 1 ? 'día' : 'días'}`, vacio: '¡Termina un día para estrenar la tabla! 🥞' },
+    orden: 'mejor_dia', sub: dias, vacio: `${t('¡Termina un día para estrenar la tabla!')} 🥞` },
   total: { tabla: 'tabla_jugadores', columnas: 'jugador_id,nombre,mejor_dia,total,dias', valor: (f) => dinero(f.total),
-    orden: 'total', sub: (f) => `${f.dias} ${f.dias === 1 ? 'día' : 'días'}`, vacio: '¡Termina un día para estrenar la tabla! 🥞' },
-  sinfin: { tabla: 'tabla_sinfin', columnas: 'jugador_id,nombre,mejor,crepas,partidas', valor: (f) => `${f.mejor.toLocaleString('es-MX')} pts`,
-    orden: 'mejor', sub: (f) => `${f.crepas} crepas · ${f.partidas} ${f.partidas === 1 ? 'partida' : 'partidas'}`, vacio: '¡Juega el modo sin fin para estrenar esta tabla! ♾️' },
+    orden: 'total', sub: dias, vacio: `${t('¡Termina un día para estrenar la tabla!')} 🥞` },
+  sinfin: { tabla: 'tabla_sinfin', columnas: 'jugador_id,nombre,mejor,crepas,partidas', valor: (f) => t('{n} pts', { n: f.mejor.toLocaleString('es-MX') }),
+    orden: 'mejor',
+    sub: (f) => `${t('{n} crepas', { n: f.crepas })} · ${f.partidas === 1 ? t('{n} partida', { n: 1 }) : t('{n} partidas', { n: f.partidas })}`,
+    vacio: `${t('¡Juega el modo sin fin para estrenar esta tabla!')} ♾️` },
 };
 
 /** Carita del personaje (o un círculo con la inicial si no tiene). */
@@ -260,7 +264,7 @@ function carita(f, dibujar) {
 }
 
 function filasHTML(filas, miId, v, dibujar) {
-  if (!filas.length) return `<p class="ranking-vacio">Todavía no hay nadie. ${v.vacio}</p>`;
+  if (!filas.length) return `<p class="ranking-vacio">${t('Todavía no hay nadie.')} ${v.vacio}</p>`;
   const medallas = ['🥇', '🥈', '🥉'];
   return `<ol class="ranking-lista">${filas.map((f, i) => `
     <li class="${f.jugador_id === miId ? 'yo' : ''}">
@@ -285,7 +289,7 @@ async function leerTabla(v) {
 }
 
 export async function abrirRanking() {
-  if (!activa()) { aviso('La tabla en línea no está configurada'); return; }
+  if (!activa()) { aviso(t('La tabla en línea no está configurada')); return; }
   if (!tieneNombre() && !(await pedirNombre())) return;
   enviarPendientes();
 
@@ -294,13 +298,13 @@ export async function abrirRanking() {
   const cont = document.createElement('div');
   cont.innerHTML = `
     <div class="segmentado" id="rk-vista">
-      <button data-valor="mejor_dia">Mejor día</button>
-      <button data-valor="total">Acumulado</button>
-      <button data-valor="sinfin">♾️ Sin fin</button>
+      <button data-valor="mejor_dia">${t('Mejor día')}</button>
+      <button data-valor="total">${t('Acumulado')}</button>
+      <button data-valor="sinfin">♾️ ${t('Sin fin')}</button>
     </div>
-    <div id="rk-cuerpo" class="ranking-cuerpo"><p class="ranking-vacio">Cargando… ⏳</p></div>
-    <p class="ranking-pie">Juegas como <b>${escapar(jugador().nombre)}</b> ·
-      <button class="btn-enlace" id="rk-nombre">cambiar nombre</button></p>`;
+    <div id="rk-cuerpo" class="ranking-cuerpo"><p class="ranking-vacio">${t('Cargando…')} ⏳</p></div>
+    <p class="ranking-pie">${t('Juegas como {nombre}', { nombre: `<b>${escapar(jugador().nombre)}</b>` })} ·
+      <button class="btn-enlace" id="rk-nombre">${t('cambiar nombre')}</button></p>`;
   const cuerpo = cont.querySelector('#rk-cuerpo');
   // Tu carita siempre sale de este teléfono (la de la base puede ir atrasada);
   // a quien no trae carita se le busca en la otra tabla
@@ -312,12 +316,12 @@ export async function abrirRanking() {
     const v = VISTAS[vista];
     const pedida = vista;
     if (!cache[v.tabla]) {
-      cuerpo.innerHTML = '<p class="ranking-vacio">Cargando… ⏳</p>';
+      cuerpo.innerHTML = `<p class="ranking-vacio">${t('Cargando…')} ⏳</p>`;
       try {
         cache[v.tabla] = await leerTabla(v);
       } catch (err) {
         console.warn('No se pudo leer la tabla en línea.', err);
-        if (vista === pedida) cuerpo.innerHTML = '<p class="ranking-vacio">No se pudo cargar la tabla. Revisa tu internet e inténtalo otra vez. 📶</p>';
+        if (vista === pedida) cuerpo.innerHTML = `<p class="ranking-vacio">${t('No se pudo cargar la tabla. Revisa tu internet e inténtalo otra vez.')} 📶</p>`;
         return;
       }
     }
@@ -344,7 +348,7 @@ export async function abrirRanking() {
   });
   // Cada vez que se abre, datos frescos
   for (const k of Object.keys(cache)) delete cache[k];
-  mostrarModal({ titulo: '🏆 Tabla en línea', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
+  mostrarModal({ titulo: `🏆 ${t('Tabla en línea')}`, contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
   pintar();
 }
 

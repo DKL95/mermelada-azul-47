@@ -7,6 +7,7 @@
      categoria 'masa' | 'untable' | 'fruta' | 'salado' | 'crujiente' | 'frio' | 'salsa' | 'decoracion' | 'bebida'
      salado    true = es para crepas saladas (no se mezcla con lo dulce)
      enFrase   cómo se escribe dentro de una frase, si no es el nombre en minúsculas
+               (en las masas: 'masa de chocolate'; frase = 'en masa de chocolate')
      costo     costo del insumo en pesos por porción
      precio    lo que paga el cliente por porción (en la masa: precio base)
      color     color principal para dibujarlo
@@ -23,16 +24,17 @@
      Bebidas  → se preparan en la barra de la ventanilla (mejora "Barra de bebidas")
    ============================================================ */
 import { CONFIG } from '../config.js';
+import { traducirDatos } from '../idioma.js';
 
 export const INGREDIENTES = [
   // --- Masas ---
   { id: 'masa_clasica', nombre: 'Masa clásica', categoria: 'masa', costo: 6, precio: 40, color: '#F2C27E', dia: 1, frase: '',
     descripcion: 'Harina, huevo, leche, mantequilla derretida y un toque de vainilla.' },
-  { id: 'masa_chocolate', nombre: 'Masa de chocolate', categoria: 'masa', costo: 8, precio: 46, color: '#7A4A35', dia: 2, frase: 'en masa de chocolate',
+  { id: 'masa_chocolate', nombre: 'Masa de chocolate', categoria: 'masa', costo: 8, precio: 46, color: '#7A4A35', dia: 2, frase: 'en masa de chocolate', enFrase: 'masa de chocolate',
     descripcion: 'La masa clásica con cacao en polvo. Queda morenita y huele delicioso.' },
-  { id: 'masa_integral', nombre: 'Masa integral', categoria: 'masa', costo: 7, precio: 46, color: '#C9965E', dia: 4, frase: 'en masa integral',
+  { id: 'masa_integral', nombre: 'Masa integral', categoria: 'masa', costo: 7, precio: 46, color: '#C9965E', dia: 4, frase: 'en masa integral', enFrase: 'masa integral',
     descripcion: 'Con harina integral: más rústica, con sabor a nuez.' },
-  { id: 'masa_sarraceno', nombre: 'Masa de sarraceno', categoria: 'masa', costo: 8, precio: 48, color: '#8C6544', dia: 3, frase: 'en masa de sarraceno', salado: true,
+  { id: 'masa_sarraceno', nombre: 'Masa de sarraceno', categoria: 'masa', costo: 8, precio: 48, color: '#8C6544', dia: 3, frase: 'en masa de sarraceno', enFrase: 'masa de sarraceno', salado: true,
     descripcion: 'Trigo sarraceno, como las galettes de Bretaña: morenita y perfecta para lo salado.' },
 
   // --- Untables (se embarran adentro) ---
@@ -259,6 +261,11 @@ export const COMBOS = [
   { id: 'campesina', nombre: 'Campesina', descripcion: 'Pavo, manchego, tocino y arúgula, en masa de sarraceno.', salado: true,
     masa: 'masa_sarraceno', rellenos: { pavo: 1, queso_manchego: 1 }, toppings: { tocino: 1, arugula: 1 }, salsas: [], doblado: 'sobre' },
 ];
+
+// Textos en el idioma elegido (ver idioma.js)
+traducirDatos(INGREDIENTES, 'nombre', 'descripcion', 'frase', 'enFrase');
+traducirDatos(DOBLADOS, 'nombre', 'frase');
+traducirDatos(COMBOS, 'nombre', 'descripcion');
 
 /** Busca un ingrediente por id. */
 export function ingrediente(id) {

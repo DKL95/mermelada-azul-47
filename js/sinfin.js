@@ -16,6 +16,7 @@ import { revisarLogros } from './data/logros.js';
 import { ganarChispitas, textoChispitas } from './cartera.js';
 import { registrarSinFin } from './ranking.js';
 import { avisarLogros } from './tienda.js';
+import { t } from './idioma.js';
 
 export const VIDAS = 3;
 const PUNTOS_POR_CHISPITA = 2500;
@@ -36,20 +37,20 @@ export async function empezarSinFin() {
   sonidos.click();
   const r = estado().stats.sinfin;
   const ok = await mostrarModal({
-    titulo: '♾️ Modo sin fin',
+    titulo: `♾️ ${t('Modo sin fin')}`,
     contenido: `<div class="reglas-sinfin">
-      <p>Atiende a todos los clientes que puedas. ¡No se acaba hasta que pierdes tus <b>3 corazones</b>! ❤️❤️❤️</p>
+      <p>${t('Atiende a todos los clientes que puedas. ¡No se acaba hasta que pierdes tus <b>3 corazones</b>!')} ❤️❤️❤️</p>
       <ul>
-        <li>💔 Pierdes uno si un cliente se va enojado o le das una crepa de 1★.</li>
-        <li>⏩ Cada vez llegan más seguido y más exigentes.</li>
-        <li>⭐ Ganas puntos por cada crepa (más si es perfecta) y bono por racha.</li>
-        <li>🥞 Todos los ingredientes y doblados están disponibles.</li>
-        <li>✨ Por cada ${PUNTOS_POR_CHISPITA.toLocaleString('es-MX')} puntos ganas 1 Chispita.</li>
+        <li>💔 ${t('Pierdes uno si un cliente se va enojado o le das una crepa de 1★.')}</li>
+        <li>⏩ ${t('Cada vez llegan más seguido y más exigentes.')}</li>
+        <li>⭐ ${t('Ganas puntos por cada crepa (más si es perfecta) y bono por racha.')}</li>
+        <li>🥞 ${t('Todos los ingredientes y doblados están disponibles.')}</li>
+        <li>✨ ${t('Por cada {n} puntos ganas 1 Chispita.', { n: PUNTOS_POR_CHISPITA.toLocaleString('es-MX') })}</li>
       </ul>
-      <p class="menu-nota">Tu partida normal no cambia: dinero, días y reputación se quedan igual.</p>
-      ${r.mejor ? `<p class="record-sinfin">🏅 Tu récord: <b>${r.mejor.toLocaleString('es-MX')} pts</b></p>` : ''}
+      <p class="menu-nota">${t('Tu partida normal no cambia: dinero, días y reputación se quedan igual.')}</p>
+      ${r.mejor ? `<p class="record-sinfin">🏅 ${t('Tu récord: {puntos}', { puntos: `<b>${t('{n} pts', { n: r.mejor.toLocaleString('es-MX') })}</b>` })}</p>` : ''}
     </div>`,
-    botones: [{ texto: 'Ahora no', valor: null }, { texto: '¡A jugar! ♾️', clase: 'btn-primario', valor: 'ok' }],
+    botones: [{ texto: t('Ahora no'), valor: null }, { texto: `${t('¡A jugar!')} ♾️`, clase: 'btn-primario', valor: 'ok' }],
   });
   if (ok !== 'ok' || !puedeJugarSinFin()) return;
   entrarModoTemporal((e) => {
@@ -72,9 +73,9 @@ export async function empezarSinFin() {
 /** Terminar antes (pregunta primero). */
 export async function rendirse() {
   const ok = await mostrarModal({
-    titulo: '¿Terminar la partida?',
-    contenido: '<p style="text-align:center">Se guardan los puntos que llevas.</p>',
-    botones: [{ texto: 'Seguir jugando', valor: null }, { texto: 'Terminar', clase: 'btn-peligro', valor: 'ok' }],
+    titulo: t('¿Terminar la partida?'),
+    contenido: `<p style="text-align:center">${t('Se guardan los puntos que llevas.')}</p>`,
+    botones: [{ texto: t('Seguir jugando'), valor: null }, { texto: t('Terminar'), clase: 'btn-peligro', valor: 'ok' }],
   });
   if (ok === 'ok') terminarSinFin();
 }
@@ -103,18 +104,18 @@ on('finSinFin', async (sf) => {
   refrescar();
   sonidos.campana();
   await mostrarModal({
-    titulo: '♾️ ¡Se acabó!',
+    titulo: `♾️ ${t('¡Se acabó!')}`,
     contenido: `<div class="resumen-dia">
-      <div class="puntos-sinfin">${sf.puntos.toLocaleString('es-MX')} <small>pts</small></div>
-      ${record ? '<div class="record">🏅 ¡Nuevo récord!</div>' : ''}
-      <div><span>🥞 Crepas</span><b>${sf.crepas}</b></div>
-      <div><span>✨ Perfectas</span><b>${sf.perfectas}</b></div>
-      <div><span>🔥 Mejor racha</span><b>${sf.rachaMax}</b></div>
-      <div><span>⏱️ Tiempo</span><b>${reloj(sf.segundos)}</b></div>
-      ${chispitas ? `<div class="total"><span>Premio</span><b>+${textoChispitas(chispitas)}</b></div>` : ''}
-      <div><span>🏅 Récord</span><b>${Math.max(r.mejor, sf.puntos).toLocaleString('es-MX')} pts</b></div>
+      <div class="puntos-sinfin">${sf.puntos.toLocaleString('es-MX')} <small>${t('pts')}</small></div>
+      ${record ? `<div class="record">🏅 ${t('¡Nuevo récord!')}</div>` : ''}
+      <div><span>🥞 ${t('Crepas')}</span><b>${sf.crepas}</b></div>
+      <div><span>✨ ${t('Perfectas')}</span><b>${sf.perfectas}</b></div>
+      <div><span>🔥 ${t('Mejor racha')}</span><b>${sf.rachaMax}</b></div>
+      <div><span>⏱️ ${t('Tiempo')}</span><b>${reloj(sf.segundos)}</b></div>
+      ${chispitas ? `<div class="total"><span>${t('Premio')}</span><b>+${textoChispitas(chispitas)}</b></div>` : ''}
+      <div><span>🏅 ${t('Récord')}</span><b>${t('{n} pts', { n: Math.max(r.mejor, sf.puntos).toLocaleString('es-MX') })}</b></div>
     </div>`,
-    botones: [{ texto: 'Listo', clase: 'btn-primario' }],
+    botones: [{ texto: t('Listo'), clase: 'btn-primario' }],
     cerrarAlTocarFuera: false,
   });
   if (logros.length) avisarLogros(logros);

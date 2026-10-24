@@ -10,6 +10,8 @@
 
    Además, TODOS los días hay una "hora pico" a media tarde.
    ============================================================ */
+import { traducirDatos } from '../idioma.js';
+
 export const EVENTOS = [
   { id: 'lluvia', emoji: '🌧️', nombre: 'Día de lluvia',
     descripcion: 'Llega menos gente, pero con más paciencia… y antojo de chocolate.',
@@ -33,6 +35,8 @@ export const EVENTOS = [
     descripcion: 'Dicen que hoy viene una crítica de comida muy famosa… ¡que su crepa quede perfecta!',
     llegadas: 1, paciencia: 1, propina: 1, peso: 1.5, favoritos: [] },
 ];
+
+traducirDatos(EVENTOS, 'nombre', 'descripcion');
 
 // Hora pico: en esta parte del día llega el doble de gente
 export const HORA_PICO = { desde: 0.42, hasta: 0.62, llegadas: 0.5 };

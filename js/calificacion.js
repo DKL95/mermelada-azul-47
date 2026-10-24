@@ -13,6 +13,7 @@ import { estado } from './state.js';
 import { multPropina } from './data/mejoras.js';
 import { evento } from './data/eventos.js';
 import { conGenero } from './genero.js';
+import { t } from './idioma.js';
 
 // Cuánto pesa cada parte en la calificación final (suman 1)
 export const PESOS = {
@@ -25,12 +26,12 @@ export const PESOS = {
 };
 
 export const NOMBRES_PARTES = {
-  ingredientes: '🍓 Ingredientes',
-  coccion: '🔥 Cocción',
-  forma: '🥞 Forma',
-  doblado: '📐 Doblado',
-  decoracion: '🎨 Decoración',
-  espera: '⏱️ Espera',
+  ingredientes: `🍓 ${t('Ingredientes')}`,
+  coccion: `🔥 ${t('Cocción')}`,
+  forma: `🥞 ${t('Forma')}`,
+  doblado: `📐 ${t('Doblado')}`,
+  decoracion: `🎨 ${t('Decoración')}`,
+  espera: `⏱️ ${t('Espera')}`,
 };
 
 // Largo de salsa (en unidades del dibujo de 200×200) que se ve "bien"

@@ -7,9 +7,10 @@
      {ing}      un ingrediente de su pedido o el que faltó/sobró
      {doblado}  el doblado que pidió ("en triángulo")
    ============================================================ */
+import { tl } from '../idioma.js';
 
 // Cómo piden la crepa
-export const FORMAS_DE_PEDIR = [
+export const FORMAS_DE_PEDIR = tl([
   '¡Hola! Me das una crepa {pedido}, porfa 🙏',
   'Quiero una crepa {pedido}.',
   '¿Me preparas una crepa {pedido}?',
@@ -18,19 +19,19 @@ export const FORMAS_DE_PEDIR = [
   '¡Holi! Una {pedido}, porfis.',
   '¿Me encargas una crepa {pedido}?',
   'Para mí una crepa {pedido}, gracias.',
-];
+]);
 
 // Cómo piden los niños (con mucha emoción)
-export const FORMAS_NINO = [
+export const FORMAS_NINO = tl([
   '¡Quiero una crepa {pedido}! ¡Con muuucho dulce! 🤩',
   '¡Holaaa! ¿Me das una crepa {pedido}? 🍭',
   'Mi mamá dijo que sí: ¡una crepa {pedido}! 🥳',
   '¡Una crepa {pedido}, porfaaa! 🙏',
   '¡Yo quiero la crepa {pedido}! ¡Bien bonita! ✨',
-];
+]);
 
 // Cada tipo de cliente tiene su manera de hablar
-export const FORMAS_POR_TIPO = {
+export const FORMAS_POR_TIPO = tl({
   tranquilo: [
     'Hola, buenas 😌 Cuando puedas, una crepa {pedido}. Sin prisa.',
     'Qué bonito lugar 🌸 Me das una crepa {pedido}, porfa.',
@@ -52,49 +53,49 @@ export const FORMAS_POR_TIPO = {
     'Bonjour. Una crepa {pedido}, s\'il vous plaît. Espero perfección.',
     'He probado crepas en París. A ver qué tal la suya: {pedido} 🎩',
   ],
-};
+});
 
 // Clientes VIP: piden "lo de siempre"
-export const SALUDOS_VIP = [
+export const SALUDOS_VIP = tl([
   '¡Hola de nuevo! Lo de siempre: una crepa {pedido} 😉',
   'Ya sabes cuál es la mía: la {pedido}, porfa 💕',
   '¡Aquí ando otra vez! Mi crepa {pedido} de siempre, ¿va?',
   'Vine nada más por mi crepa {pedido}, ¡como siempre!',
-];
+]);
 
 // La crítica famosa
-export const SALUDOS_FAMOSA = [
+export const SALUDOS_FAMOSA = tl([
   'Hola, vengo a reseñar su crepería 📸. Quiero una crepa {pedido}.',
   'Mis seguidores quieren saber qué tal están sus crepas. Una {pedido}, por favor ✨',
-];
+]);
 
 // El novio (cliente especial)
-export const FORMAS_NOVIO = [
+export const FORMAS_NOVIO = tl([
   'Hola, guapa 😍 ¿Me haces una crepa {pedido}? La quiero hecha por la mejor crepera del mundo.',
   'Vine nada más a verte... y por una crepa {pedido} 💕',
   '¿Me regalas una crepa {pedido}? Pago con abrazos (y también con dinero 😅).',
   'Hola, mi amor. Una crepa {pedido}, porfa. Sin prisa, yo te espero 🥰',
   'Me dijeron que aquí trabaja la crepera más bonita. Una {pedido}, por favor 😏',
-];
+]);
 
 // Mientras esperan y se les acaba la paciencia
-export const IMPACIENCIA = ['¿Ya merito?', 'Mmm... 🕐', '¿Falta mucho?', 'Tengo hambre...', '¿Sigue mi crepa?'];
+export const IMPACIENCIA = tl(['¿Ya merito?', 'Mmm... 🕐', '¿Falta mucho?', 'Tengo hambre...', '¿Sigue mi crepa?']);
 
 // Cuando se van porque se les acabó la paciencia (globo)
-export const SE_VA = ['¡Ya me voy!', 'Ni modo, otro día...', '¡Qué tardado! 😤', 'Mejor me voy por unos tacos.'];
+export const SE_VA = tl(['¡Ya me voy!', 'Ni modo, otro día...', '¡Qué tardado! 😤', 'Mejor me voy por unos tacos.']);
 
 // Reseña que dejan cuando se van sin crepa
-export const ABANDONO = [
+export const ABANDONO = tl([
   'Esperé y esperé... y nada. Ya no vuelvo.',
   'Ni me atendieron 😤',
   'Me fui con hambre, qué mal servicio.',
   'Tardaron una eternidad, mejor me fui.',
   'Nunca llegó mi crepa 😭',
   'Me dejaron esperando, ¡qué falta de respeto!',
-];
+]);
 
 // ---------- Reseñas según qué tan contentos quedaron ----------
-export const RESENAS = {
+export const RESENAS = tl({
   encantado: [
     '¡Está deliciosa! Ya tienes cliente fijo.',
     'La mejor crepa que he probado, ¡gracias!',
@@ -185,10 +186,10 @@ export const RESENAS = {
     'Cero estrellas si pudiera.',
     '¡Ash! Me voy a otra crepería.',
   ],
-};
+});
 
 // Reseñas especiales de los niños cuando quedan contentos
-export const RESENAS_NINO = [
+export const RESENAS_NINO = tl([
   '¡Mamá, mira cuánta chispita! 🤩',
   '¡Es la crepa más bonita del mundo mundial!',
   '¡Sabe a cumpleaños! 🎂',
@@ -196,10 +197,10 @@ export const RESENAS_NINO = [
   '¡Wiii! ¡Tiene muchos colores! 🌈',
   'Cuando sea grande quiero hacer crepas como tú.',
   '¡Me la comí toda y no me manché! (bueno, poquito)',
-];
+]);
 
 // Reseñas del novio: siempre cariñosas
-export const RESENAS_NOVIO = {
+export const RESENAS_NOVIO = tl({
   perfecta: [
     'La mejor crepa del mundo, hecha por la mejor persona del mundo 💕',
     'Perfecta, igualito que tú 😍',
@@ -219,10 +220,10 @@ export const RESENAS_NOVIO = {
     'Te salió... interesante 😂 Te quiero muchísimo.',
     'Tranquila, mañana te sale perfecta. Yo siempre vengo.',
   ],
-};
+});
 
 // ---------- Quejas específicas (según lo que salió peor) ----------
-export const RAZONES = {
+export const RAZONES = tl({
   faltan: ['¿Y mi {ing}? No le pusiste...', 'Le faltó {ing}, yo sí lo pedí.', 'Pedí {ing} y no venía 😕', 'Le pusieron muy poquito de {ing}.'],
   sobran: ['Yo no pedí {ing}...', '¿Por qué trae {ing}? No me gusta.', 'Yo no pedí eso, qué decepción.', 'Le pusieron {ing} de más.'],
   cruda: ['Estaba cruda por dentro 😕', 'Le faltó cocción, sabía a masa.', 'La masa estaba aguadita.', 'Le faltó plancha a mi crepa.'],
@@ -234,10 +235,10 @@ export const RAZONES = {
   muchaSalsa: ['¡Traía demasiado {ing}! Empalagosa.', 'La ahogaron en {ing} 😵', 'Muy rica, pero con tanto {ing} ya no sabía a crepa.'],
   pocaDeco: ['¡Le faltaron colores y dulces! 😢', 'Está muy simple... ¡yo quería más decoración!', '¿Y las chispitas? ¡Quería más!'],
   espera: ['Se me hizo muy tardado...', '¡Esperé un siglo!', 'Rica pero tardadísima.', 'Tanto tiempo para una crepa...'],
-};
+});
 
 // Al recibir su crepa, mientras la prueban (antes de la reseña)
-export const GRACIAS = ['¡Gracias! 💕', '¡Qué rico se ve!', '¡Mmm, a ver...', '¡Justo lo que quería!'];
+export const GRACIAS = tl(['¡Gracias! 💕', '¡Qué rico se ve!', '¡Mmm, a ver...', '¡Justo lo que quería!']);
 
 /** Elige un elemento al azar de una lista. */
 export function alAzar(lista) {

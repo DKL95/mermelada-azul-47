@@ -16,6 +16,7 @@ import { esRomantica } from './romance.js';
 import { tieneArticulo } from './cartera.js';
 import { nombreJugador, ponerNombre, limpiarNombre } from './ranking.js';
 import { g } from './genero.js';
+import { t } from './idioma.js';
 import { CUERPO, ropa, extra, detallesCara, peinadoAtras, peinadoFrente, accesorio, caraSVG, flor } from './clientes.js';
 import {
   SEXOS, PIELES, ESTATURAS, COMPLEXIONES, PEINADOS, COLORES_PELO, VELLO, ARRIBA, ESTAMPADOS,
@@ -851,7 +852,7 @@ export function caritaDesdeTabla(x) {
 //  Creador
 // ============================================================
 
-const PESTANAS = [['cuerpo', '🧍 Cuerpo'], ['cabello', '💇 Cabello'], ['ropa', '👕 Ropa'], ['accesorios', '💍 Accesorios']];
+const PESTANAS = [['cuerpo', `🧍 ${t('Cuerpo')}`], ['cabello', `💇 ${t('Cabello')}`], ['ropa', `👕 ${t('Ropa')}`], ['accesorios', `💍 ${t('Accesorios')}`]];
 const alAzar = (lista) => lista[Math.floor(Math.random() * lista.length)];
 
 /** Lee un campo como 'acc.cabeza' o 'piel'. */
@@ -879,7 +880,7 @@ export function conTraje(p, traje) {
 }
 
 /** Nombre del disfraz (algunos cambian según el personaje: "Bruja" / "Brujo"). */
-export const nombreTraje = (t) => `${t.emoji} ${Array.isArray(t.nombre) ? g(...t.nombre) : t.nombre}`;
+export const nombreTraje = (tr) => `${tr.emoji} ${Array.isArray(tr.nombre) ? g(...tr.nombre) : tr.nombre}`;
 
 /** Las opciones que se pueden elegir: las suyas, sin lo exclusivo si no toca, ni barba en mujer. */
 function opcionesDe(lista, p, campo) {
@@ -897,7 +898,7 @@ function chips(campo, lista, p) {
 function colores(campo, lista, p) {
   const actual = leer(p, campo);
   return `<div class="muestras">${lista.map((c) => `
-    <button class="muestra${c === actual ? ' activa' : ''}" style="background:${c}" data-campo="${campo}" data-valor="${c}" aria-label="Color ${c}"></button>`).join('')}</div>`;
+    <button class="muestra${c === actual ? ' activa' : ''}" style="background:${c}" data-campo="${campo}" data-valor="${c}" aria-label="${t('Color {c}', { c })}"></button>`).join('')}</div>`;
 }
 
 const grupo = (titulo, html) => `<div class="grupo-creador"><h4>${titulo}</h4>${html}</div>`;
@@ -917,37 +918,37 @@ const SIN_COLOR = ['ninguno', 'perlas', 'aretes_corazon', 'gorro_chef', 'lentes'
 // Los trajes de disfraz traen sus colores
 const TRAJE_ARRIBA = ARRIBA.filter((o) => o.traje).map((o) => o.id);
 
-const botonBoutique = '<button class="btn btn-secundario btn-ir-boutique" data-boutique>🛍️ Ver más en la boutique</button>';
+const botonBoutique = `<button class="btn btn-secundario btn-ir-boutique" data-boutique>🛍️ ${t('Ver más en la boutique')}</button>`;
 
 function htmlPestana(pestana, p, nombre, conBoutique) {
   switch (pestana) {
     case 'cuerpo':
-      return grupo('Nombre', `<input class="campo-nombre" id="creador-nombre" type="text" maxlength="${MAX_NOMBRE}" autocomplete="nickname" autocapitalize="words" enterkeyhint="done" placeholder="Tu nombre" value="${nombre.replace(/"/g, '&quot;')}">`)
-        + grupo('Soy…', chips('sexo', SEXOS, p))
-        + grupo('Piel', colores('piel', PIELES, p))
-        + grupo('Estatura', chips('estatura', ESTATURAS, p))
-        + grupo('Complexión', chips('complexion', COMPLEXIONES, p));
+      return grupo(t('Nombre'), `<input class="campo-nombre" id="creador-nombre" type="text" maxlength="${MAX_NOMBRE}" autocomplete="nickname" autocapitalize="words" enterkeyhint="done" placeholder="${t('Tu nombre')}" value="${nombre.replace(/"/g, '&quot;')}">`)
+        + grupo(t('Soy…'), chips('sexo', SEXOS, p))
+        + grupo(t('Piel'), colores('piel', PIELES, p))
+        + grupo(t('Estatura'), chips('estatura', ESTATURAS, p))
+        + grupo(t('Complexión'), chips('complexion', COMPLEXIONES, p));
     case 'cabello':
-      return [['largo', 'Largo'], ['corto', 'Corto'], ['recogido', 'Recogido']]
+      return [['largo', t('Largo')], ['corto', t('Corto')], ['recogido', t('Recogido')]]
         .map(([estilo, titulo]) => grupo(titulo, chips('peinado', PEINADOS.filter((o) => o.estilo === estilo), p))).join('')
-        + grupo('Color', colores('pelo', COLORES_PELO, p))
-        + (p.sexo === 'hombre' ? grupo('Barba y bigote', chips('vello', VELLO, p)) : '');
+        + grupo(t('Color'), colores('pelo', COLORES_PELO, p))
+        + (p.sexo === 'hombre' ? grupo(t('Barba y bigote'), chips('vello', VELLO, p)) : '');
     case 'ropa': {
-      const disfraces = TRAJES.filter((t) => tieneArticulo(claveArticulo('traje', t.id)));
-      return (disfraces.length ? grupo('🦸 Mis disfraces', `<div class="chips">${disfraces.map((t) =>
-          `<button class="chip especial" data-traje="${t.id}">${nombreTraje(t)}</button>`).join('')}</div>`) : '')
-        + grupo('Arriba', chips('arriba', ARRIBA, p) + (TRAJE_ARRIBA.includes(p.arriba) && p.arriba !== 'samurai' ? '' : colores('colorArriba', COLORES, p))
-          + (CON_COLOR2.includes(p.arriba) || p.arriba === 'samurai' ? `<small class="nota-creador">Detalles</small>${colores('colorArriba2', COLORES, p)}` : ''))
-        + (p.arriba === 'playera' ? grupo('Estampado', chips('estampado', ESTAMPADOS, p)) : '')
-        + (p.arriba === 'vestido' ? '' : grupo('Abajo', chips('abajo', ABAJO, p) + colores('colorAbajo', p.abajo === 'jeans' ? COLORES_MEZCLILLA : COLORES, p)))
-        + grupo('Calzado', chips('calzado', CALZADO, p) + colores('colorCalzado', COLORES, p))
+      const disfraces = TRAJES.filter((tr) => tieneArticulo(claveArticulo('traje', tr.id)));
+      return (disfraces.length ? grupo(`🦸 ${t('Mis disfraces')}`, `<div class="chips">${disfraces.map((tr) =>
+          `<button class="chip especial" data-traje="${tr.id}">${nombreTraje(tr)}</button>`).join('')}</div>`) : '')
+        + grupo(t('Arriba'), chips('arriba', ARRIBA, p) + (TRAJE_ARRIBA.includes(p.arriba) && p.arriba !== 'samurai' ? '' : colores('colorArriba', COLORES, p))
+          + (CON_COLOR2.includes(p.arriba) || p.arriba === 'samurai' ? `<small class="nota-creador">${t('Detalles')}</small>${colores('colorArriba2', COLORES, p)}` : ''))
+        + (p.arriba === 'playera' ? grupo(t('Estampado'), chips('estampado', ESTAMPADOS, p)) : '')
+        + (p.arriba === 'vestido' ? '' : grupo(t('Abajo'), chips('abajo', ABAJO, p) + colores('colorAbajo', p.abajo === 'jeans' ? COLORES_MEZCLILLA : COLORES, p)))
+        + grupo(t('Calzado'), chips('calzado', CALZADO, p) + colores('colorCalzado', COLORES, p))
         + (conBoutique ? botonBoutique : '');
     }
     default: // accesorios
       return Object.entries(ACCESORIOS).map(([cat, { nombre: titulo, opciones }]) =>
         grupo(titulo, chips(`acc.${cat}`, opciones, p)
           + (SIN_COLOR.includes(p.acc[cat]) ? '' : colores(`colorAcc.${cat}`, COLORES, p)))).join('')
-        + '<p class="nota-creador">Puedes traer uno de cada tipo a la vez.</p>' + (conBoutique ? botonBoutique : '');
+        + `<p class="nota-creador">${t('Puedes traer uno de cada tipo a la vez.')}</p>` + (conBoutique ? botonBoutique : '');
   }
 }
 
@@ -984,9 +985,9 @@ export async function editarPersonaje({ primeraVez = false } = {}) {
   cont.innerHTML = `
     <div class="creador-vista">
       <div class="creador-svg"></div>
-      <button class="btn-dado" aria-label="Personaje al azar">🎲</button>
+      <button class="btn-dado" aria-label="${t('Personaje al azar')}">🎲</button>
     </div>
-    <div class="segmentado creador-tabs">${PESTANAS.map(([id, t]) => `<button data-pestana="${id}">${t}</button>`).join('')}</div>
+    <div class="segmentado creador-tabs">${PESTANAS.map(([id, titulo]) => `<button data-pestana="${id}">${titulo}</button>`).join('')}</div>
     <div class="creador-opciones"></div>`;
   const $svg = cont.querySelector('.creador-svg');
   const $opc = cont.querySelector('.creador-opciones');
@@ -1004,8 +1005,8 @@ export async function editarPersonaje({ primeraVez = false } = {}) {
     const tab = ev.target.closest('[data-pestana]');
     if (tab) { sonidos.click(); pestana = tab.dataset.pestana; $opc.scrollTop = 0; pintar(); return; }
     if (ev.target.closest('.btn-dado')) { sonidos.pop(); p = personajeAlAzar(p.sexo); pintar(); return; }
-    const t = ev.target.closest('[data-traje]');
-    if (t) { sonidos.pop(); p = conTraje(p, TRAJES.find((x) => x.id === t.dataset.traje)); pintar(); return; }
+    const traje = ev.target.closest('[data-traje]');
+    if (traje) { sonidos.pop(); p = conTraje(p, TRAJES.find((x) => x.id === traje.dataset.traje)); pintar(); return; }
     if (ev.target.closest('[data-boutique]')) {
       // Se guarda lo que lleva y se abre la boutique (cierra esta ventana)
       guardarPersonaje(p);
@@ -1033,11 +1034,11 @@ export async function editarPersonaje({ primeraVez = false } = {}) {
   pintar();
 
   const r = await mostrarModal({
-    titulo: primeraVez ? '✨ Crea tu personaje' : '👤 Mi personaje',
+    titulo: primeraVez ? `✨ ${t('Crea tu personaje')}` : `👤 ${t('Mi personaje')}`,
     contenido: cont,
     botones: primeraVez
-      ? [{ texto: '¡Listo! 🥞', clase: 'btn-primario', valor: 'ok' }]
-      : [{ texto: 'Cancelar', valor: null }, { texto: 'Guardar', clase: 'btn-primario', valor: 'ok' }],
+      ? [{ texto: `${t('¡Listo!')} 🥞`, clase: 'btn-primario', valor: 'ok' }]
+      : [{ texto: t('Cancelar'), valor: null }, { texto: t('Guardar'), clase: 'btn-primario', valor: 'ok' }],
     cerrarAlTocarFuera: !primeraVez,
   });
   if (r !== 'ok') return null;
@@ -1045,6 +1046,6 @@ export async function editarPersonaje({ primeraVez = false } = {}) {
   const limpio = limpiarNombre(nombre);
   if (limpio) ponerNombre(limpio);
   sonidos.logro();
-  if (!primeraVez) aviso('👤 ¡Personaje guardado!');
+  if (!primeraVez) aviso(`👤 ${t('¡Personaje guardado!')}`);
   return p;
 }

@@ -24,6 +24,7 @@ import { revisarLogros } from './data/logros.js';
 import { ganarChispitas } from './cartera.js';
 import { sonidos } from './audio.js';
 import { esRomantica } from './romance.js';
+import { t } from './idioma.js';
 
 export const LUGARES = 3;           // clientes que caben frente al mostrador
 export const MAX_BEBIDA = 2;        // vasos listos de cada bebida
@@ -198,8 +199,8 @@ export function entregar(c, indice) {
   // Bonos: crepa perfecta y racha de clientes encantados seguidos
   const bonos = [];
   const racha = r.pct >= 90 ? (estado().hoy.racha || 0) + 1 : 0;
-  if (r.pct >= 95) bonos.push({ texto: '✨ ¡Crepa perfecta!', monto: 10, chispitas: 1 });
-  if (racha >= 2) bonos.push({ texto: `🔥 Racha x${racha}`, monto: Math.min(25, 5 * (racha - 1)) });
+  if (r.pct >= 95) bonos.push({ texto: `✨ ${t('¡Crepa perfecta!')}`, monto: 10, chispitas: 1 });
+  if (racha >= 2) bonos.push({ texto: `🔥 ${t('Racha x{n}', { n: racha })}`, monto: Math.min(25, 5 * (racha - 1)) });
   const extra = bonos.reduce((s, b) => s + b.monto, 0);
   // Si faltó la bebida, no se cobra
   const precio = bebida && !conBebida ? c.precio - (c.precioBebida || 0) : c.precio;
@@ -304,12 +305,12 @@ function intervaloLlegada() {
   const [min, max] = dif === 'relajado' ? [38, 52] : dif === 'desafio' ? [20, 30] : [28, 40];
   // Cada día llega la gente un poquito más seguido
   const prisa = Math.min(10, (e.dia - 1) * 1.5);
-  let t = Math.max(12, min + Math.random() * (max - min) - prisa);
+  let seg = Math.max(12, min + Math.random() * (max - min) - prisa);
   // Buena reputación = más clientes (5★ → 25% más seguido; 1★ → 20% menos)
-  t *= 1.25 - 0.1 * e.reputacion;
-  t *= multIntervalo(e) * (evento(e.evento)?.llegadas || 1);
-  if (juego.enHoraPico) t *= HORA_PICO.llegadas;
-  return Math.max(8, t);
+  seg *= 1.25 - 0.1 * e.reputacion;
+  seg *= multIntervalo(e) * (evento(e.evento)?.llegadas || 1);
+  if (juego.enHoraPico) seg *= HORA_PICO.llegadas;
+  return Math.max(8, seg);
 }
 
 function lugarLibre() {

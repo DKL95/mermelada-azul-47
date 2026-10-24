@@ -115,6 +115,22 @@
 .segmentado button[aria-pressed="true"] { background: var(--primario); }
 .ajuste-columna { flex-direction: column; align-items: stretch; }
 
+/* Selector de idioma */
+.selector-idioma {
+  min-height: 44px;
+  max-width: 60%;
+  padding: 0 36px 0 14px;
+  border: 2px solid var(--fondo-2);
+  border-radius: var(--radio-chico);
+  background: var(--blanco) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center / 12px;
+  color: var(--texto);
+  font: inherit;
+  font-size: 16px; /* 16px o más: Safari no hace zoom */
+  -webkit-appearance: none;
+  appearance: none;
+}
+.selector-idioma:focus { outline: none; border-color: var(--primario); }
+
 /* Tabla en línea */
 .campo-nombre {
   width: 100%;

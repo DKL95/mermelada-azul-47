@@ -17,6 +17,7 @@
 import { PAQUETES, ganarChispitas } from './cartera.js';
 import { aviso } from './ui.js';
 import { sonidos } from './audio.js';
+import { t } from './idioma.js';
 
 const CLAVE_ACREDITADAS = 'creperia.compras'; // ids de transacciones ya acreditadas
 
@@ -33,7 +34,7 @@ function acreditar(idTransaccion, idProducto) {
   ganarChispitas(paquete.chispitas);
   try { localStorage.setItem(CLAVE_ACREDITADAS, JSON.stringify([...lista, idTransaccion].slice(-200))); } catch { /* sin espacio */ }
   sonidos.compra();
-  aviso(`✨ +${paquete.chispitas} Chispitas. ¡Gracias!`);
+  aviso(`✨ ${t('+{n} Chispitas. ¡Gracias!', { n: paquete.chispitas })}`);
   return true;
 }
 

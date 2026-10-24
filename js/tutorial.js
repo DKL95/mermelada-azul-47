@@ -9,37 +9,38 @@ import { estado, actualizar, suscribir } from './state.js';
 import { juego, on, comandas } from './turno.js';
 import { aviso } from './ui.js';
 import { sonidos } from './audio.js';
+import { t } from './idioma.js';
 
 const PASOS = [
   {
     objetivo: '#btn-abrir',
-    texto: '👋 Esta es tu ventanilla. Toca <b>Abrir</b> para empezar el día.',
+    texto: `👋 ${t('Esta es tu ventanilla. Toca <b>Abrir</b> para empezar el día.')}`,
     listo: () => juego.abierto,
   },
   {
     objetivo: '#zona-clientes .cliente',
-    texto: '🙋 ¡Llegó alguien! Tócalo para ver qué quiere y luego <b>Tomar pedido</b>.',
+    texto: `🙋 ${t('¡Llegó alguien! Tócalo para ver qué quiere y luego <b>Tomar pedido</b>.')}`,
     listo: () => comandas().length > 0,
   },
   {
     objetivo: '.tab[data-pestana="cocina"]',
-    texto: '🍳 El pedido ya está en la cocina. ¡Vamos para allá!',
+    texto: `🍳 ${t('El pedido ya está en la cocina. ¡Vamos para allá!')}`,
     listo: () => document.querySelector('#pantalla-cocina.activa'),
   },
   {
     objetivo: '#riel-comandas .comanda',
-    texto: '🧾 Toca la comanda para prepararla (tócala otra vez para ver el pedido completo).',
+    texto: `🧾 ${t('Toca la comanda para prepararla (tócala otra vez para ver el pedido completo).')}`,
     listo: () => document.querySelector('.comanda.activa'),
   },
   {
     objetivo: '#escenario',
     arriba: true, // el globo va hasta arriba para no tapar los controles
-    texto: '🥄 Toca el centro de la plancha para verter la masa y arrastra en círculos. Después sigue las instrucciones de cada estación, de la 1 a la 7.',
+    texto: `🥄 ${t('Toca el centro de la plancha para verter la masa y arrastra en círculos. Después sigue las instrucciones de cada estación, de la 1 a la 7.')}`,
     listo: () => estado().charola.length > 0,
   },
   {
     objetivo: '.tab[data-pestana="venta"]',
-    texto: '📦 ¡Crepa lista! Ve a <b>Venta</b> y toca al cliente para entregársela.',
+    texto: `📦 ${t('¡Crepa lista! Ve a <b>Venta</b> y toca al cliente para entregársela.')}`,
     listo: () => estado().records.crepasVendidas > vendidasInicio || juego.clientes.every((c) => c.estado !== 'esperando'),
   },
 ];
@@ -81,9 +82,9 @@ function crearPiezas() {
 function mostrarPaso() {
   const p = PASOS[paso];
   $globo.innerHTML = `
-    <small>Paso ${paso + 1} de ${PASOS.length}</small>
+    <small>${t('Paso {n} de {total}', { n: paso + 1, total: PASOS.length })}</small>
     <p>${p.texto}</p>
-    <button class="tuto-saltar">Saltar tutorial</button>`;
+    <button class="tuto-saltar">${t('Saltar tutorial')}</button>`;
   $globo.querySelector('.tuto-saltar').addEventListener('click', terminar);
   $globo.classList.remove('entra');
   void $globo.offsetWidth;
@@ -137,5 +138,5 @@ function terminar(completo = false) {
   $aro?.remove(); $globo?.remove();
   $aro = $globo = null;
   actualizar((e) => { e.tutorialVisto = true; });
-  if (completo === true) { sonidos.logro(); aviso('🎉 ¡Listo! Ya sabes todo lo básico. ¡A cocinar!'); }
+  if (completo === true) { sonidos.logro(); aviso(`🎉 ${t('¡Listo! Ya sabes todo lo básico. ¡A cocinar!')}`); }
 }

@@ -1,0 +1,15 @@
+{
+  "name": "creepy-crepas",
+  "productName": "Creepy Crepas",
+  "version": "1.0.0",
+  "description": "Creepy Crepas — versión de PC para Steam",
+  "author": "Derek",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "45.0.0"
+  }
+}

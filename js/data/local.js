@@ -5,6 +5,7 @@
    Lo que no tiene precio es gratis. 'tema' = los colores de la
    versión (pública o especial).
    ============================================================ */
+import { traducirDatos } from '../idioma.js';
 
 export const DECORACION = {
   toldo: { nombre: '⛱️ Toldo', opciones: [
@@ -38,6 +39,9 @@ export const DECORACION = {
     { id: 'navidad', nombre: '🎄 Navidad', precio: 900 },
   ] },
 };
+
+traducirDatos(Object.values(DECORACION), 'nombre');
+Object.values(DECORACION).forEach((c) => traducirDatos(c.opciones, 'nombre'));
 
 // Colores del toldo (gratis). null = el color de la versión.
 export const COLORES_TOLDO = [null, '#E8414F', '#FF4FA3', '#FF7A1A', '#FFB020', '#22C55E', '#8B5CF6', '#1B1B2B'];

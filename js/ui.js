@@ -4,6 +4,7 @@
    formato de dinero y dibujo de estrellas.
    ============================================================ */
 import { CONFIG } from './config.js';
+import { t } from './idioma.js';
 
 const capaModal = () => document.getElementById('capa-modal');
 let cerrarActual = null; // función para cerrar la ventana abierta (si hay)
@@ -19,7 +20,7 @@ let cerrarActual = null; // función para cerrar la ventana abierta (si hay)
  * @param {boolean} [op.cerrarAlTocarFuera=true]
  * @returns {Promise<any>} el `valor` del botón tocado (o null)
  */
-export function mostrarModal({ titulo, contenido, botones = [{ texto: 'Cerrar', valor: null }], cerrarAlTocarFuera = true }) {
+export function mostrarModal({ titulo, contenido, botones = [{ texto: t('Cerrar'), valor: null }], cerrarAlTocarFuera = true }) {
   // Si ya había otra ventana abierta, se cierra primero
   if (cerrarActual) cerrarActual(null);
   return new Promise((resolver) => {
@@ -74,7 +75,7 @@ export function mostrarModal({ titulo, contenido, botones = [{ texto: 'Cerrar', 
 }
 
 /** Pregunta Sí/No. Devuelve true si confirma. */
-export async function confirmar(titulo, mensaje, textoSi = 'Sí', textoNo = 'Cancelar') {
+export async function confirmar(titulo, mensaje, textoSi = t('Sí'), textoNo = t('Cancelar')) {
   const r = await mostrarModal({
     titulo,
     contenido: `<p style="text-align:center">${mensaje}</p>`,

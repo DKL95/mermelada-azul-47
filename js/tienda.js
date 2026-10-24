@@ -12,8 +12,9 @@ import { DECORACION, COLORES_TOLDO } from './data/local.js';
 import { decoracion, ponerDecoracion, tieneDecoracion, claveDecoracion } from './local.js';
 import { svgFachada, svgCalle, svgMostrador } from './escenario.js';
 import { nombreCreperia } from './romance.js';
+import { t } from './idioma.js';
 
-const SECCIONES = { cocina: '🍳 Para la cocina', local: '🏡 Para el local' };
+const SECCIONES = { cocina: `🍳 ${t('Para la cocina')}`, local: `🏡 ${t('Para el local')}` };
 
 // ============================================================
 //  Tienda
@@ -29,8 +30,8 @@ export function abrirTienda(pestana = 'mejoras') {
     const scroll = cont.closest('.modal')?.scrollTop;
     cont.innerHTML = `
       <div class="segmentado tienda-pestanas">
-        <button data-pestana="mejoras" aria-pressed="${pestana === 'mejoras'}">🛒 Mejoras</button>
-        <button data-pestana="decoracion" aria-pressed="${pestana === 'decoracion'}">🎨 Decoración</button>
+        <button data-pestana="mejoras" aria-pressed="${pestana === 'mejoras'}">🛒 ${t('Mejoras')}</button>
+        <button data-pestana="decoracion" aria-pressed="${pestana === 'decoracion'}">🎨 ${t('Decoración')}</button>
       </div>
       ${pestana === 'mejoras' ? htmlTienda() : htmlDecoracion(probando)}`;
     if (scroll !== undefined) cont.closest('.modal').scrollTop = scroll;
@@ -63,14 +64,14 @@ export function abrirTienda(pestana = 'mejoras') {
       ponerDecoracion({ [cat]: opcion.id });
       probando = null;
       sonidos.compra();
-      aviso(`🎨 ¡${opcion.nombre} para tu local!`);
+      aviso(`🎨 ${t('¡{nombre} para tu local!', { nombre: opcion.nombre })}`);
       let logros = [];
       actualizar((s) => { logros = revisarLogros(s, { momento: 'compra' }); });
       if (logros.length) avisarLogros(logros);
       pintar();
     }
   });
-  return mostrarModal({ titulo: '🛒 Tienda', contenido: cont, botones: [{ texto: 'Cerrar', clase: 'btn-primario' }] });
+  return mostrarModal({ titulo: `🛒 ${t('Tienda')}`, contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
 }
 
 /** Pestaña de decoración: vista previa del local y las opciones de cada parte. */
@@ -94,7 +95,7 @@ function htmlDecoracion(probando) {
     }).join('')}</div>
     ${cat === 'toldo' ? `<div class="muestras">${COLORES_TOLDO.map((c) => `
       <button class="muestra${(d.colorToldo || null) === c ? ' activa' : ''}" data-color-toldo="${c || ''}"
-        style="background:${c || 'var(--toldo)'}" aria-label="${c ? 'Color ' + c : 'Color de la versión'}"></button>`).join('')}</div>` : ''}`).join('');
+        style="background:${c || 'var(--toldo)'}" aria-label="${c ? t('Color {c}', { c }) : t('Color de la versión')}"></button>`).join('')}</div>` : ''}`).join('');
   const barra = probando ? `
     <div class="barra-compra">
       <b>${probando.opcion.nombre}</b>
@@ -103,15 +104,20 @@ function htmlDecoracion(probando) {
         <button class="btn btn-chispitas" data-comprar-decor="chispitas" ${ch >= enChispitas(probando.opcion.precio) ? '' : 'disabled'}>${textoChispitas(enChispitas(probando.opcion.precio))}</button>
       </span>
     </div>` : '';
-  return `<div class="tienda-dinero">Tienes <b>${dinero(e.dinero)}</b> y <b>${textoChispitas(ch)}</b></div>
+  return `<div class="tienda-dinero">${tienes(e.dinero, ch)}</div>
     ${vista}${barra}${grupos}
-    <p class="menu-nota">La decoración es para siempre: no se pierde si reinicias la partida.</p>`;
+    <p class="menu-nota">${t('La decoración es para siempre: no se pierde si reinicias la partida.')}</p>`;
+}
+
+/** "Tienes $500 y ✨12" */
+function tienes(pesos, ch) {
+  return t('Tienes {dinero} y {chispitas}', { dinero: `<b>${dinero(pesos)}</b>`, chispitas: `<b>${textoChispitas(ch)}</b>` });
 }
 
 function htmlTienda() {
   const e = estado();
   const ch = chispitas();
-  let html = `<div class="tienda-dinero">Tienes <b>${dinero(e.dinero)}</b> y <b>${textoChispitas(ch)}</b></div>`;
+  let html = `<div class="tienda-dinero">${tienes(e.dinero, ch)}</div>`;
   for (const [sec, titulo] of Object.entries(SECCIONES)) {
     html += `<h3 class="menu-titulo">${titulo}</h3>`;
     for (const m of MEJORAS.filter((x) => x.seccion === sec && mejoraVisible(x, e))) {
@@ -123,7 +129,7 @@ function htmlTienda() {
       // Se paga con pesos o con Chispitas
       const precioCh = enChispitas(precio);
       const boton = n >= max
-        ? '<span class="comprado">✓ Tuyo</span>'
+        ? `<span class="comprado">✓ ${t('Tuyo')}</span>`
         : `<span class="precios">
             <button class="btn ${e.dinero >= precio ? 'btn-primario' : ''}" data-comprar="${m.id}" data-moneda="pesos" ${e.dinero >= precio ? '' : 'disabled'}>${dinero(precio)}</button>
             <button class="btn btn-chispitas" data-comprar="${m.id}" data-moneda="chispitas" ${ch >= precioCh ? '' : 'disabled'}>${textoChispitas(precioCh)}</button>
@@ -134,7 +140,7 @@ function htmlTienda() {
           <span class="mejora-texto">
             <b>${m.nombre}</b>${puntos}
             <small>${m.descripcion}</small>
-            <small class="efecto">${n > 0 && n < max ? `Ahora: ${efecto} → Siguiente: ${m.efectos[n]}` : efecto}</small>
+            <small class="efecto">${n > 0 && n < max ? t('Ahora: {ahora} → Siguiente: {siguiente}', { ahora: efecto, siguiente: m.efectos[n] }) : efecto}</small>
           </span>
           ${boton}
         </div>`;
@@ -157,7 +163,9 @@ function comprar(id, moneda = 'pesos') {
     logros = revisarLogros(s, { momento: 'compra' });
   });
   sonidos.compra();
-  aviso(`${m.emoji} ¡${m.nombre}${m.precios.length > 1 ? ` nivel ${n + 1}` : ''} comprado!`);
+  aviso(`${m.emoji} ${m.precios.length > 1
+    ? t('¡{nombre} nivel {n} comprado!', { nombre: m.nombre, n: n + 1 })
+    : t('¡{nombre} comprado!', { nombre: m.nombre })}`);
   if (logros.length) avisarLogros(logros);
 }
 
@@ -170,19 +178,19 @@ export function abrirLogros() {
   const e = estado();
   const tenidos = LOGROS.filter((l) => e.logros.includes(l.id)).length;
   mostrarModal({
-    titulo: '🏆 Logros',
+    titulo: `🏆 ${t('Logros')}`,
     contenido: `
-      <div class="logros-cuenta">${tenidos} de ${LOGROS.length}</div>
+      <div class="logros-cuenta">${t('{n} de {total}', { n: tenidos, total: LOGROS.length })}</div>
       <div class="logros">
         ${LOGROS.map((l) => {
           const ok = e.logros.includes(l.id);
           return `<div class="logro${ok ? ' ganado' : ''}">
             <span class="logro-emoji">${ok ? l.emoji : '🔒'}</span>
-            <span><b>${l.nombre}</b><small>${l.descripcion}</small><small class="premio">Premio: ${dinero(l.premio)} · ${textoChispitas(chispitasDe(l))}</small></span>
+            <span><b>${l.nombre}</b><small>${l.descripcion}</small><small class="premio">${t('Premio: {premio}', { premio: `${dinero(l.premio)} · ${textoChispitas(chispitasDe(l))}` })}</small></span>
           </div>`;
         }).join('')}
       </div>`,
-    botones: [{ texto: 'Cerrar', clase: 'btn-primario' }],
+    botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }],
   });
 }
 
@@ -193,7 +201,7 @@ export function avisarLogros(lista) {
     sonidos.logro();
     const el = document.createElement('div');
     el.className = 'aviso-logro';
-    el.innerHTML = `<span class="logro-emoji">${l.emoji}</span><span><small>¡Logro desbloqueado!</small><b>${l.nombre}</b><small>+${dinero(l.premio)} · +${textoChispitas(chispitasDe(l))}</small></span>`;
+    el.innerHTML = `<span class="logro-emoji">${l.emoji}</span><span><small>${t('¡Logro desbloqueado!')}</small><b>${l.nombre}</b><small>+${dinero(l.premio)} · +${textoChispitas(chispitasDe(l))}</small></span>`;
     capa.appendChild(el);
     setTimeout(() => el.remove(), 3600);
   }, i * 1800));

@@ -4,6 +4,7 @@
    Todo está hecho con figuras simples para editarlo fácil.
    ============================================================ */
 import { ingrediente, DOBLADOS } from './data/ingredientes.js';
+import { t } from './idioma.js';
 
 // ---------- Utilidades de color ----------
 
@@ -594,11 +595,11 @@ export function ticketDetalle(pedido) {
     </div>`;
   const d = DOBLADOS.find((x) => x.id === pedido.doblado);
   return `<div class="ticket-detalle">
-    ${fila('🥣 Masa', [[pedido.masa || 'masa_clasica', 1]])}
-    ${fila('🍓 Adentro', Object.entries(pedido.rellenos || {}))}
-    <div class="det-fila"><span class="det-titulo">📐 Doblado</span><span class="det-items"><span class="det-item">${iconoDoblado(d.id)}${d.nombre}</span></span></div>
-    ${fila('🍨 Encima', Object.entries(pedido.toppings || {}).filter(([id]) => ingrediente(id).categoria !== 'decoracion'))}
-    ${fila('🎨 Decorar', [...(pedido.salsas || []).map((id) => [id, 1]), ...Object.entries(pedido.toppings || {}).filter(([id]) => ingrediente(id).categoria === 'decoracion')])}
-    ${pedido.bebida ? fila('☕ Bebida', [[pedido.bebida, 1]]) : ''}
+    ${fila(`🥣 ${t('Masa')}`, [[pedido.masa || 'masa_clasica', 1]])}
+    ${fila(`🍓 ${t('Adentro')}`, Object.entries(pedido.rellenos || {}))}
+    <div class="det-fila"><span class="det-titulo">📐 ${t('Doblado')}</span><span class="det-items"><span class="det-item">${iconoDoblado(d.id)}${d.nombre}</span></span></div>
+    ${fila(`🍨 ${t('Encima')}`, Object.entries(pedido.toppings || {}).filter(([id]) => ingrediente(id).categoria !== 'decoracion'))}
+    ${fila(`🎨 ${t('Decorar')}`, [...(pedido.salsas || []).map((id) => [id, 1]), ...Object.entries(pedido.toppings || {}).filter(([id]) => ingrediente(id).categoria === 'decoracion')])}
+    ${pedido.bebida ? fila(`☕ ${t('Bebida')}`, [[pedido.bebida, 1]]) : ''}
   </div>`;
 }

@@ -11,6 +11,7 @@
    el resto del juego solo llama a esas funciones.
    ============================================================ */
 import { CONFIG } from '../config.js';
+import { t, traducirDatos } from '../idioma.js';
 
 export const MEJORAS = [
   // ----- Cocina -----
@@ -42,9 +43,11 @@ export const MEJORAS = [
     descripcion: 'Una guirnalda de foquitos en el toldo.', efectos: ['+10% de propinas'] },
   { id: 'letrero', seccion: 'local', emoji: '✨', nombre: 'Letrero luminoso', precios: [700],
     descripcion: 'El letrero brilla y se ve desde lejos.', efectos: ['Llega gente más seguido'] },
-  { id: 'mascota', seccion: 'local', emoji: '🐩', nombre: `Mascota: ${CONFIG.nombreMascota}`, precios: [800],
+  { id: 'mascota', seccion: 'local', emoji: '🐩', nombre: t('Mascota: {nombre}', { nombre: CONFIG.nombreMascota }), precios: [800],
     descripcion: 'Una French Poodle blanca que se duerme en el mostrador. ¡Todos la quieren!', efectos: ['La reputación sube más rápido'] },
 ];
+
+traducirDatos(MEJORAS, 'nombre', 'descripcion', 'efectos');
 
 /** Nivel comprado de una mejora (0 = no la tienes). */
 export function nivel(e, id) {
