@@ -1198,4 +1198,6 @@ export default {
   "Zarzamoras enteras, moradas casi negras.": "Amoras inteiras, roxas quase pretas.",
   "Zona perfecta +30%": "Zona perfeita +30%",
   "Zona perfecta +60%": "Zona perfeita +60%",
+  "Espacio": "Espaço",
+  "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>Teclado:</strong> Tab alterna entre Cozinha e Balcão. Espaço faz o mesmo que o botão principal. Com 1–9 você escolhe massa, ingrediente ou dobra, e no Balcão atende o cliente 1, 2 ou 3. ← → trocam de aba, Z desfaz, F troca de chapa, M abre o cardápio e Esc fecha janelas ou abre os Ajustes.",
 };

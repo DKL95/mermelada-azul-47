@@ -4,7 +4,7 @@
    (cómodo mientras desarrollamos); si no, se usa la copia guardada.
    Cambia VERSION_CACHE cuando publiques una versión nueva.
    ============================================================ */
-const VERSION_CACHE = 'creperia-v39';
+const VERSION_CACHE = 'creperia-v40';
 
 // Archivos mínimos para que el juego arranque sin conexión
 const ARCHIVOS = [
@@ -38,6 +38,7 @@ const ARCHIVOS = [
   './js/local.js',
   './js/sinfin.js',
   './js/plataforma.js',
+  './js/teclado.js',
   './js/idioma.js',
   './js/idiomas/en.js',
   './js/idiomas/fr.js',
@@ -59,12 +60,15 @@ const ARCHIVOS = [
   './assets/icono-192.png',
   './assets/icono-512.png',
   './assets/icono-maskable-512.png',
-  // Fuente redondeada (si falla, el juego usa la del sistema)
-  'https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap',
+  // Fuentes (Fredoka y Caveat)
+  './assets/fuentes/fredoka-latin.woff2',
+  './assets/fuentes/fredoka-latin-ext.woff2',
+  './assets/fuentes/caveat-latin.woff2',
+  './assets/fuentes/caveat-latin-ext.woff2',
 ];
 
 self.addEventListener('install', (e) => {
-  // Se guardan uno por uno: si alguno falla (ej. la fuente sin internet), los demás sí quedan
+  // Se guardan uno por uno: si alguno falla (ej. sin internet), los demás sí quedan
   e.waitUntil(caches.open(VERSION_CACHE).then((c) => Promise.all(ARCHIVOS.map((a) => c.add(a).catch(() => {})))));
   self.skipWaiting();
 });

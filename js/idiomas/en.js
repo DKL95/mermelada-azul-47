@@ -1197,4 +1197,6 @@ export default {
   "Zarzamoras enteras, moradas casi negras.": "Whole blackberries, purple almost black.",
   "Zona perfecta +30%": "Perfect zone +30%",
   "Zona perfecta +60%": "Perfect zone +60%",
+  "Espacio": "Space",
+  "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>Keyboard:</strong> Tab switches between Kitchen and Counter. Space does what the main button does. Use 1–9 to pick batter, ingredient or fold, and at the Counter to serve customer 1, 2 or 3. ← → change tabs, Z undoes, F switches griddle, M opens the menu and Esc closes windows or opens Settings.",
 };

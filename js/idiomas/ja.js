@@ -1198,4 +1198,6 @@ export default {
   "Zarzamoras enteras, moradas casi negras.": "まるごとのブラックベリー。黒に近い紫。",
   "Zona perfecta +30%": "ベスト範囲+30%",
   "Zona perfecta +60%": "ベスト範囲+60%",
+  "Espacio": "スペース",
+  "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>キーボード：</strong>Tabでキッチンとカウンターを切りかえ。スペースはメインのボタンと同じ。1～9で生地・具材・たたみ方をえらび、カウンターではお客さん1・2・3に対応。← →でタブを切りかえ、Zで元に戻す、Fで鉄板を切りかえ、Mでメニュー、Escでウィンドウを閉じるか設定を開きます。",
 };

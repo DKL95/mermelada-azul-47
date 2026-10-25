@@ -1198,4 +1198,6 @@ export default {
   "Zarzamoras enteras, moradas casi negras.": "Ganze Brombeeren, lila bis fast schwarz.",
   "Zona perfecta +30%": "Perfekte Zone +30 %",
   "Zona perfecta +60%": "Perfekte Zone +60 %",
+  "Espacio": "Leertaste",
+  "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>Tastatur:</strong> Tab wechselt zwischen Küche und Theke. Die Leertaste macht dasselbe wie der Hauptknopf. Mit 1–9 wählst du Teig, Zutat oder Faltung und bedienst an der Theke Kunde 1, 2 oder 3. ← → wechseln den Reiter, Z macht rückgängig, F wechselt die Platte, M öffnet die Speisekarte und Esc schließt Fenster oder öffnet die Einstellungen.",
 };

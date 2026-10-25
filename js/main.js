@@ -21,6 +21,7 @@ import { aplicarDecoracion } from './local.js';
 import { reloj } from './sinfin.js';
 import { iniciarTutorial } from './tutorial.js';
 import { esAndroid } from './plataforma.js';
+import './teclado.js';
 import { t, IDIOMAS, idioma, cambiarIdioma, traducirPagina } from './idioma.js';
 
 // Cada pestaña es un módulo con montar / alMostrar / alOcultar
@@ -337,6 +338,7 @@ function abrirAyuda() {
       <p>🛍️ ${t('<strong>Boutique:</strong> ropa, accesorios y disfraces para tu personaje. Pruébatelos antes de comprar, con pesos o con Chispitas.')}</p>
       <p>✨ ${t('<strong>Chispitas:</strong> moneda especial. Se ganan con crepas perfectas, logros y el premio diario, y sirven para comprar en la tienda. Toca el ✨ de arriba para verlas.')}</p>
       <p>⭐ ${t('Entre mejor quede, más propina y más estrellas de reputación.')}</p>
+      ${document.documentElement.classList.contains('con-teclado') ? `<p>⌨️ ${t('<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.')}</p>` : ''}
       <p style="color:var(--texto-suave);font-size:14px">${t('¿Quieres repetir el tutorial? Está en ⚙️ Ajustes.')}</p>`,
     botones: [{ texto: t('¡Entendido!'), clase: 'btn-primario' }],
   });

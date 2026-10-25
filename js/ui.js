@@ -8,6 +8,7 @@ import { t } from './idioma.js';
 
 const capaModal = () => document.getElementById('capa-modal');
 let cerrarActual = null; // función para cerrar la ventana abierta (si hay)
+let cerrableActual = false; // ¿se puede cerrar sin elegir un botón?
 
 /**
  * Muestra una ventana emergente.
@@ -69,9 +70,18 @@ export function mostrarModal({ titulo, contenido, botones = [{ texto: t('Cerrar'
     }
 
     cerrarActual = cerrar;
+    cerrableActual = cerrarAlTocarFuera;
     capa.hidden = false;
     window.dispatchEvent(new Event('modal:abierto')); // pausa el reloj del día
   });
+}
+
+/** Cierra la ventana abierta como si tocaran fuera (tecla Esc).
+ *  Las que no se cierran al tocar fuera, tampoco con esto. */
+export function cerrarModal() {
+  if (!cerrarActual || !cerrableActual) return false;
+  cerrarActual(null);
+  return true;
 }
 
 /** Pregunta Sí/No. Devuelve true si confirma. */

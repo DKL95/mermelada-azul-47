@@ -264,3 +264,65 @@
   .modal { max-width: 520px; padding: 24px; }
   .modal h2 { font-size: 25px; }
 }
+
+/* ===== Mouse (PC): los botones reaccionan al pasar encima ===== */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover, .btn-icono:hover, .btn-buzon:hover, .tab:hover, .tab-bandeja:hover,
+  .btn-ingrediente:hover, .chip-masa:hover, .btn-doblado:hover, .opcion-crepa:hover,
+  .estacion:hover, .fogon-btn:hover, .pildora:hover, #ind-chispitas:hover { filter: brightness(1.07); }
+  .cliente:hover .cuerpo-cliente { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9)); }
+}
+
+/* ===== Teclado (PC): cada botón muestra su tecla (ver js/teclado.js) ===== */
+.con-teclado #controles .btn-primario,
+.con-teclado .chip-masa, .con-teclado .btn-doblado, .con-teclado .opcion-crepa,
+.con-teclado #btn-abrir, .con-teclado .tarjeta-pedido [data-a="tomar"],
+.con-teclado #controles [data-tecla], .con-teclado #btn-ajustes { position: relative; }
+
+.con-teclado #controles .btn-primario::after,
+.con-teclado #controles [data-tecla]::after,
+.con-teclado #btn-abrir::after,
+.con-teclado .tarjeta-pedido [data-a="tomar"]::after,
+.con-teclado #controles :is(.chip-masa, .btn-ingrediente, .btn-doblado):nth-of-type(-n+9)::after,
+.con-teclado .opcion-crepa:nth-of-type(-n+9)::after,
+.con-teclado .cliente::after,
+.con-teclado #barra-tabs .tab:not(.activa)::after,
+.con-teclado #btn-ajustes::after,
+.con-teclado #btn-menu::after,
+.con-teclado .fogon-btn:not(.activo):not([hidden])::after {
+  position: absolute;
+  top: -7px;
+  left: -5px;
+  z-index: 2;
+  min-width: 20px;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: #2A2A4A;
+  color: #FFFFFF;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.con-teclado #controles .btn-primario::after,
+.con-teclado #btn-abrir::after,
+.con-teclado .tarjeta-pedido [data-a="tomar"]::after { content: var(--tecla-espacio); text-transform: none; }
+.con-teclado #controles [data-tecla]::after { content: attr(data-tecla); }
+.con-teclado .cliente::after { content: attr(data-tecla); top: auto; bottom: 30%; left: 50%; transform: translateX(-50%); font-size: 14px; padding: 2px 8px; }
+.con-teclado #barra-tabs .tab:not(.activa)::after { content: 'Tab'; text-transform: none; top: 6px; left: 10px; }
+.con-teclado #btn-ajustes::after { content: 'Esc'; text-transform: none; top: auto; bottom: -6px; left: -8px; }
+.con-teclado #btn-menu::after { content: 'M'; }
+.con-teclado .fogon-btn:not(.activo):not([hidden])::after { content: 'F'; }
+
+/* Números: cuentan los botones de cada fila (masa, ingredientes, doblados, crepas de la charola) */
+.con-teclado #controles .chips-masa,
+.con-teclado #controles .bandeja-ingredientes,
+.con-teclado #controles .opciones-doblado,
+.con-teclado .opciones-charola { counter-reset: tecla; }
+.con-teclado #controles :is(.chip-masa, .btn-ingrediente, .btn-doblado),
+.con-teclado .opcion-crepa { counter-increment: tecla; }
+.con-teclado #controles :is(.chip-masa, .btn-ingrediente, .btn-doblado):nth-of-type(-n+9)::after,
+.con-teclado .opcion-crepa:nth-of-type(-n+9)::after { content: counter(tecla); }

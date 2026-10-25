@@ -162,6 +162,7 @@ function crearElemento(c) {
   const el = document.createElement('div');
   el.className = 'cliente caminando' + (c.tipo === 'nino' ? ' nino' : '');
   el.dataset.tipo = c.tipo; // cada tipo espera a su manera (ver escenas.css)
+  el.dataset.tecla = c.lugar + 1; // teclas 1, 2 y 3 (teclado.js)
   el.style.left = (c.lugar < LUGARES / 2 ? -20 : 120) + '%'; // entra por el lado más cercano
   el.innerHTML = `
     <div class="sobre-cabeza"></div>

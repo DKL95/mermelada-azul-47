@@ -223,7 +223,7 @@ function irA(nueva) {
   pintarFogones();
 }
 
-/** Pone botones en el panel. botones: [{texto, clase, id, alTocar}] */
+/** Pone botones en el panel. botones: [{texto, clase, id, tecla, alTocar}] (tecla: ver teclado.js) */
 function botones(lista) {
   const fila = document.createElement('div');
   fila.className = 'fila-botones';
@@ -231,6 +231,7 @@ function botones(lista) {
     const btn = document.createElement('button');
     btn.className = 'btn ' + (b.clase || '');
     if (b.id) btn.id = b.id;
+    if (b.tecla) btn.dataset.tecla = b.tecla;
     btn.innerHTML = b.texto;
     btn.addEventListener('click', () => { sonidos.click(); b.alTocar(); });
     fila.appendChild(btn);
@@ -488,7 +489,7 @@ function panelBandeja() {
   }
   $panel.appendChild(bandeja);
 
-  const lista = [{ texto: `↶ ${t('Deshacer')}`, alTocar: deshacer }];
+  const lista = [{ texto: `↶ ${t('Deshacer')}`, tecla: 'z', alTocar: deshacer }];
   if (est === 'decorar') lista.push({ texto: `← ${t('Toppings')}`, alTocar: () => irA('toppings') });
   lista.push({ texto: SIGUIENTE[est].texto, clase: 'btn-primario', alTocar: () => irA(SIGUIENTE[est].ir) });
   $panel.appendChild(botones(lista));
