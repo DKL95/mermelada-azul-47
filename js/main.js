@@ -20,7 +20,7 @@ import { abrirBoutique } from './boutique.js';
 import { aplicarDecoracion } from './local.js';
 import { reloj } from './sinfin.js';
 import { iniciarTutorial } from './tutorial.js';
-import { esAndroid } from './plataforma.js';
+import { esAndroid, esSteam } from './plataforma.js';
 import './teclado.js';
 import { t, IDIOMAS, idioma, cambiarIdioma, traducirPagina } from './idioma.js';
 
@@ -392,6 +392,10 @@ function iniciar() {
   // Dentro de la app de Android: pagos con Google Play
   if (esAndroid) {
     import('./pagos-android.js').then((m) => m.iniciarPagos()).catch((err) => console.warn('Pagos no disponibles', err));
+  }
+  // En la PC: los logros también se ganan en Steam
+  if (esSteam) {
+    import('./steam.js').then((m) => m.iniciarSteam()).catch((err) => console.warn('Logros de Steam no disponibles', err));
   }
 
   // Service worker (juego sin internet). Solo funciona en http(s), no en file://

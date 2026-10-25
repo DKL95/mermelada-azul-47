@@ -10,13 +10,58 @@
    arriba (..); ya empaquetado, la copia que va dentro del programa
    (resources/juego).
    ============================================================ */
-const { app, BrowserWindow, protocol, net, shell, Menu } = require('electron');
+const { app, BrowserWindow, protocol, net, shell, Menu, ipcMain } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const RAIZ = app.isPackaged
   ? path.join(process.resourcesPath, 'juego')
   : path.join(__dirname, '..');
+
+// ===== Steam =====
+// 480 es "Spacewar", la app de prueba de Valve: sirve para probar los logros
+// mientras Steam no te da el tuyo. Cuando lo tengas, cámbialo aquí
+// (ver GUIA_STEAM.md).
+const STEAM_APP_ID = 480;
+const ES_PRUEBA = STEAM_APP_ID === 480;
+
+let steamworks = null, steam = null;
+try {
+  steamworks = require('steamworks.js');
+} catch (err) {
+  console.warn('steamworks.js no se pudo cargar:', err.message);
+}
+
+// Ya publicado: si alguien abre el .exe sin Steam, Steam lo vuelve a abrir
+// (así cuenta las horas y funcionan los logros).
+if (steamworks && app.isPackaged && !ES_PRUEBA) {
+  try {
+    if (steamworks.restartAppIfNecessary(STEAM_APP_ID)) app.exit(0);
+  } catch (err) {
+    console.warn('Steam no respondió:', err.message);
+  }
+}
+
+function iniciarSteam() {
+  if (!steamworks) return;
+  try {
+    steam = steamworks.init(STEAM_APP_ID);
+  } catch (err) {
+    // Sin Steam abierto el juego funciona igual, solo sin logros
+    console.warn('Steam no está abierto: el juego sigue sin logros.', err.message);
+  }
+}
+
+// El juego avisa de cada logro ganado (js/steam.js → preload.js)
+ipcMain.on('steam:logro', (_ev, nombre) => {
+  if (!steam || typeof nombre !== 'string' || !/^LOGRO_[A-Z0-9_]{1,60}$/.test(nombre)) return;
+  try {
+    if (steam.achievement.isActivated(nombre)) return;
+    if (steam.achievement.activate(nombre)) steam.stats.store();
+  } catch (err) {
+    console.warn('No se pudo dar el logro', nombre, err.message);
+  }
+});
 
 // Antes de que arranque Electron: app:// se porta como un sitio normal (https)
 protocol.registerSchemesAsPrivileged([
@@ -93,8 +138,16 @@ function crearVentana() {
 Menu.setApplicationMenu(null);
 
 app.whenReady().then(() => {
+  iniciarSteam();
   servirJuego();
   crearVentana();
 });
 
 app.on('window-all-closed', () => app.quit());
+
+// La capa de Steam (Mayús+Tab) encima del juego
+try {
+  steamworks?.electronEnableSteamOverlay();
+} catch (err) {
+  console.warn('Sin capa de Steam:', err.message);
+}

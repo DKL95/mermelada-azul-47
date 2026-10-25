@@ -7,9 +7,58 @@
   "private": true,
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "logros": "electron herramientas/logros.js",
+    "empaquetar": "electron-builder --win --dir"
   },
   "devDependencies": {
-    "electron": "45.0.0"
+    "electron": "45.0.0",
+    "electron-builder": "26.17.0"
+  },
+  "dependencies": {
+    "steamworks.js": "0.4.0"
+  },
+  "build": {
+    "appId": "mx.creepycrepas.juego",
+    "productName": "Creepy Crepas",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/steamworks.js/**"
+    ],
+    "extraResources": [
+      {
+        "from": "..",
+        "to": "juego",
+        "filter": [
+          "index.html",
+          "privacidad.html",
+          "manifest.webmanifest",
+          "css/**",
+          "js/**",
+          "assets/**"
+        ]
+      }
+    ],
+    "win": {
+      "target": "dir",
+      "icon": "../assets/icono-512.png"
+    },
+    "electronLanguages": [
+      "es",
+      "es-419",
+      "en-US",
+      "fr",
+      "pt-BR",
+      "de",
+      "ja",
+      "ko"
+    ]
   }
 }
