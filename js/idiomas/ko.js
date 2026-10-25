@@ -1200,4 +1200,9 @@ export default {
   "Zona perfecta +60%": "완벽 구간 +60%",
   "Espacio": "스페이스",
   "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>키보드:</strong> Tab으로 주방과 카운터를 오가요. 스페이스는 메인 버튼과 같아요. 1–9로 반죽, 재료, 접기를 고르고, 카운터에서는 손님 1, 2, 3을 맞이해요. ← →는 탭 이동, Z는 되돌리기, F는 철판 바꾸기, M은 메뉴, Esc는 창을 닫거나 설정을 열어요.",
+  "Dinero ahorita": "지금 가진 돈",
+  "Dinero ganado en total": "지금까지 번 돈",
+  "Su dinero y sus logros aparecen cuando juegue con la versión nueva.": "새 버전으로 플레이하면 돈과 업적이 표시돼요.",
+  "Ver el perfil de {nombre}": "{nombre}님의 프로필 보기",
+  "Volver a la tabla": "순위표로 돌아가기",
 };

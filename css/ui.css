@@ -147,15 +147,25 @@
 .ranking-cuerpo { margin-top: 12px; min-height: 120px; }
 .ranking-vacio { text-align: center; color: var(--texto-suave); padding: 24px 8px; }
 .ranking-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.ranking-lista li {
+.ranking-lista li { border-radius: var(--radio-chico); background: var(--blanco); }
+/* Toda la fila es un botón: abre el mini perfil */
+.ranking-fila {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   padding: 8px 12px;
-  border-radius: var(--radio-chico);
-  background: var(--blanco);
+  border: none;
+  border-radius: inherit;
+  background: none;
+  color: inherit;
+  font: inherit;
   font-size: 16px;
+  text-align: left;
+  cursor: pointer;
 }
+.ranking-fila:active { background: rgba(27, 42, 85, 0.06); }
+@media (hover: hover) and (pointer: fine) { .ranking-fila:hover { background: rgba(27, 42, 85, 0.05); } }
 .ranking-lista li.yo { background: #FFE3F1; box-shadow: inset 0 0 0 2px var(--candy); }
 .ranking-pos { flex: 0 0 28px; text-align: center; font-weight: 700; }
 .ranking-nombre { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -258,6 +268,31 @@
 .ranking-cara svg { width: 100%; height: 100%; display: block; }
 .ranking-cara.sin-cara { font-weight: 700; color: var(--texto-suave); }
 #rk-vista button { font-size: 13px; }
+
+/* Mini perfil de un jugador (al tocarlo en la tabla) */
+.perfil { display: flex; gap: 14px; align-items: center; }
+.perfil-figura {
+  flex: 0 0 110px; height: 190px; border-radius: var(--radio-chico); background: var(--fondo-2);
+  display: flex; align-items: flex-end; justify-content: center; padding: 6px 0;
+}
+.perfil-figura svg { width: 100%; height: 100%; display: block; }
+.perfil-inicial { align-self: center; font-size: 44px; font-weight: 700; color: var(--texto-suave); }
+.perfil-datos { flex: 1; min-width: 0; }
+.perfil-datos .ranking-vacio { padding: 12px 0; }
+.perfil-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; font-size: 14px; }
+.perfil-lista li {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  padding: 5px 10px; border-radius: var(--radio-chico); background: var(--blanco);
+}
+.perfil-lista span { min-width: 0; }
+.perfil-lista b { white-space: nowrap; }
+.perfil-nota { margin-top: 8px; }
+/* Celular: el personaje arriba y los números abajo, a todo lo ancho */
+@media (max-width: 480px) {
+  .perfil { flex-direction: column; align-items: stretch; gap: 10px; }
+  .perfil-figura { flex: 0 0 150px; height: 150px; }
+  .perfil-figura svg { width: auto; }
+}
 
 /* Tabletas: ventanas más anchas */
 @media (min-width: 600px) and (min-height: 600px) {

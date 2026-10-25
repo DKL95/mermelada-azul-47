@@ -1200,4 +1200,9 @@ export default {
   "Zona perfecta +60%": "Zone parfaite +60 %",
   "Espacio": "Espace",
   "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>Clavier :</strong> Tab passe de la Cuisine au Comptoir. Espace fait comme le bouton principal. Avec 1–9 tu choisis la pâte, l’ingrédient ou le pliage, et au Comptoir tu sers le client 1, 2 ou 3. ← → changent d’onglet, Z annule, F change de plaque, M ouvre le menu et Échap ferme les fenêtres ou ouvre les Réglages.",
+  "Dinero ahorita": "Argent actuel",
+  "Dinero ganado en total": "Argent gagné au total",
+  "Su dinero y sus logros aparecen cuando juegue con la versión nueva.": "Son argent et ses succès apparaîtront quand cette personne jouera à la nouvelle version.",
+  "Ver el perfil de {nombre}": "Voir le profil de {nombre}",
+  "Volver a la tabla": "Retour au classement",
 };

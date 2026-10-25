@@ -10,6 +10,9 @@
    Además, al abrir el juego (y cada vez que cambia) el personaje se
    sube a la tabla de caritas, para salir con su carita sin esperar
    a terminar un día (supabase-v3.sql).
+   Y cuando cambian sus números (dinero, logros…), se suben a la tabla
+   de perfiles: al tocar a alguien en la tabla se abre su mini perfil
+   (supabase-v4.sql).
 
    El jugador (id al azar + nombre) se guarda aparte de la partida:
    si reinicias la partida sigues siendo el mismo jugador.
@@ -25,6 +28,7 @@ import { on } from './turno.js';
 import { mostrarModal, aviso, dinero } from './ui.js';
 import { sonidos } from './audio.js';
 import { t } from './idioma.js';
+import { LOGROS } from './data/logros.js';
 
 const CLAVE_JUGADOR = 'creperia.jugador';
 const CLAVE_PENDIENTES = 'creperia.pendientes';
@@ -32,6 +36,7 @@ const MAX_NOMBRE = 20;
 const MAX_PENDIENTES = 60;  // días o partidas guardados sin conexión (los más viejos se tiran)
 const CLAVE_PERSONAJE = 'creperia.personaje';
 const CLAVE_CARA = 'creperia.caraEnviada'; // el último personaje que se subió (para no repetirlo)
+const CLAVE_PERFIL = 'creperia.perfilEnviado'; // los últimos números del perfil que se subieron
 // Lo que se manda del personaje (personaje.js lo revisa al dibujarlo)
 const CAMPOS_PERSONAJE = ['sexo', 'piel', 'estatura', 'complexion', 'peinado', 'pelo', 'vello', 'arriba', 'colorArriba',
   'colorArriba2', 'estampado', 'abajo', 'colorAbajo', 'calzado', 'colorCalzado', 'acc', 'colorAcc'];
@@ -145,7 +150,7 @@ async function enviarPendientes() {
   if (!activa() || enviando || !navigator.onLine) return;
   const j = jugador();
   const pendientes = leer(CLAVE_PENDIENTES, []);
-  if (!j.nombre || !pendientes.length) { enviarCara(); return; }
+  if (!j.nombre || !pendientes.length) { enviarCara(); enviarPerfil(); return; }
 
   enviando = true;
   const personaje = personajeParaTabla();
@@ -179,6 +184,7 @@ async function enviarPendientes() {
   if (enviados.size) escribir(CLAVE_PENDIENTES, leer(CLAVE_PENDIENTES, []).filter((p) => !enviados.has(p.envio)));
   enviando = false;
   enviarCara();
+  enviarPerfil();
 }
 
 let mandandoCara = false;
@@ -203,6 +209,45 @@ async function enviarCara() {
     console.warn('No se pudo subir el personaje; se reintenta después.', err);
   }
   mandandoCara = false;
+}
+
+/** Los números del mini perfil, de la partida de este teléfono. */
+function perfilParaTabla() {
+  const e = estado();
+  const limitar = (v, min, max) => Math.min(Math.max(Math.round(v) || 0, min), max);
+  return {
+    dinero: limitar(e.dinero, -1000000000, 1000000000),
+    dinero_total: limitar(e.stats.dineroTotal, 0, 2000000000),
+    logros: limitar(e.logros.length, 0, 1000),
+    dia: limitar(e.dia, 1, 100000),
+    vendidas: limitar(e.records.crepasVendidas, 0, 10000000),
+  };
+}
+
+let mandandoPerfil = false;
+let conPerfiles = true; // se apaga si la base todavía no tiene la tabla (falta supabase-v4.sql)
+
+/** Sube los números del perfil si cambiaron desde la última vez. */
+async function enviarPerfil() {
+  if (!activa() || mandandoPerfil || !conPerfiles || !navigator.onLine) return;
+  const j = jugador();
+  if (!j.nombre) return;
+  const perfil = perfilParaTabla();
+  const firma = JSON.stringify([j.id, perfil]);
+  if (leer(CLAVE_PERFIL, '') === firma) return;
+  mandandoPerfil = true;
+  try {
+    await pedir('perfiles', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ jugador_id: j.id, ...perfil }),
+    });
+    escribir(CLAVE_PERFIL, firma);
+  } catch (err) {
+    if (/perfiles/i.test(err.message)) conPerfiles = false;
+    console.warn('No se pudo subir el perfil; se reintenta después.', err);
+  }
+  mandandoPerfil = false;
 }
 
 // ---------- Ventana de la tabla ----------
@@ -268,10 +313,12 @@ function filasHTML(filas, miId, v, dibujar) {
   const medallas = ['🥇', '🥈', '🥉'];
   return `<ol class="ranking-lista">${filas.map((f, i) => `
     <li class="${f.jugador_id === miId ? 'yo' : ''}">
-      <span class="ranking-pos">${medallas[i] ?? i + 1}</span>
-      ${carita(f, dibujar)}
-      <span class="ranking-nombre">${escapar(f.nombre)}<small>${v.sub(f)}</small></span>
-      <b>${v.valor(f)}</b>
+      <button class="ranking-fila" data-i="${i}" aria-label="${escapar(t('Ver el perfil de {nombre}', { nombre: f.nombre }))}">
+        <span class="ranking-pos">${medallas[i] ?? i + 1}</span>
+        ${carita(f, dibujar)}
+        <span class="ranking-nombre">${escapar(f.nombre)}<small>${v.sub(f)}</small></span>
+        <b>${v.valor(f)}</b>
+      </button>
     </li>`).join('')}</ol>`;
 }
 
@@ -288,7 +335,61 @@ async function leerTabla(v) {
   }
 }
 
-export async function abrirRanking() {
+/** La fila de un solo jugador en una tabla o vista de la base (o null si no hay). */
+async function leerDe(tabla, columnas, id, extra = '') {
+  const filas = await pedir(`${tabla}?select=${columnas}&jugador_id=eq.${encodeURIComponent(id)}${extra}&limit=1`);
+  return filas?.[0] ?? null;
+}
+
+/** Mini perfil de un jugador de la tabla. Con "Volver" se regresa a la tabla. */
+async function abrirPerfil(fila) {
+  const { personajeDesdeTabla } = await import('./personaje.js');
+  const id = fila.jugador_id;
+  const soyYo = id === jugador().id;
+  const figura = (personaje) => personajeDesdeTabla(personaje)
+    || `<span class="perfil-inicial">${escapar(Array.from(fila.nombre)[0] || '?')}</span>`;
+  const cont = document.createElement('div');
+  cont.className = 'perfil';
+  cont.innerHTML = `
+    <div class="perfil-figura">${figura(fila.personaje)}</div>
+    <div class="perfil-datos"><p class="ranking-vacio">${t('Cargando…')} ⏳</p></div>`;
+  const datos = cont.querySelector('.perfil-datos');
+
+  mostrarModal({
+    titulo: fila.nombre, // va como texto, no como HTML
+    contenido: cont,
+    botones: [{ texto: `← ${t('Volver a la tabla')}`, clase: 'btn-primario', valor: 'volver' }],
+  }).then((r) => { if (r === 'volver') abrirRanking({ conservar: true }); });
+
+  // De la tabla ya leída, o se pide solo lo de este jugador
+  const deCache = (tabla) => cache[tabla]?.find((f) => f.jugador_id === id);
+  const [dias, sinfin, perfil] = await Promise.all([
+    deCache('tabla_jugadores') ?? leerDe('tabla_jugadores', 'mejor_dia', id).catch(() => null),
+    deCache('tabla_sinfin') ?? leerDe('tabla_sinfin', 'mejor', id).catch(() => null),
+    // Tus números salen de este teléfono (los de la base pueden ir atrasados)
+    soyYo ? perfilParaTabla()
+      : leerDe('perfiles', 'dinero,dinero_total,logros,dia,vendidas', id, '&order=creado.desc').catch(() => null),
+  ]);
+  if (!cont.isConnected) return; // ya la cerró
+
+  const dato = (emoji, etiqueta, valor) => `<li><span>${emoji} ${etiqueta}</span><b>${valor}</b></li>`;
+  const numero = (n) => n.toLocaleString('es-MX');
+  const lista = [];
+  if (perfil) {
+    lista.push(dato('💰', t('Dinero ahorita'), dinero(perfil.dinero)));
+    lista.push(dato('🏦', t('Dinero ganado en total'), dinero(perfil.dinero_total)));
+    lista.push(dato('🏅', t('Logros'), `${perfil.logros} / ${LOGROS.length}`));
+    lista.push(dato('📅', t('Día'), numero(perfil.dia)));
+    lista.push(dato('🥞', t('Crepas vendidas'), numero(perfil.vendidas)));
+  }
+  if (dias) lista.push(dato('🏆', t('Mejor día'), dinero(dias.mejor_dia)));
+  if (sinfin) lista.push(dato('♾️', t('Sin fin'), t('{n} pts', { n: numero(sinfin.mejor) })));
+  datos.innerHTML = `
+    ${lista.length ? `<ul class="perfil-lista">${lista.join('')}</ul>` : ''}
+    ${perfil ? '' : `<p class="ajuste-nota perfil-nota">${t('Su dinero y sus logros aparecen cuando juegue con la versión nueva.')}</p>`}`;
+}
+
+export async function abrirRanking({ conservar = false } = {}) {
   if (!activa()) { aviso(t('La tabla en línea no está configurada')); return; }
   if (!tieneNombre() && !(await pedirNombre())) return;
   enviarPendientes();
@@ -329,6 +430,10 @@ export async function abrirRanking() {
     const filas = [...cache[v.tabla]].sort((a, b) => b[v.orden] - a[v.orden]).slice(0, 50)
       .map((f) => (f.personaje && f.jugador_id !== jugador().id ? f : { ...f, personaje: personajeDe(f.jugador_id) || f.personaje }));
     cuerpo.innerHTML = filasHTML(filas, jugador().id, v, caritaDesdeTabla);
+    cuerpo.querySelectorAll('.ranking-fila').forEach((b) => b.addEventListener('click', () => {
+      sonidos.click();
+      abrirPerfil(filas[b.dataset.i]);
+    }));
     // Si a alguien le falta la carita, se busca en la otra tabla (y se vuelve a pintar)
     const otra = Object.values(VISTAS).find((o) => o.tabla !== v.tabla);
     if (filas.some((f) => !f.personaje) && !cache[otra.tabla]) {
@@ -346,8 +451,8 @@ export async function abrirRanking() {
     await pedirNombre();
     abrirRanking();
   });
-  // Cada vez que se abre, datos frescos
-  for (const k of Object.keys(cache)) delete cache[k];
+  // Cada vez que se abre, datos frescos (menos al regresar de un perfil)
+  if (!conservar) for (const k of Object.keys(cache)) delete cache[k];
   mostrarModal({ titulo: `🏆 ${t('Tabla en línea')}`, contenido: cont, botones: [{ texto: t('Cerrar'), clase: 'btn-primario' }] });
   pintar();
 }
@@ -359,5 +464,5 @@ window.addEventListener('online', enviarPendientes);
 // Al cambiar el personaje (un rato después, por si sigue probándose cosas) y al salir del juego
 let esperaCara = 0;
 window.addEventListener('personaje:cambio', () => { clearTimeout(esperaCara); esperaCara = setTimeout(enviarCara, 3000); });
-document.addEventListener('visibilitychange', () => { if (document.hidden) enviarCara(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { enviarCara(); enviarPerfil(); } });
 enviarPendientes();

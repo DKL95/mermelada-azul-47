@@ -1199,4 +1199,9 @@ export default {
   "Zona perfecta +60%": "Perfect zone +60%",
   "Espacio": "Space",
   "<strong>Teclado:</strong> Tab cambia entre Cocina y Venta. Espacio hace lo del botón principal. Con 1–9 eliges masa, ingrediente o doblado, y en Venta atiendes al cliente 1, 2 o 3. ← → cambian de pestañita, Z deshace, F cambia de plancha, M abre el menú y Esc cierra ventanas o abre Ajustes.": "<strong>Keyboard:</strong> Tab switches between Kitchen and Counter. Space does what the main button does. Use 1–9 to pick batter, ingredient or fold, and at the Counter to serve customer 1, 2 or 3. ← → change tabs, Z undoes, F switches griddle, M opens the menu and Esc closes windows or opens Settings.",
+  "Dinero ahorita": "Money right now",
+  "Dinero ganado en total": "Total money earned",
+  "Su dinero y sus logros aparecen cuando juegue con la versión nueva.": "Their money and achievements show up once they play the new version.",
+  "Ver el perfil de {nombre}": "See {nombre}'s profile",
+  "Volver a la tabla": "Back to the board",
 };

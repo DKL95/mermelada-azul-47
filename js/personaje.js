@@ -848,6 +848,12 @@ export function caritaDesdeTabla(x) {
   return p ? dibujarPersonaje(p, { vista: 'cara' }) : '';
 }
 
+/** El personaje de cuerpo entero, para el mini perfil ('' si no se puede). */
+export function personajeDesdeTabla(x) {
+  const p = personajeSeguro(x);
+  return p ? dibujarPersonaje(p, { vista: 'completo', emocion: 'feliz' }) : '';
+}
+
 // ============================================================
 //  Creador
 // ============================================================
