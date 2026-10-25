@@ -413,6 +413,7 @@
   background: linear-gradient(#CDEBF5, #E8F6FA);
 }
 .calle { position: absolute; inset: 0; }
+.vecino { display: none; }
 .calle svg { width: 100%; height: 100%; display: block; }
 .fachada { flex: 0 0 auto; position: relative; }
 .fachada svg { width: 100%; display: block; }
@@ -1378,4 +1379,9 @@
   #app[data-cielo="atardecer"] #pantalla-venta { background: linear-gradient(#FF9A76, #FFD3A5 60%, #FFE9D6); }
   #app[data-cielo="noche"] #pantalla-venta { background: linear-gradient(#1B2A55, #3B4F86 70%, #5A6FA8); }
   .venta { width: min(100%, 74vh); margin: 0 auto; box-shadow: 0 0 24px rgba(27,42,85,0.12); }
+  /* Edificios vecinos en el espacio que sobra a los lados del local */
+  .vecino { display: block; position: absolute; top: 0; bottom: 0; width: calc(50% - min(50%, 37vh)); pointer-events: none; }
+  .vecino.izq { left: 0; }
+  .vecino.der { right: 0; }
+  .vecino svg { width: 100%; height: 100%; display: block; }
 }

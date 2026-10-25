@@ -163,6 +163,73 @@ export function svgCalle(op = {}) {
   </svg>`;
 }
 
+/** Edificio vecino a un lado del local. Solo se ve con la pantalla acostada
+ *  (tableta y PC), donde el local va centrado y sobra lugar a los lados.
+ *  Se dibuja como el de la izquierda (pegado al local en x=400) y el de la
+ *  derecha es el mismo en espejo, con otros colores. */
+export function svgVecino(lado, op = {}) {
+  const SUELO = 560;
+  const izq = lado === 'izq';
+  const noche = op.decor?.cielo === 'noche';
+  const lluvia = op.clima === 'lluvia';
+  const muro = izq ? '#FFC2E2' : '#C9B8FF';
+  const muroOscuro = izq ? '#F3A6CE' : '#B19EF0';
+  const colorToldo = izq ? '#FF8FB8' : '#8FD3FF';
+  const vidrio = (i) => (noche ? (i % 3 ? '#FFE59A' : '#5A6FA8') : '#FFFFFF');
+  let ventanas = '';
+  for (let f = 0, i = 0; f < 4; f++) {
+    for (let c = 0; c < 3; c++, i++) {
+      const x = 135 + c * 88, y = 150 + f * 64;
+      ventanas += `<rect x="${x}" y="${y}" width="48" height="44" rx="6" fill="${vidrio(i + f)}" opacity="0.92"/>
+        <rect x="${x - 4}" y="${y + 42}" width="56" height="6" rx="3" fill="${muroOscuro}"/>`;
+    }
+  }
+  let ondas = '';
+  for (let i = 0; i < 7; i++) {
+    const x = 118 + i * 40;
+    ondas += `<rect x="${x}" y="402" width="40" height="26" fill="${i % 2 ? '#FFFFFF' : colorToldo}"/>
+      <path d="M${x} 428 a20 9 0 0 0 40 0 z" fill="${i % 2 ? '#FFFFFF' : colorToldo}"/>`;
+  }
+  const nube = (x, y, s) => `
+    <g transform="translate(${x} ${y}) scale(${s})" fill="${lluvia ? '#B9C4D6' : '#FFFFFF'}" opacity="${noche ? 0.25 : 0.9}">
+      <ellipse cx="0" cy="0" rx="22" ry="12"/><ellipse cx="18" cy="-6" rx="16" ry="12"/><ellipse cx="34" cy="2" rx="16" ry="10"/>
+    </g>`;
+  const estrellas = noche
+    ? [[40, 30], [150, 60], [260, 24], [330, 80], [90, 96]].map(([x, y], i) =>
+      `<circle cx="${x}" cy="${y}" r="${i % 2 ? 1.6 : 2.2}" fill="#FFFFFF"><animate attributeName="opacity" values="1;0.3;1" dur="${2 + (i % 3)}s" repeatCount="indefinite"/></circle>`).join('')
+    : '';
+  const dibujo = `
+    ${estrellas}${nube(izq ? 40 : 60, 60, 1.3)}${nube(220, 30, 0.9)}
+    <!-- edificio -->
+    <rect x="100" y="112" width="320" height="${SUELO - 112}" fill="${muro}"/>
+    <rect x="90" y="100" width="330" height="18" rx="5" fill="${muroOscuro}"/>
+    ${ventanas}
+    <!-- local de abajo: aparador, puerta y toldo -->
+    <rect x="128" y="440" width="170" height="${SUELO - 440}" rx="6" fill="${noche ? '#FFE9B0' : '#E8F6FA'}"/>
+    <path d="M150 480 h126 M150 510 h126" stroke="${muroOscuro}" stroke-width="3"/>
+    <rect x="316" y="446" width="62" height="${SUELO - 446}" rx="6" fill="${muroOscuro}"/>
+    <circle cx="328" cy="${SUELO - 56}" r="4" fill="#FFD84D"/>
+    ${ondas}
+    <!-- árbol y farol en la banqueta -->
+    <g transform="translate(58 ${SUELO})">
+      <rect x="-7" y="-70" width="14" height="72" rx="5" fill="#A9795A"/>
+      <circle cx="0" cy="-104" r="46" fill="#9ED9B5"/><circle cx="-30" cy="-80" r="30" fill="#8FD0A8"/><circle cx="30" cy="-82" r="32" fill="#8FD0A8"/>
+    </g>
+    <g transform="translate(110 ${SUELO})">
+      <rect x="-3" y="-150" width="6" height="150" rx="2" fill="#3B4F86"/>
+      <rect x="-12" y="-168" width="24" height="22" rx="6" fill="#3B4F86"/>
+      <rect x="-8" y="-164" width="16" height="14" rx="4" fill="#FFE59A"/>
+    </g>
+    <!-- banqueta -->
+    <rect x="0" y="${SUELO}" width="400" height="${600 - SUELO}" fill="${lluvia ? '#D3DDEA' : '#E6EEF8'}"/>
+    <rect x="0" y="${SUELO}" width="400" height="3" fill="rgba(27,42,85,0.1)"/>
+    ${[60, 160, 260, 360].map((x) => `<rect x="${x}" y="${SUELO}" width="3" height="${600 - SUELO}" fill="rgba(27,42,85,0.08)"/>`).join('')}`;
+  return `
+  <svg viewBox="0 0 400 600" preserveAspectRatio="${izq ? 'xMaxYMax' : 'xMinYMax'} slice" aria-hidden="true">
+    ${izq ? dibujo : `<g transform="translate(400 0) scale(-1 1)">${dibujo}</g>`}
+  </svg>`;
+}
+
 /** Banderines colgando de farol a farol. forma: 'triangulo' | 'picado' | 'corazon' */
 function banderines(colores, forma) {
   const n = 13;

@@ -36,11 +36,21 @@ function servirJuego() {
   });
 }
 
+// La pantalla está pensada para verse como de 1200×720: en ventanas más
+// grandes todo crece parejo (como en un juego de consola) y en más chicas
+// se encoge un poco, en vez de quedar diminuto o encimado.
+const BASE = { ancho: 1200, alto: 720 };
+function ajustarZoom(ventana) {
+  const [ancho, alto] = ventana.getContentSize();
+  const zoom = Math.min(ancho / BASE.ancho, alto / BASE.alto);
+  ventana.webContents.setZoomFactor(Math.min(3, Math.max(0.75, zoom)));
+}
+
 function crearVentana() {
   const ventana = new BrowserWindow({
     width: 1280,
     height: 800,
-    minWidth: 800,
+    minWidth: 960,
     minHeight: 600,
     backgroundColor: '#1a1020',
     title: 'Creepy Crepas',
@@ -69,6 +79,12 @@ function crearVentana() {
       ventana.setFullScreen(!ventana.isFullScreen());
       ev.preventDefault();
     }
+  });
+
+  ventana.on('resize', () => ajustarZoom(ventana));
+  ventana.webContents.on('did-finish-load', () => {
+    ajustarZoom(ventana);
+    ventana.webContents.setVisualZoomLevelLimits(1, 1); // sin zoom con dos dedos en el touchpad
   });
 
   ventana.loadURL('app://juego/index.html');

@@ -177,6 +177,17 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
   .tab { max-width: 380px; height: 62px; font-size: 20px; }
 }
 
+/* Pantalla acostada (tableta o PC): el dinero ya no se estira a todo lo ancho */
+@media (min-width: 900px) and (min-height: 600px) and (orientation: landscape) {
+  #ind-dinero { flex: 0 0 auto; min-width: 150px; }
+  #btn-ajustes { margin-left: auto; }
+}
+
+/* PC (Steam): el juego llena toda la ventana. steam/main.js le pone zoom
+   para que todo crezca con la ventana, así que aquí siempre se ve como
+   una pantalla de al menos 1200×720. */
+.plataforma-steam #app { max-width: none; }
+
 /* ===== Pantallas ===== */
 #pantallas {
   position: relative;

@@ -21,7 +21,7 @@ import { textoChispitas } from './cartera.js';
 import { conGenero } from './genero.js';
 import { personaje, dibujarPersonaje } from './personaje.js';
 import { abrirBoutique } from './boutique.js';
-import { svgFachada, svgCalle, svgMostrador } from './escenario.js';
+import { svgFachada, svgCalle, svgMostrador, svgVecino } from './escenario.js';
 import { decoracion } from './local.js';
 import { empezarSinFin, puedeJugarSinFin, rendirse } from './sinfin.js';
 import { PESOS, NOMBRES_PARTES } from './calificacion.js';
@@ -37,6 +37,8 @@ const POS_LUGAR = [22, 50, 78]; // % horizontal de cada lugar frente al mostrado
 export function montar(contenedor) {
   raiz = contenedor;
   raiz.innerHTML = `
+    <div class="vecino izq" id="vecino-izq"></div>
+    <div class="vecino der" id="vecino-der"></div>
     <div class="venta">
       <div class="fachada">
         <div id="svg-fachada"></div>
@@ -477,6 +479,8 @@ function pintarDecorado(e = estado()) {
   raiz.querySelector('#svg-fachada').innerHTML = svgFachada(nombreCreperia(), { letrero: nivel(e, 'letrero'), luces: nivel(e, 'luces'), decor });
   raiz.querySelector('#calle').innerHTML = svgCalle({ plantas: nivel(e, 'plantas'), mesitas: nivel(e, 'mesitas'), clima: e.evento, decor });
   raiz.querySelector('#svg-mostrador').innerHTML = svgMostrador({ perrita: nivel(e, 'mascota'), terminal: nivel(e, 'caja'), decor });
+  raiz.querySelector('#vecino-izq').innerHTML = svgVecino('izq', { clima: e.evento, decor });
+  raiz.querySelector('#vecino-der').innerHTML = svgVecino('der', { clima: e.evento, decor });
   const clima = raiz.querySelector('#clima');
   clima.className = 'clima ' + (e.evento || '');
   const particula = e.evento === 'san_valentin' ? '💗' : !e.evento ? PARTICULAS[decor.temporada] : null;
