@@ -12,7 +12,8 @@
    a terminar un día (supabase-v3.sql).
    Y cuando cambian sus números (dinero, logros…), se suben a la tabla
    de perfiles: al tocar a alguien en la tabla se abre su mini perfil
-   (supabase-v4.sql).
+   (supabase-v4.sql). Su frase va dentro del personaje.
+   La pestaña "Semana" suma solo lo de esta semana (supabase-v5.sql).
 
    El jugador (id al azar + nombre) se guarda aparte de la partida:
    si reinicias la partida sigues siendo el mismo jugador.
@@ -33,13 +34,14 @@ import { LOGROS } from './data/logros.js';
 const CLAVE_JUGADOR = 'creperia.jugador';
 const CLAVE_PENDIENTES = 'creperia.pendientes';
 const MAX_NOMBRE = 20;
+export const MAX_FRASE = 60;
 const MAX_PENDIENTES = 60;  // días o partidas guardados sin conexión (los más viejos se tiran)
 const CLAVE_PERSONAJE = 'creperia.personaje';
 const CLAVE_CARA = 'creperia.caraEnviada'; // el último personaje que se subió (para no repetirlo)
 const CLAVE_PERFIL = 'creperia.perfilEnviado'; // los últimos números del perfil que se subieron
 // Lo que se manda del personaje (personaje.js lo revisa al dibujarlo)
 const CAMPOS_PERSONAJE = ['sexo', 'piel', 'estatura', 'complexion', 'peinado', 'pelo', 'vello', 'arriba', 'colorArriba',
-  'colorArriba2', 'estampado', 'abajo', 'colorAbajo', 'calzado', 'colorCalzado', 'acc', 'colorAcc'];
+  'colorArriba2', 'estampado', 'abajo', 'colorAbajo', 'calzado', 'colorCalzado', 'acc', 'colorAcc', 'frase'];
 const ESPERA_MS = 8000;     // si la red no responde en este tiempo, se reintenta luego
 
 const activa = () => Boolean(CONFIG.tablaEnLinea?.url && CONFIG.tablaEnLinea?.clave);
@@ -76,10 +78,13 @@ export function ponerNombre(nombre) {
 }
 
 /** Quita espacios de más y caracteres invisibles; máximo 20 letras. */
-export function limpiarNombre(texto) {
-  return Array.from(texto.replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2028-\u202E]/g, '').replace(/\s+/g, ' ').trim())
-    .slice(0, MAX_NOMBRE).join('');
+export function limpiarNombre(texto, max = MAX_NOMBRE) {
+  return Array.from(String(texto).replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2028-\u202E]/g, '').replace(/\s+/g, ' ').trim())
+    .slice(0, max).join('');
 }
+
+/** La frase del personaje (la suya o la que llega de otro teléfono): máximo 60 letras. */
+export const limpiarFrase = (texto) => (typeof texto === 'string' ? limpiarNombre(texto, MAX_FRASE) : '');
 
 /** Los nombres vienen de otros teléfonos: nunca se meten como HTML. */
 function escapar(texto) {
@@ -284,7 +289,7 @@ async function pedirNombre() {
   return true;
 }
 
-let vista = 'mejor_dia'; // pestaña elegida: 'mejor_dia' | 'total' | 'sinfin'
+let vista = 'mejor_dia'; // pestaña elegida: 'mejor_dia' | 'total' | 'semana' | 'sinfin'
 
 // Cada pestaña: de qué vista de la base sale, por qué se ordena y cómo se muestra
 const dias = (f) => (f.dias === 1 ? t('{n} día', { n: 1 }) : t('{n} días', { n: f.dias }));
@@ -297,6 +302,10 @@ const VISTAS = {
     orden: 'mejor',
     sub: (f) => `${t('{n} crepas', { n: f.crepas })} · ${f.partidas === 1 ? t('{n} partida', { n: 1 }) : t('{n} partidas', { n: f.partidas })}`,
     vacio: `${t('¡Juega el modo sin fin para estrenar esta tabla!')} ♾️` },
+  // Solo lo de esta semana (empieza el lunes)
+  semana: { tabla: 'tabla_semanal', columnas: 'jugador_id,nombre,semana,mejor_dia,dias', valor: (f) => dinero(f.semana),
+    orden: 'semana', sub: (f) => (f.dias === 1 ? t('{n} día esta semana', { n: 1 }) : t('{n} días esta semana', { n: f.dias })),
+    vacio: `${t('¡Termina un día para ser {la primera|el primero} de la semana!')} 📅`, nota: `📅 ${t('Los mejores de esta semana. Se reinicia cada lunes.')}` },
 };
 
 /** Carita del personaje (o un círculo con la inicial si no tiene). */
@@ -309,9 +318,10 @@ function carita(f, dibujar) {
 }
 
 function filasHTML(filas, miId, v, dibujar) {
-  if (!filas.length) return `<p class="ranking-vacio">${t('Todavía no hay nadie.')} ${v.vacio}</p>`;
+  const nota = v.nota ? `<p class="ranking-nota">${v.nota}</p>` : '';
+  if (!filas.length) return `${nota}<p class="ranking-vacio">${t('Todavía no hay nadie.')} ${v.vacio}</p>`;
   const medallas = ['🥇', '🥈', '🥉'];
-  return `<ol class="ranking-lista">${filas.map((f, i) => `
+  return `${nota}<ol class="ranking-lista">${filas.map((f, i) => `
     <li class="${f.jugador_id === miId ? 'yo' : ''}">
       <button class="ranking-fila" data-i="${i}" aria-label="${escapar(t('Ver el perfil de {nombre}', { nombre: f.nombre }))}">
         <span class="ranking-pos">${medallas[i] ?? i + 1}</span>
@@ -324,12 +334,36 @@ function filasHTML(filas, miId, v, dibujar) {
 
 const cache = {}; // filas ya leídas de cada vista de la base (mientras la ventana está abierta)
 
+/** El lunes de esta semana a las 0:00, hora del centro de México (UTC−6, sin horario de verano). */
+function inicioDeSemana() {
+  const mx = new Date(Date.now() - 6 * 3600000);
+  mx.setUTCHours(0, 0, 0, 0);
+  mx.setUTCDate(mx.getUTCDate() - ((mx.getUTCDay() + 6) % 7));
+  return new Date(mx.getTime() + 6 * 3600000);
+}
+
+/** Sin la vista tabla_semanal (falta correr supabase-v5.sql): se suma aquí con los días de esta semana. */
+async function semanaSinVista() {
+  const filas = await pedir(`puntuaciones?select=jugador_id,nombre,ganado,personaje&creado=gte.${inicioDeSemana().toISOString()}&order=creado.desc&limit=1000`);
+  const porJugador = new Map();
+  for (const f of filas) {
+    const j = porJugador.get(f.jugador_id)
+      || porJugador.set(f.jugador_id, { jugador_id: f.jugador_id, nombre: f.nombre, semana: 0, mejor_dia: 0, dias: 0, personaje: null }).get(f.jugador_id);
+    j.semana += f.ganado;
+    j.mejor_dia = Math.max(j.mejor_dia, f.ganado);
+    j.dias += 1;
+    j.personaje ||= f.personaje; // vienen de la más nueva a la más vieja
+  }
+  return [...porJugador.values()];
+}
+
 /** Lee una vista de la base; si todavía no tiene la columna del personaje, la lee sin ella. */
 async function leerTabla(v) {
   const consulta = (cols) => pedir(`${v.tabla}?select=${cols}&order=${v.orden}.desc&limit=200`);
   try {
     return await consulta(`${v.columnas},personaje`);
   } catch (err) {
+    if (v.tabla === 'tabla_semanal' && /tabla_semanal|PGRST205|42P01/i.test(err.message)) return semanaSinVista();
     if (!/personaje/i.test(err.message)) throw err;
     return consulta(v.columnas);
   }
@@ -348,9 +382,11 @@ async function abrirPerfil(fila) {
   const soyYo = id === jugador().id;
   const figura = (personaje) => personajeDesdeTabla(personaje)
     || `<span class="perfil-inicial">${escapar(Array.from(fila.nombre)[0] || '?')}</span>`;
+  const frase = limpiarFrase(fila.personaje?.frase);
   const cont = document.createElement('div');
   cont.className = 'perfil';
   cont.innerHTML = `
+    ${frase ? `<p class="perfil-frase">${escapar(frase)}</p>` : ''}
     <div class="perfil-figura">${figura(fila.personaje)}</div>
     <div class="perfil-datos"><p class="ranking-vacio">${t('Cargando…')} ⏳</p></div>`;
   const datos = cont.querySelector('.perfil-datos');
@@ -363,8 +399,9 @@ async function abrirPerfil(fila) {
 
   // De la tabla ya leída, o se pide solo lo de este jugador
   const deCache = (tabla) => cache[tabla]?.find((f) => f.jugador_id === id);
-  const [dias, sinfin, perfil] = await Promise.all([
+  const [dias, semana, sinfin, perfil] = await Promise.all([
     deCache('tabla_jugadores') ?? leerDe('tabla_jugadores', 'mejor_dia', id).catch(() => null),
+    deCache('tabla_semanal') ?? leerDe('tabla_semanal', 'semana', id).catch(() => null),
     deCache('tabla_sinfin') ?? leerDe('tabla_sinfin', 'mejor', id).catch(() => null),
     // Tus números salen de este teléfono (los de la base pueden ir atrasados)
     soyYo ? perfilParaTabla()
@@ -383,6 +420,7 @@ async function abrirPerfil(fila) {
     lista.push(dato('🥞', t('Crepas vendidas'), numero(perfil.vendidas)));
   }
   if (dias) lista.push(dato('🏆', t('Mejor día'), dinero(dias.mejor_dia)));
+  if (semana) lista.push(dato('📅', t('Esta semana'), dinero(semana.semana)));
   if (sinfin) lista.push(dato('♾️', t('Sin fin'), t('{n} pts', { n: numero(sinfin.mejor) })));
   datos.innerHTML = `
     ${lista.length ? `<ul class="perfil-lista">${lista.join('')}</ul>` : ''}
@@ -401,6 +439,7 @@ export async function abrirRanking({ conservar = false } = {}) {
     <div class="segmentado" id="rk-vista">
       <button data-valor="mejor_dia">${t('Mejor día')}</button>
       <button data-valor="total">${t('Acumulado')}</button>
+      <button data-valor="semana">📅 ${t('Semana')}</button>
       <button data-valor="sinfin">♾️ ${t('Sin fin')}</button>
     </div>
     <div id="rk-cuerpo" class="ranking-cuerpo"><p class="ranking-vacio">${t('Cargando…')} ⏳</p></div>

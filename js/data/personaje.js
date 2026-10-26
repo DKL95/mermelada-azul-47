@@ -87,6 +87,11 @@ export const ARRIBA = [
   { id: 'traje_rayas', nombre: '🪲 Traje de rayas', traje: 'bioexorcista' }, { id: 'sueter_pesadilla', nombre: '🧤 Suéter de pesadilla', traje: 'pesadillas' },
   { id: 'tunica_grito', nombre: '📞 Túnica del grito', traje: 'grito' }, { id: 'overol_muneco', nombre: '🪆 Overol de muñeco', traje: 'muneco' },
   { id: 'traje_payaso', nombre: '🎈 Traje de payaso', traje: 'payaso' },
+  // Música
+  { id: 'chaqueta_kpop', nombre: '💜 Chaqueta de ídolo', traje: 'kpop' }, { id: 'chaqueta_militar', nombre: '🕺 Chaqueta del paso lunar', traje: 'paso_lunar' },
+  { id: 'chamarra_estoperoles', nombre: '🎸 Chamarra con estoperoles', traje: 'rock' }, { id: 'traje_blanco', nombre: '🕶️ Traje blanco de estrellas', traje: 'copete' },
+  { id: 'camisa_hawaiana', nombre: '🌺 Camisa de flores', traje: 'perreo' }, { id: 'chamarra_cuero', nombre: '🤖 Chamarra de cuero', traje: 'robot' },
+  { id: 'traje_charro', nombre: '🤠 Traje de charro', traje: 'charro' }, { id: 'body_brillante', nombre: '✨ Body de lentejuelas', traje: 'eras' },
 ];
 
 export const ESTAMPADOS = [
@@ -98,6 +103,7 @@ export const ABAJO = [
   { id: 'pantalon', nombre: 'Pantalón' }, { id: 'jeans', nombre: 'Jeans' },
   { id: 'falda', nombre: 'Falda' }, { id: 'short', nombre: 'Short' },
   { id: 'mallas', nombre: 'Mallas', precio: 300 }, { id: 'tutu', nombre: 'Tutú', precio: 500 },
+  { id: 'pantalon_charro', nombre: 'Pantalón de charro', traje: 'charro' },
 ];
 
 export const CALZADO = [
@@ -105,6 +111,7 @@ export const CALZADO = [
   { id: 'botas', nombre: 'Botas' }, { id: 'sandalias', nombre: 'Sandalias' },
   { id: 'botas_heroe', nombre: 'Botas de héroe', precio: 600 },
   { id: 'descalzo', nombre: 'Descalzo', traje: 'peleador' },
+  { id: 'botas_plataforma', nombre: '🎸 Botas de plataforma', traje: 'rock' },
 ];
 
 // Accesorios: se puede traer uno de cada categoría a la vez
@@ -130,12 +137,16 @@ export const ACCESORIOS = {
     { id: 'mascara_blanca', nombre: 'Máscara blanca', traje: 'sombra' }, { id: 'pelo_fantasma', nombre: 'Pelo de fantasma', traje: 'bioexorcista' },
     { id: 'sombrero_pesadilla', nombre: 'Sombrero café', traje: 'pesadillas' }, { id: 'capucha_grito', nombre: 'Máscara del grito', traje: 'grito' },
     { id: 'pelo_muneco', nombre: 'Pelo de muñeco', traje: 'muneco' }, { id: 'pelo_payaso', nombre: 'Pelo de payaso', traje: 'payaso' },
+    { id: 'fedora', nombre: '🎩 Sombrero de fieltro', precio: 600 }, { id: 'orejas_conejo', nombre: '🐰 Orejas de conejo', precio: 500 },
+    { id: 'microfono_diadema', nombre: '🎧 Micrófono de diadema', precio: 400 }, { id: 'sombrero_charro', nombre: '🤠 Sombrero de charro', precio: 900 },
+    { id: 'casco_robot', nombre: '🤖 Casco de robot', traje: 'robot' },
   ] },
   ojos: { nombre: '👓 Ojos', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'lentes', nombre: 'Lentes' }, { id: 'lentesSol', nombre: 'Lentes de sol' },
     { id: 'lentes_redondos', nombre: 'Lentes redondos', precio: 400 }, { id: 'lentes_corazon', nombre: '💗 Lentes de corazón', precio: 500 },
     { id: 'lentes_estrella', nombre: '⭐ Lentes de estrella', precio: 500 }, { id: 'antifaz', nombre: 'Antifaz', precio: 500 },
     { id: 'parche', nombre: 'Parche', precio: 300 },
+    { id: 'lentes_dorados', nombre: '🕶️ Lentes dorados', precio: 500 },
   ] },
   cara: { nombre: '😺 Cara', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'pecas', nombre: 'Pecas', precio: 150 },
@@ -148,6 +159,7 @@ export const ACCESORIOS = {
     { id: 'mascara_hockey', nombre: '🏒 Máscara de hockey', traje: 'lago' }, { id: 'cara_fantasma', nombre: 'Ojeras de fantasma', traje: 'bioexorcista' },
     { id: 'cara_quemada', nombre: 'Cara quemada', traje: 'pesadillas' }, { id: 'cicatrices_muneco', nombre: 'Cicatrices de muñeco', traje: 'muneco' },
     { id: 'cara_payaso', nombre: '🎈 Maquillaje de payaso', traje: 'payaso' },
+    { id: 'maquillaje_estrella', nombre: '⭐ Estrella en el ojo', traje: 'rock' },
   ] },
   orejas: { nombre: '👂 Orejas', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'aretes', nombre: 'Aretes' }, { id: 'arracadas', nombre: 'Arracadas' },
@@ -159,12 +171,14 @@ export const ACCESORIOS = {
     { id: 'corbata', nombre: 'Corbata' }, { id: 'moñito', nombre: 'Moñito' },
     { id: 'bufanda_rayas', nombre: 'Bufanda de rayas', precio: 500 }, { id: 'paliacate', nombre: 'Paliacate', precio: 300 },
     { id: 'medalla', nombre: '🏅 Medalla', precio: 800 },
+    { id: 'cadena_oro', nombre: '📿 Cadena de oro', precio: 700 },
   ] },
   muneca: { nombre: '⌚ Muñeca', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'reloj', nombre: 'Reloj' }, { id: 'pulsera', nombre: 'Pulsera' },
     { id: 'reloj_inteligente', nombre: 'Reloj inteligente', precio: 600 }, { id: 'brazaletes', nombre: 'Brazaletes dorados', precio: 700 },
     { id: 'guantes_blancos', nombre: '🧤 Guantes blancos', precio: 300 }, { id: 'guantes_pelea', nombre: '🥊 Guantes de pelea', precio: 300 },
     { id: 'munequeras', nombre: 'Muñequeras', precio: 250 },
+    { id: 'guante_brillante', nombre: '🧤 Un guante brillante', precio: 400 }, { id: 'pulseras_amistad', nombre: '🌈 Pulseras de la amistad', precio: 250 },
   ] },
   mano: { nombre: '✋ Mano', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'espatula', nombre: 'Espátula', precio: 300 }, { id: 'taza', nombre: '☕ Taza', precio: 200 },
@@ -175,6 +189,8 @@ export const ACCESORIOS = {
     { id: 'tridente', nombre: '🔱 Tridente', traje: 'diablo' }, { id: 'guadana', nombre: 'Guadaña', traje: 'parca' },
     { id: 'machete', nombre: 'Machete', traje: 'lago' }, { id: 'cuchillo', nombre: '🔪 Cuchillo', traje: 'sombra' },
     { id: 'guante_garras', nombre: 'Guante de garras', traje: 'pesadillas' },
+    { id: 'microfono', nombre: '🎤 Micrófono', precio: 400 }, { id: 'guitarra_electrica', nombre: '🎸 Guitarra eléctrica', precio: 900 },
+    { id: 'barra_luz', nombre: '💡 Barra de luz de fan', precio: 500 },
   ] },
   espalda: { nombre: '🪽 Espalda', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'mochila', nombre: '🎒 Mochila', precio: 400 }, { id: 'capa', nombre: 'Capa', precio: 900 },
@@ -190,7 +206,8 @@ export const ACCESORIOS = {
    piezas = campos del personaje que cambia.
    piezasHombre = lo que cambia distinto si el personaje es hombre (opcional).
    nombre puede ser [femenino, masculino].
-   grupo 'halloween' = va en su propia sección de la boutique (con los de terror). */
+   grupo 'halloween' = va en su propia sección de la boutique (con los de terror);
+   grupo 'musica' = la sección de artistas de la música. */
 export const TRAJES = [
   { id: 'arana', nombre: 'Héroe arácnido', emoji: '🕷️', precio: 1500,
     piezas: { arriba: 'arana', 'acc.cabeza': 'mascara_arana', abajo: 'mallas', colorAbajo: '#1F5FFF', calzado: 'botas_heroe', colorCalzado: '#D62839' } },
@@ -270,6 +287,24 @@ export const TRAJES = [
     piezas: { arriba: 'overol_muneco', 'acc.cabeza': 'pelo_muneco', 'acc.cara': 'cicatrices_muneco', 'acc.mano': 'cuchillo', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#3D6FD8', calzado: 'tenis', colorCalzado: '#E8414F' } },
   { id: 'payaso', nombre: 'Payaso de la alcantarilla', emoji: '🎈', precio: 1800, grupo: 'halloween',
     piezas: { arriba: 'traje_payaso', 'acc.cabeza': 'pelo_payaso', 'acc.cara': 'cara_payaso', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.mano': 'globo', 'colorAcc.mano': '#E8414F', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#E9E6EE', calzado: 'zapatos', colorCalzado: '#FF7A1A' } },
+
+  // Parodias de artistas de la música (sin nombres reales)
+  { id: 'kpop', nombre: 'Estrella del K-pop', emoji: '💜', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'chaqueta_kpop', 'acc.cabeza': 'microfono_diadema', 'acc.mano': 'barra_luz', 'colorAcc.mano': '#8B5CF6', 'acc.orejas': 'arracadas', 'colorAcc.orejas': '#D9D9E0', 'acc.ojos': 'ninguno', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'tenis', colorCalzado: '#FFFFFF' } },
+  { id: 'paso_lunar', nombre: ['La reina del paso lunar', 'El rey del paso lunar'], emoji: '🕺', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'chaqueta_militar', 'acc.cabeza': 'fedora', 'colorAcc.cabeza': '#1B1B2B', 'acc.muneca': 'guante_brillante', 'acc.mano': 'ninguno', 'acc.ojos': 'ninguno', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'zapatos', colorCalzado: '#1B1B2B' } },
+  { id: 'rock', nombre: ['Rockera de la estrella', 'Rockero de la estrella'], emoji: '🎸', precio: 1600, grupo: 'musica',
+    piezas: { arriba: 'chamarra_estoperoles', 'acc.cara': 'maquillaje_estrella', 'acc.mano': 'guitarra_electrica', 'colorAcc.mano': '#E8414F', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'mallas', colorAbajo: '#1B1B2B', calzado: 'botas_plataforma', colorCalzado: '#1B1B2B' } },
+  { id: 'copete', nombre: ['La reina del copete', 'El rey del copete'], emoji: '🕶️', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'traje_blanco', peinado: 'copete', pelo: '#1B1B2B', 'acc.ojos': 'lentes_dorados', 'acc.mano': 'microfono', 'acc.cabeza': 'ninguno', 'acc.cuello': 'ninguno', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#ECEAE2', calzado: 'zapatos', colorCalzado: '#ECEAE2' } },
+  { id: 'perreo', nombre: 'Conejito del perreo', emoji: '🐰', precio: 1600, grupo: 'musica',
+    piezas: { arriba: 'camisa_hawaiana', 'acc.cabeza': 'orejas_conejo', 'colorAcc.cabeza': '#FFFFFF', 'acc.ojos': 'lentesSol', 'colorAcc.ojos': '#1B1B2B', 'acc.cuello': 'cadena_oro', 'acc.mano': 'ninguno', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'short', colorAbajo: '#FFFFFF', calzado: 'tenis', colorCalzado: '#FFFFFF' } },
+  { id: 'robot', nombre: 'DJ robot', emoji: '🤖', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'chamarra_cuero', 'acc.cabeza': 'casco_robot', 'colorAcc.cabeza': '#FFD84D', 'acc.cuello': 'ninguno', 'acc.mano': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'botas', colorCalzado: '#1B1B2B' } },
+  { id: 'charro', nombre: ['Charra cantora', 'Charro cantor'], emoji: '🤠', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'traje_charro', 'acc.cabeza': 'sombrero_charro', 'colorAcc.cabeza': '#1B1B2B', 'acc.cuello': 'moñito', 'colorAcc.cuello': '#D62839', 'acc.mano': 'ninguno', 'acc.ojos': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon_charro', colorAbajo: '#1B1B2B', calzado: 'botas', colorCalzado: '#3B2219' } },
+  { id: 'eras', nombre: 'Estrella de las eras', emoji: '✨', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'body_brillante', 'acc.mano': 'microfono', 'acc.muneca': 'pulseras_amistad', 'acc.cara': 'estrellitas', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'short', colorAbajo: '#4F7BE8', calzado: 'botas_heroe', colorCalzado: '#4F7BE8' } },
 ];
 
 // Textos en el idioma elegido (ver idioma.js)

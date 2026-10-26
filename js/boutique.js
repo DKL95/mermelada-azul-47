@@ -20,6 +20,7 @@ import { t } from './idioma.js';
 const SECCIONES = [
   ['trajes', `🦸 ${t('Disfraces')}`],
   ['halloween', `🎃 ${t('Halloween y terror')}`],
+  ['musica', `🎤 ${t('Música')}`],
   ...Object.entries(ACCESORIOS).map(([cat, { nombre }]) => [`acc.${cat}`, nombre]),
   ['abajo', `👖 ${t('Abajo')}`],
   ['calzado', `👟 ${t('Calzado')}`],
@@ -30,7 +31,7 @@ const VISTA = { 'acc.cabeza': 'cabeza', 'acc.ojos': 'cara', 'acc.cara': 'cara', 
 
 /** Lo que se vende en una sección: { campo, id, nombre, precio, traje? } */
 function articulos(seccion) {
-  if (seccion === 'trajes' || seccion === 'halloween') {
+  if (seccion === 'trajes' || seccion === 'halloween' || seccion === 'musica') {
     return TRAJES.filter((tr) => (tr.grupo || 'trajes') === seccion)
       .map((tr) => ({ campo: 'traje', id: tr.id, nombre: nombreTraje(tr), precio: tr.precio, traje: tr }));
   }
