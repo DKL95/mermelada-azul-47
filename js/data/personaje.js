@@ -68,6 +68,11 @@ export const ARRIBA = [
   { id: 'sudadera', nombre: 'Sudadera' }, { id: 'camisa', nombre: 'Camisa' }, { id: 'sueter', nombre: 'Suéter' },
   { id: 'chamarra', nombre: 'Chamarra' }, { id: 'saco', nombre: 'Saco' }, { id: 'overol', nombre: 'Overol' },
   { id: 'vestido', nombre: 'Vestido' },
+  // K-pop: se venden sueltas en la boutique (y vienen en sus conjuntos)
+  { id: 'crop_top', nombre: '💖 Top corto', precio: 400 }, { id: 'bomber', nombre: '🧥 Chamarra bomber', precio: 700 },
+  { id: 'jersey', nombre: '🎽 Jersey deportivo', precio: 500 }, { id: 'uniforme', nombre: '🎓 Saco de uniforme', precio: 700 },
+  { id: 'saco_brillos', nombre: '🪩 Saco de lentejuelas', precio: 900 }, { id: 'chaleco_cuero', nombre: '⛓️ Chaleco de cuero', precio: 600 },
+  { id: 'sueter_corazon', nombre: '💕 Suéter de corazón', precio: 500 },
   // Trajes de los disfraces
   { id: 'arana', nombre: '🕷️ Traje arácnido', traje: 'arana' }, { id: 'mago', nombre: '🧙 Túnica de mago', traje: 'mago' },
   { id: 'murcielago', nombre: '🦇 Traje del señor de la noche', traje: 'murcielago' }, { id: 'capitan', nombre: '🛡️ Traje de capitán', traje: 'capitan' },
@@ -104,6 +109,8 @@ export const ABAJO = [
   { id: 'falda', nombre: 'Falda' }, { id: 'short', nombre: 'Short' },
   { id: 'mallas', nombre: 'Mallas', precio: 300 }, { id: 'tutu', nombre: 'Tutú', precio: 500 },
   { id: 'pantalon_charro', nombre: 'Pantalón de charro', traje: 'charro' },
+  { id: 'falda_tableada', nombre: 'Falda tableada', precio: 400 }, { id: 'falda_cuadros', nombre: 'Falda de cuadros', precio: 500 },
+  { id: 'pantalon_cargo', nombre: 'Pantalón cargo', precio: 500 }, { id: 'pantalon_cuero', nombre: 'Pantalón de cuero', precio: 600 },
 ];
 
 export const CALZADO = [
@@ -112,6 +119,8 @@ export const CALZADO = [
   { id: 'botas_heroe', nombre: 'Botas de héroe', precio: 600 },
   { id: 'descalzo', nombre: 'Descalzo', traje: 'peleador' },
   { id: 'botas_plataforma', nombre: '🎸 Botas de plataforma', traje: 'rock' },
+  { id: 'tenis_plataforma', nombre: 'Tenis de plataforma', precio: 500 }, { id: 'botas_altas', nombre: 'Botas largas', precio: 700 },
+  { id: 'mocasines', nombre: 'Mocasines', precio: 400 },
 ];
 
 // Accesorios: se puede traer uno de cada categoría a la vez
@@ -140,13 +149,15 @@ export const ACCESORIOS = {
     { id: 'fedora', nombre: '🎩 Sombrero de fieltro', precio: 600 }, { id: 'orejas_conejo', nombre: '🐰 Orejas de conejo', precio: 500 },
     { id: 'microfono_diadema', nombre: '🎧 Micrófono de diadema', precio: 400 }, { id: 'sombrero_charro', nombre: '🤠 Sombrero de charro', precio: 900 },
     { id: 'casco_robot', nombre: '🤖 Casco de robot', traje: 'robot' },
+    { id: 'gorro_pescador', nombre: 'Gorro de pescador', precio: 400 }, { id: 'pasadores', nombre: '📎 Pasadores', precio: 250 },
+    { id: 'diadema_perlas', nombre: 'Diadema de perlas', precio: 450 },
   ] },
   ojos: { nombre: '👓 Ojos', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'lentes', nombre: 'Lentes' }, { id: 'lentesSol', nombre: 'Lentes de sol' },
     { id: 'lentes_redondos', nombre: 'Lentes redondos', precio: 400 }, { id: 'lentes_corazon', nombre: '💗 Lentes de corazón', precio: 500 },
     { id: 'lentes_estrella', nombre: '⭐ Lentes de estrella', precio: 500 }, { id: 'antifaz', nombre: 'Antifaz', precio: 500 },
     { id: 'parche', nombre: 'Parche', precio: 300 },
-    { id: 'lentes_dorados', nombre: '🕶️ Lentes dorados', precio: 500 },
+    { id: 'lentes_dorados', nombre: '🕶️ Lentes dorados', precio: 500 }, { id: 'lentes_y2k', nombre: '🕶️ Lentes ovalados', precio: 450 },
   ] },
   cara: { nombre: '😺 Cara', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'pecas', nombre: 'Pecas', precio: 150 },
@@ -160,11 +171,13 @@ export const ACCESORIOS = {
     { id: 'cara_quemada', nombre: 'Cara quemada', traje: 'pesadillas' }, { id: 'cicatrices_muneco', nombre: 'Cicatrices de muñeco', traje: 'muneco' },
     { id: 'cara_payaso', nombre: '🎈 Maquillaje de payaso', traje: 'payaso' },
     { id: 'maquillaje_estrella', nombre: '⭐ Estrella en el ojo', traje: 'rock' },
+    { id: 'gemas_cara', nombre: '💎 Brillitos en la cara', precio: 300 },
   ] },
   orejas: { nombre: '👂 Orejas', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'aretes', nombre: 'Aretes' }, { id: 'arracadas', nombre: 'Arracadas' },
     { id: 'perlas', nombre: 'Perlas' }, { id: 'aretes_corazon', nombre: '💕 Aretes de corazón', especial: true },
     { id: 'aretes_estrella', nombre: '⭐ Aretes de estrella', precio: 400 }, { id: 'aretes_fresa', nombre: '🍓 Aretes de fresa', precio: 400 },
+    { id: 'arete_cruz', nombre: 'Arete de cruz', precio: 350 }, { id: 'aretes_cadena', nombre: 'Aretes de cadenita', precio: 400 },
   ] },
   cuello: { nombre: '🧣 Cuello', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'collar', nombre: 'Collar' }, { id: 'bufanda', nombre: 'Bufanda' },
@@ -172,6 +185,7 @@ export const ACCESORIOS = {
     { id: 'bufanda_rayas', nombre: 'Bufanda de rayas', precio: 500 }, { id: 'paliacate', nombre: 'Paliacate', precio: 300 },
     { id: 'medalla', nombre: '🏅 Medalla', precio: 800 },
     { id: 'cadena_oro', nombre: '📿 Cadena de oro', precio: 700 },
+    { id: 'gargantilla', nombre: 'Gargantilla', precio: 300 }, { id: 'collar_candado', nombre: '🔒 Collar de candado', precio: 500 },
   ] },
   muneca: { nombre: '⌚ Muñeca', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'reloj', nombre: 'Reloj' }, { id: 'pulsera', nombre: 'Pulsera' },
@@ -179,6 +193,7 @@ export const ACCESORIOS = {
     { id: 'guantes_blancos', nombre: '🧤 Guantes blancos', precio: 300 }, { id: 'guantes_pelea', nombre: '🥊 Guantes de pelea', precio: 300 },
     { id: 'munequeras', nombre: 'Muñequeras', precio: 250 },
     { id: 'guante_brillante', nombre: '🧤 Un guante brillante', precio: 400 }, { id: 'pulseras_amistad', nombre: '🌈 Pulseras de la amistad', precio: 250 },
+    { id: 'guantes_sin_dedos', nombre: 'Guantes sin dedos', precio: 350 },
   ] },
   mano: { nombre: '✋ Mano', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'espatula', nombre: 'Espátula', precio: 300 }, { id: 'taza', nombre: '☕ Taza', precio: 200 },
@@ -191,6 +206,8 @@ export const ACCESORIOS = {
     { id: 'guante_garras', nombre: 'Guante de garras', traje: 'pesadillas' },
     { id: 'microfono', nombre: '🎤 Micrófono', precio: 400 }, { id: 'guitarra_electrica', nombre: '🎸 Guitarra eléctrica', precio: 900 },
     { id: 'barra_luz', nombre: '💡 Barra de luz de fan', precio: 500 },
+    { id: 'martillo_luz', nombre: '🔨 Martillo de luz', precio: 600 }, { id: 'lightstick_dulce', nombre: '🍭 Barra de luz de dulce', precio: 600 },
+    { id: 'peluche', nombre: '🧸 Peluche', precio: 500 },
   ] },
   espalda: { nombre: '🪽 Espalda', opciones: [
     { id: 'ninguno', nombre: 'Nada' }, { id: 'mochila', nombre: '🎒 Mochila', precio: 400 }, { id: 'capa', nombre: 'Capa', precio: 900 },
@@ -305,6 +322,25 @@ export const TRAJES = [
     piezas: { arriba: 'traje_charro', 'acc.cabeza': 'sombrero_charro', 'colorAcc.cabeza': '#1B1B2B', 'acc.cuello': 'moñito', 'colorAcc.cuello': '#D62839', 'acc.mano': 'ninguno', 'acc.ojos': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon_charro', colorAbajo: '#1B1B2B', calzado: 'botas', colorCalzado: '#3B2219' } },
   { id: 'eras', nombre: 'Estrella de las eras', emoji: '✨', precio: 1800, grupo: 'musica',
     piezas: { arriba: 'body_brillante', 'acc.mano': 'microfono', 'acc.muneca': 'pulseras_amistad', 'acc.cara': 'estrellitas', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'short', colorAbajo: '#4F7BE8', calzado: 'botas_heroe', colorCalzado: '#4F7BE8' } },
+  // Grupos de K-pop (sus piezas también se venden sueltas)
+  { id: 'rosa_negro', nombre: ['Princesa del rosa y negro', 'Príncipe del rosa y negro'], emoji: '🖤', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'jersey', colorArriba: '#1B1B2B', colorArriba2: '#FF4FA3', 'acc.mano': 'martillo_luz', 'colorAcc.mano': '#FF4FA3', 'acc.cuello': 'gargantilla', 'colorAcc.cuello': '#1B1B2B', 'acc.orejas': 'aretes_cadena', 'colorAcc.orejas': '#D9D9E0', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'falda_cuadros', colorAbajo: '#FF4FA3', calzado: 'botas_altas', colorCalzado: '#1B1B2B' },
+    piezasHombre: { abajo: 'pantalon_cargo', colorAbajo: '#1B1B2B', calzado: 'tenis_plataforma', colorCalzado: '#1B1B2B' } },
+  { id: 'dulzura', nombre: 'Dulzura al doble', emoji: '🍭', precio: 1700, grupo: 'musica',
+    piezas: { arriba: 'sueter_corazon', colorArriba: '#FFB3D6', colorArriba2: '#FF4FA3', 'acc.cabeza': 'pasadores', 'colorAcc.cabeza': '#FF4FA3', 'acc.cara': 'gemas_cara', 'colorAcc.cara': '#FF4FA3', 'acc.mano': 'lightstick_dulce', 'colorAcc.mano': '#FF4FA3', 'acc.ojos': 'ninguno', 'acc.cuello': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'falda_tableada', colorAbajo: '#FFFFFF', calzado: 'tenis_plataforma', colorCalzado: '#FFFFFF' },
+    piezasHombre: { abajo: 'pantalon', colorAbajo: '#FFFFFF' } },
+  { id: 'escuela', nombre: 'Estrella de la escuela', emoji: '🎓', precio: 1700, grupo: 'musica',
+    piezas: { arriba: 'uniforme', colorArriba: '#1B2A55', colorArriba2: '#E8414F', 'acc.orejas': 'arete_cruz', 'colorAcc.orejas': '#D9D9E0', 'acc.mano': 'microfono', 'acc.espalda': 'mochila', 'colorAcc.espalda': '#E8414F', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.cara': 'ninguno', 'acc.cuello': 'ninguno', abajo: 'falda_cuadros', colorAbajo: '#1B2A55', calzado: 'mocasines', colorCalzado: '#1B1B2B' },
+    piezasHombre: { abajo: 'pantalon', colorAbajo: '#1B2A55' } },
+  { id: 'barrio', nombre: ['Rapera del barrio', 'Rapero del barrio'], emoji: '🧢', precio: 1700, grupo: 'musica',
+    piezas: { arriba: 'bomber', colorArriba: '#3F6B3A', colorArriba2: '#FF7A1A', 'acc.cabeza': 'gorro_pescador', 'colorAcc.cabeza': '#1B1B2B', 'acc.cuello': 'collar_candado', 'acc.muneca': 'guantes_sin_dedos', 'colorAcc.muneca': '#1B1B2B', 'acc.ojos': 'ninguno', 'acc.cara': 'ninguno', 'acc.mano': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon_cargo', colorAbajo: '#1B1B2B', calzado: 'tenis_plataforma', colorCalzado: '#FFFFFF' } },
+  { id: 'metaverso', nombre: ['Guerrera del metaverso', 'Guerrero del metaverso'], emoji: '🦾', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'chaleco_cuero', colorArriba: '#1B1B2B', colorArriba2: '#8B5CF6', 'acc.ojos': 'lentes_y2k', 'colorAcc.ojos': '#8B5CF6', 'acc.orejas': 'aretes_cadena', 'colorAcc.orejas': '#D9D9E0', 'acc.muneca': 'guantes_sin_dedos', 'colorAcc.muneca': '#1B1B2B', 'acc.cuello': 'gargantilla', 'colorAcc.cuello': '#1B1B2B', 'acc.cara': 'gemas_cara', 'colorAcc.cara': '#8B5CF6', 'acc.cabeza': 'ninguno', 'acc.mano': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon_cuero', colorAbajo: '#1B1B2B', calzado: 'botas_altas', colorCalzado: '#1B1B2B' } },
+  { id: 'dinamita', nombre: ['La reina de la dinamita', 'El rey de la dinamita'], emoji: '🪩', precio: 1800, grupo: 'musica',
+    piezas: { arriba: 'saco_brillos', colorArriba: '#FFD84D', 'acc.mano': 'microfono', 'acc.cabeza': 'ninguno', 'acc.ojos': 'ninguno', 'acc.cara': 'ninguno', 'acc.cuello': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon', colorAbajo: '#1B1B2B', calzado: 'mocasines', colorCalzado: '#FFFFFF' } },
+  { id: 'dosmil', nombre: 'Estilo dosmilero', emoji: '🦋', precio: 1700, grupo: 'musica',
+    piezas: { arriba: 'crop_top', colorArriba: '#3DA5FF', colorArriba2: '#FFFFFF', 'acc.ojos': 'lentes_y2k', 'colorAcc.ojos': '#FF4FA3', 'acc.cabeza': 'pasadores', 'colorAcc.cabeza': '#FFD84D', 'acc.cuello': 'gargantilla', 'colorAcc.cuello': '#1B1B2B', 'acc.mano': 'peluche', 'colorAcc.mano': '#FFFFFF', 'acc.cara': 'ninguno', 'acc.espalda': 'ninguno', abajo: 'pantalon_cargo', colorAbajo: '#ECEAE2', calzado: 'tenis_plataforma', colorCalzado: '#FFFFFF' },
+    piezasHombre: { arriba: 'jersey', colorArriba: '#3DA5FF', colorArriba2: '#FFFFFF' } },
 ];
 
 // Textos en el idioma elegido (ver idioma.js)

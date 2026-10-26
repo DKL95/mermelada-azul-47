@@ -13,7 +13,7 @@ import { mostrarModal, aviso, dinero } from './ui.js';
 import { sonidos } from './audio.js';
 import { chispitas, gastarChispitas, enChispitas, textoChispitas, tieneArticulo, agregarArticulos } from './cartera.js';
 import { personaje, guardarPersonaje, dibujarPersonaje, tieneOpcion, conTraje, nombreTraje } from './personaje.js';
-import { ACCESORIOS, ABAJO, CALZADO, TRAJES, claveArticulo, personajeInicial, piezasDe, todasLasPiezas } from './data/personaje.js';
+import { ACCESORIOS, ARRIBA, ABAJO, CALZADO, TRAJES, claveArticulo, personajeInicial, piezasDe, todasLasPiezas } from './data/personaje.js';
 import { t } from './idioma.js';
 
 // [id, título, de dónde salen los artículos]
@@ -22,12 +22,13 @@ const SECCIONES = [
   ['halloween', `🎃 ${t('Halloween y terror')}`],
   ['musica', `🎤 ${t('Música')}`],
   ...Object.entries(ACCESORIOS).map(([cat, { nombre }]) => [`acc.${cat}`, nombre]),
+  ['arriba', `👕 ${t('Arriba')}`],
   ['abajo', `👖 ${t('Abajo')}`],
   ['calzado', `👟 ${t('Calzado')}`],
 ];
 
 // En qué encuadre se ve mejor cada cosa en su tarjetita
-const VISTA = { 'acc.cabeza': 'cabeza', 'acc.ojos': 'cara', 'acc.cara': 'cara', 'acc.orejas': 'cara', 'acc.cuello': 'busto' };
+const VISTA = { arriba: 'busto', 'acc.cabeza': 'cabeza', 'acc.ojos': 'cara', 'acc.cara': 'cara', 'acc.orejas': 'cara', 'acc.cuello': 'busto' };
 
 /** Lo que se vende en una sección: { campo, id, nombre, precio, traje? } */
 function articulos(seccion) {
@@ -35,7 +36,7 @@ function articulos(seccion) {
     return TRAJES.filter((tr) => (tr.grupo || 'trajes') === seccion)
       .map((tr) => ({ campo: 'traje', id: tr.id, nombre: nombreTraje(tr), precio: tr.precio, traje: tr }));
   }
-  const lista = seccion === 'abajo' ? ABAJO : seccion === 'calzado' ? CALZADO : ACCESORIOS[seccion.slice(4)].opciones;
+  const lista = seccion === 'arriba' ? ARRIBA : seccion === 'abajo' ? ABAJO : seccion === 'calzado' ? CALZADO : ACCESORIOS[seccion.slice(4)].opciones;
   return lista.filter((o) => o.precio).map((o) => ({ campo: seccion, id: o.id, nombre: o.nombre, precio: o.precio, opcion: o }));
 }
 
